@@ -41,7 +41,7 @@ To explore this digital cosmos, we formulate several research questions that wil
 
 ### 5. How did the Youniverse evolve over time?
 
-- How has the structure of this digital cosmos evolved from 2005 to 2019: have new galaxies emerged, merged, or faded over time?
+- How has the structure of this digital cosmos evolved over time: have new galaxies emerged, merged, or faded over time?
 
 
 ## Data Preprocessing
@@ -127,7 +127,7 @@ Video titles and descriptions are lowercased, stripped of special characters, an
 
 **Week 7-8: Finalization & Visualization**
 
-- **Part 5: Temporal Evolution of the Network (Completion)** - complete temporal network analysis and track galaxy evolution from 2005-2019
+- **Part 5: Temporal Evolution of the Network (Completion)** - complete temporal network analysis and track galaxy evolution over time
 - **Data Story Development** - design narrative structure, create interactive visualizations, and draft text synthesizing all findings
 - **Repository & Documentation** - clean repository structure, finalize code documentation, and prepare final report
 
