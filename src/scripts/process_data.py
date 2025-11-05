@@ -33,13 +33,11 @@ def save_state_and_dict(rows_seen, channelToCommNumbers, dict_path, state_path):
     Saves the channel-to-commenter-count dict and the row state.
    
     """
-    # write the channel->unique_author_count dict
     with open(dict_path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=["channel_id", "count"])
         w.writeheader()
         for ch, cnt in channelToCommNumbers.items():
             w.writerow({"channel_id": ch, "count": int(cnt)})
-    # write the streaming state
     with open(state_path, "w") as f:
         json.dump({"rows_seen": int(rows_seen)}, f)
 
@@ -52,13 +50,10 @@ def flush_authors(authors_dict, edges_counter, channelToCommNumbers, top_k, min_
     for author, cnt in authors_dict.items():
         if not cnt:
             continue
-        # top-K channels this author commented on the most
         topk = [ch for ch, _ in cnt.most_common(top_k)]
         if len(topk) >= min_chans:
-            # +1 per unordered pair for this author
             for a, b in combinations(sorted(topk), 2):
                 edges_counter[(a, b)] += 1
-        # count this author once for each channel in their top-K
         for ch in topk:
             channelToCommNumbers[ch] += 1
     authors_dict.clear()
@@ -88,7 +83,6 @@ def generate_edges(
 
     print("Starting edge generation process (Top-K logic)...")
     
-    # --- Resume edge counter ---
     if os.path.exists(checkpoint_path):
         print("Resuming from checkpoint...")
         with open(checkpoint_path, "rb") as f:
@@ -96,7 +90,6 @@ def generate_edges(
     else:
         edges_counter = Counter()
 
-    # --- Resume commenter counts dict ---
     if os.path.exists(dict_path):
         print(f"Resuming commenter counts from {dict_path}...")
         channelToCommNumbers = defaultdict(int)
@@ -110,7 +103,6 @@ def generate_edges(
     else:
         channelToCommNumbers = defaultdict(int)
 
-    # --- Resume row state ---
     if os.path.exists(state_path):
         with open(state_path) as f:
             rows_seen = json.load(f)["rows_seen"]
@@ -123,7 +115,6 @@ def generate_edges(
     user_counts = defaultdict(Counter)
     COMMENTS_URL_KEY = "youtube_comments.tsv.gz"
     
-    # --- Corrected `with` statement logic ---
     comments_url = get_file_url(COMMENTS_URL_KEY)
     with fsspec.open(comments_url, "rb") as fh:
         reader = pd.read_csv(
@@ -165,7 +156,6 @@ def generate_edges(
               
               save_state_and_dict(rows_seen, channelToCommNumbers, dict_path, state_path)
 
-    # --- Final flush ---
     print("Processing final flush...")
     flush_authors(user_counts, edges_counter, channelToCommNumbers, top_k_per_author, min_chans_for_pairs)
     save_state_and_dict(rows_seen, channelToCommNumbers, dict_path, state_path)
@@ -177,7 +167,6 @@ def generate_edges(
     edges_df.to_csv(out_csv_path, index=False)
     print(f"Wrote edges → {out_csv_path}")
     
-    # Clean up checkpoint files
     if os.path.exists(checkpoint_path): os.remove(checkpoint_path)
     if os.path.exists(state_path): os.remove(state_path)
     
