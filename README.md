@@ -1,6 +1,6 @@
 # YouNiverse: Voyage Through Video Galaxies
 
-**Team:** Adam, Yassine, Elyas, Mehdi, Mohammed
+**Team:** Adam, Yassine, Elyas, Mehdi, Mohamed
 
 
 
