@@ -1,4 +1,3 @@
-# src/models/analysis.py
 import pandas as pd
 import networkx as nx
 from collections import Counter
@@ -64,7 +63,6 @@ def build_graph(edges_df, channels_df):
     Creates the NetworkX graph and sets node attributes.
    
     """
-    # ... (This function remains the same as before) ...
     print("Building graph from normalized edges...")
     Graphtype = nx.Graph()
     G = nx.from_pandas_edgelist(
@@ -81,9 +79,7 @@ def build_graph(edges_df, channels_df):
 def find_communities(G, nodes_out_path, comm_out_path):
     """
     Finds the LCC, runs Louvain, calculates metrics, and saves results.
-   
     """
-    # ... (This function remains the same as before) ...
     print("Finding Largest Connected Component (LCC)...")
     comps = sorted(nx.connected_components(G), key=len, reverse=True)
     if not comps:
@@ -132,7 +128,6 @@ def find_communities(G, nodes_out_path, comm_out_path):
 def analyze_communities(LCC, node_df, communities, max_show=5):
     """
     Prints a summary of the top communities.
-   
     """
     print("--- Deep Dive into Top 5 Communities ---")
     node2comm = {node: i for i, comm in enumerate(communities) for node in comm}
@@ -169,7 +164,7 @@ def analyze_communities(LCC, node_df, communities, max_show=5):
         print("-" * 80)
         
         print("Top 5 Channels (by Subscribers):")
-        top5 = comm_df.nlargest(5, "subscribers_cc")
+        top5 = comm_df.nlargest(5, "strength")
         print(top5[["name_cc", "category_cc", "strength","subscribers_cc"]].to_string(index=False))
         print("=" * 80)
         print()

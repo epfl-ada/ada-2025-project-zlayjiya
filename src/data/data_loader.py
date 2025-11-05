@@ -14,7 +14,6 @@ def get_file_url(key):
     return f"https://zenodo.org/records/{ZENODO_RECORD_ID}/files/{key}?download=1"
 
 
-
 def load_video_metadata(columns=None, local_path="yt_metadata_helper.feather"):
     """
     Downloads (if needed) and loads the video metadata feather file.

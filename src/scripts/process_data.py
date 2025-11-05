@@ -1,4 +1,3 @@
-# src/scripts/process_data.py
 import pandas as pd
 import fsspec
 from collections import defaultdict, Counter
@@ -8,7 +7,7 @@ import pickle
 import os
 import json
 import csv
-from src.data.data_loader import get_file_url # Import helper
+from src.data.data_loader import get_file_url
 
 def build_video_to_channel_map(video_df):
     """
@@ -27,7 +26,6 @@ def get_channel_subset_map(channel_df, min_subscribers=200_000):
     print(f"Created channel subset map. {sum(subset_map.values()):,} channels selected.")
     return subset_map
 
-# --- Helper functions for new logic ---
 def save_state_and_dict(rows_seen, channelToCommNumbers, dict_path, state_path):
     """
     Saves the channel-to-commenter-count dict and the row state.
@@ -80,8 +78,6 @@ def generate_edges(
     if os.path.exists(out_csv_path):
         print(f"{out_csv_path} already exists. Skipping edge generation.")
         return load_edges(out_csv_path)
-
-    print("Starting edge generation process (Top-K logic)...")
     
     if os.path.exists(checkpoint_path):
         print("Resuming from checkpoint...")
@@ -172,7 +168,6 @@ def generate_edges(
     
     return edges_df
 
-# Helper function
 def load_edges(path):
     print(f"Loading existing edges from {path}...")
     return pd.read_csv(path)
