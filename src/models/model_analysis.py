@@ -3,6 +3,7 @@ import networkx as nx
 from collections import Counter
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 
 def filter_edges(edges_df, channel_df, min_subscribers=200_000, min_weight=3):
     """
@@ -233,3 +234,191 @@ def visualize_network(LCC, communities, node_df, viz_out_path, n_per_comm=10, mi
     plt.savefig(viz_out_path, dpi=150, bbox_inches="tight")
     print(f"✓ Saved {viz_out_path}")
     plt.show()
+
+
+def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_channel=50, 
+                   n_topics=4, use_descriptions=False, min_wordcount=5, max_freq=0.5, 
+                   passes=10, seed=42, nlp=None):
+    """
+    Detects topics/categories for a given community using LDA (following Lab 9 methodology).
+    Uses spacy for preprocessing and gensim for topic modeling.
+    
+    Parameters:
+    -----------
+    community : set or list
+        Set of channel IDs forming a community
+    video_metadata_df : pd.DataFrame
+        DataFrame with columns: 'channel_id', 'title', 'description' (optional)
+    k_channels : int
+        Number of channels to randomly sample from the community
+    n_videos_per_channel : int
+        Maximum number of videos to sample per channel
+    n_topics : int
+        Number of topics to extract with LDA
+    use_descriptions : bool
+        If True, use video descriptions instead of titles
+    min_wordcount : int
+        Minimum word count for dictionary filtering
+    max_freq : float
+        Maximum document frequency for dictionary filtering
+    passes : int
+        Number of passes for LDA training
+    seed : int
+        Random seed for reproducibility
+    nlp : spacy model (optional)
+        Spacy NLP model for text processing. If None, will try to load 'en_core_web_sm'
+        
+    Returns:
+    --------
+    dict with keys:
+        - 'topics': list of topics (each topic is a list of (word, weight) tuples)
+        - 'model': the trained LDA model
+        - 'corpus': the corpus used
+        - 'dictionary': the dictionary used
+        - 'n_videos': number of videos analyzed
+        - 'sampled_channels': list of channel IDs sampled
+    """
+    try:
+        import spacy
+        from gensim.models.phrases import Phrases
+        from gensim.corpora import Dictionary
+        from gensim.models import LdaMulticore
+    except ImportError as e:
+        print(f"Missing required library: {e}")
+        print("Install with: pip install spacy gensim")
+        return {'topics': [], 'n_videos': 0, 'sampled_channels': []}
+    
+    print(f"=== Topic Detection for Community ({len(community)} channels) ===")
+    
+    # Set random seed
+    random.seed(seed)
+    np.random.seed(seed)
+    
+    # Load spacy model
+    if nlp is None:
+        try:
+            nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
+        except:
+            print("Spacy model 'en_core_web_sm' not found")
+            print("Install with: python -m spacy download en_core_web_sm")
+            return {'topics': [], 'n_videos': 0, 'sampled_channels': []}
+    
+    STOPWORDS = spacy.lang.en.stop_words.STOP_WORDS
+    
+    # Sample channels
+    community_list = list(community)
+    k_actual = min(k_channels, len(community_list))
+    sampled_channels = random.sample(community_list, k_actual)
+    print(f"Sampled {k_actual} channels from community")
+    
+    # Filter and sample videos
+    if 'channel_id' not in video_metadata_df.columns:
+        print("No 'channel_id' column found in video metadata")
+        return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+    
+    videos_from_community = video_metadata_df[
+        video_metadata_df['channel_id'].isin(sampled_channels)
+    ].copy()
+    
+    if len(videos_from_community) == 0:
+        print("No videos found for sampled channels")
+        return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+    
+    # Sample videos per channel
+    sampled_videos = []
+    for channel in sampled_channels:
+        channel_videos = videos_from_community[videos_from_community['channel_id'] == channel]
+        n_sample = min(n_videos_per_channel, len(channel_videos))
+        if n_sample > 0:
+            sampled = channel_videos.sample(n=n_sample, random_state=seed)
+            sampled_videos.append(sampled)
+    
+    if not sampled_videos:
+        print("No videos sampled")
+        return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+    
+    videos_sample = pd.concat(sampled_videos, ignore_index=True)
+    print(f"Sampled {len(videos_sample)} videos")
+    
+    # Get texts
+    text_field = 'description' if use_descriptions else 'title'
+    if text_field not in videos_sample.columns:
+        print(f"Column '{text_field}' not found")
+        return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+    
+    texts = videos_sample[text_field].fillna('').astype(str).tolist()
+    texts = [t for t in texts if len(t.strip()) > 0]
+    
+    if len(texts) == 0:
+        print("No valid texts")
+        return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+    
+    print(f"Processing {len(texts)} {text_field}s with spacy...")
+    
+    # Preprocess with spacy
+    processed_docs = []
+    for doc in nlp.pipe(texts, n_process=1, batch_size=50):
+        # Lemmatize, remove punctuation and stopwords
+        doc_tokens = [token.lemma_ for token in doc if token.is_alpha and not token.is_stop]
+        # Remove stopwords and keep only words of length 3+
+        doc_tokens = [token for token in doc_tokens if token not in STOPWORDS and len(token) > 2]
+        processed_docs.append(doc_tokens)
+    
+    docs = processed_docs
+    print(f"Preprocessed {len(docs)} documents")
+    
+    # Add bigrams
+    print("Adding bigrams...")
+    bigram = Phrases(docs, min_count=5)
+    for idx in range(len(docs)):
+        for token in bigram[docs[idx]]:
+            if '_' in token:
+                docs[idx].append(token)
+    
+    # Create dictionary and corpus
+    print("Creating dictionary and corpus...")
+    dictionary = Dictionary(docs)
+    dictionary.filter_extremes(no_below=min_wordcount, no_above=max_freq)
+    corpus = [dictionary.doc2bow(doc) for doc in docs]
+    
+    print(f'Number of unique tokens: {len(dictionary)}')
+    print(f'Number of documents: {len(corpus)}')
+    
+    if len(dictionary) == 0:
+        print("Dictionary is empty after filtering")
+        return {'topics': [], 'n_videos': len(texts), 'sampled_channels': sampled_channels}
+    
+    # Train LDA model
+    print(f"Training LDA model with {n_topics} topics...")
+    try:
+        model = LdaMulticore(
+            corpus=corpus,
+            num_topics=n_topics,
+            id2word=dictionary,
+            workers=4,
+            passes=passes,
+            random_state=seed
+        )
+        
+        # Extract topics
+        print(f"\nDetected {n_topics} topics:\n")
+        topics = []
+        for topic_id in range(n_topics):
+            topic_words = model.show_topic(topic_id, topn=10)
+            topics.append(topic_words)
+            words_str = ', '.join([f"{word}" for word, _ in topic_words[:5]])
+            print(f"Topic {topic_id}: {words_str}")
+        
+        return {
+            'topics': topics,
+            'model': model,
+            'corpus': corpus,
+            'dictionary': dictionary,
+            'n_videos': len(texts),
+            'sampled_channels': sampled_channels,
+            'docs': docs
+        }
+    
+    except Exception as e:
+        print(f"LDA training failed: {e}")
+        return {'topics': [], 'n_videos': len(texts), 'sampled_channels': sampled_channels}
