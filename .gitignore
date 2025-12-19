@@ -165,3 +165,11 @@ cython_debug/
 **/__init__.py
 
 data/*
+
+# Jekyll
+docs/vendor/
+docs/_site/
+docs/.jekyll-cache/
+
+# DS_Store
+.DS_Store
