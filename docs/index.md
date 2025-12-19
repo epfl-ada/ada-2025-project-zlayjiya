@@ -2,6 +2,81 @@
 layout: default
 title: "YouNiverse: Voyage Through Video Galaxies"
 ---
+<head>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<style>
+/* Your custom styles here */
+.viz-container {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2744 100%);
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 40px 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.viz-title {
+    color: #ffffff;
+    font-size: 1.4em;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.insight-box {
+    background: #132f34ff;
+    padding: 15px;
+    border-left: 4px solid #17a2b8;
+    margin: 20px 0;
+    color: #ffffff;
+    border-radius: 4px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #0d1849ff 0%, #764ba2 100%);
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    color : #ffffff;
+}
+
+.stat-number {
+    font-size: 3em;
+    font-weight: bold;
+    color: #0b0000ff;
+    margin-bottom: 10px;
+}
+
+.stat-label {
+    color: rgba(255,255,255,0.8);
+    font-size: 1em;
+}
+
+.section-divider {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.journey-progress {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 30px 0 50px 0;
+    padding: 0 50px;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+</style>
 
 <!-- Section I: Introduction -->
 <section id="introduction" class="section">
@@ -84,113 +159,190 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     <span class="section-number">Chapter II</span>
     <h2>Before We Explore: First Glimpses of the YouNiverse</h2>
     
-    <h3>The YouNiverse Dataset</h3>
     <p>
-        Our journey begins with the <span class="highlight">YouNiverse dataset</span>, a comprehensive collection spanning 136,470 channels and over 72 million videos published between May 2005 and October 2019.
+        To answer these questions, we turned to the YouNiverse dataset—and the name truly does it justice. its size is that of a universe. -> Data from 73 million videos , 137 thousand channels and 8.6 billion comments from 449 million users on a timeframe from May 2005 to October 2019.
     </p>
-    
-    <!-- TODO: Add dataset description and stats -->
-    
-    <h3>Power Law Distribution</h3>
+
     <p>
-        Even before building our cosmic map, the data reveals a striking pattern: attention on YouTube follows a <span class="highlight">power law distribution</span>. A handful of channels capture most of the views, while the vast majority remain in the shadows.
+        Looking at this universe with the naked eye, we see a system that has grown exponentially since its 'big bang'. What started as a few flickering lights has evolved into a sprawling ecosystem. However, this growth is not uniform.
     </p>
     
     <div class="viz-container">
-        <div class="viz-title">Distribution of Views and Subscribers</div>
-        <div id="power-law-chart" class="viz-placeholder">
-            <!-- Plotly chart will be inserted here -->
-            {% include_relative powerlaw.html %}
-        </div>
-    </div>
-    
-    <h3>Growth Over Time</h3>
-    <p>
-        The YouNiverse has expanded dramatically over the years. From a small collection of channels in 2005 to a sprawling ecosystem by 2019, the platform's growth tells a story of explosive democratization of content creation.
-    </p>
-    
-    <div class="viz-container">
-        <div class="viz-title">Growth of Videos Over Time</div>
+        <div class="viz-title">Evolution of the YouNiverse</div>
         <div id="growth-chart" class="viz-placeholder">
-            <!-- Plotly chart will be inserted here -->
             {% include_relative youtube_growth.html %}
         </div>
     </div>
-    
-    <h3>Category Distribution</h3>
+
     <p>
-        YouTube's official categories provide our first lens into the content landscape. But as we'll discover, these labels only scratch the surface of the true thematic structure.
+        When we peer through our telescope at these celestial bodies (channels), we notice a stark reality: size is not distributed equally. The distribution of views and subscribers follows a <strong> Power Law </strong> a mathematical signature of a "winner-takes-all" dynamic. A few 'Supermassive' channels command the vast majority of the YouNiverse's light, while millions of smaller stars twinkle in the background. The top 1% of channels capture over X% of all views—a cosmic inequality that shapes the entire ecosystem.
     </p>
-    
+
+
     <div class="viz-container">
-        <div class="viz-title">Distribution of Official YouTube Categories</div>
+        <div class="viz-title">Distribution of View Counts per Channel</div>
+        <div id="power-law-chart" class="viz-placeholder">
+            {% include_relative powerlaw.html %}
+        </div>
+    </div>
+
+
+    <p>
+        To understand the nature of these stars, we first look at their "Spectra"—the content categories assigned to them. While this gives us a hint of their composition (Gaming, News, Education), categories alone don’t tell us how these stars interact.  
+    </p>
+
+    <div class="viz-container">
+        <div class="viz-title">Spectrum of Content: Category Distribution</div>
         <div id="category-chart" class="viz-placeholder">
-            <!-- Plotly chart will be inserted here -->
             {% include_relative pie_chart.html %}
         </div>
     </div>
+
+    <p>
+        To see the true architecture of the YouNiverse, we must board our spaceship and look at the gravitational bonds between them.
+    </p>
 </section>
 
-<!-- Section III: Galaxy Construction -->
 <section id="galaxies" class="section">
     <span class="section-number">Chapter III</span>
     <h2>Constructing the Cosmic Map: From Comments to Galaxies</h2>
     
-    <h3>Building the Co-Commenter Network</h3>
     <p>
-        To reveal the hidden structure of YouTube, we build a network based on <span class="highlight">audience overlap</span>. The core logic: for each user, we find the Top-K channels they comment on most. We then create edges only between these Top-K channels, forming a high-signal graph of true audience affinity.
+        To understand our YouNiverse, we want to see what channels actually share common audiences. By doing this we will be able to run community detection algorithms and visualize types of interactions.
     </p>
-    
     <p>
-        Two channels with many shared commenters are linked by strong gravitational bonds—they orbit in the same region of the YouNiverse.
+        To do this we will use the biggest file in our dataset, the comment data. We want to know which channels users most commented on. "We establish gravitational bonds between channels: when users orbit both, commenting frequently on each, we draw a connection weighted by the strength of their shared audience. The edge of these weights will then be first determined by the number of commenters they have in common. Two channels with many shared commenters are linked by strong gravitational bonds—they orbit in the same region of the YouNiverse.
     </p>
-    
-    <h3>Edge Normalization</h3>
-    <p>
-        Raw co-commenter counts can be misleading. Two massive channels might share thousands of commenters simply due to their size. To find genuine affinity, we <span class="highlight">normalize edge weights</span> by channel size, revealing proportional audience overlap rather than absolute numbers.
-    </p>
-    
-    <h3>Community Detection: Finding Galaxies</h3>
-    <p>
-        Using the <span class="highlight">Louvain algorithm</span>, we identify natural clusters—our "galaxies"—by maximizing network modularity. Each galaxy represents a group of channels bound together by shared audiences.
-    </p>
-    
+
     <div class="viz-container">
-        <div class="viz-title">The YouNiverse Network</div>
-        <div id="network-viz" class="viz-placeholder">
-            <!-- Network visualization will be inserted here -->
+        <div id="raw-network-viz" class="viz-placeholder">
+            <img src='USER 1.png' width="100%">
+        </div>
+    </div>
+
+    <p>
+        In space, a massive sun has more gravity simply because it is big. On YouTube, two "Black Hole" channels (like PewDiePie and T-Series) might share many commenters just because they are famous, not because they are related. To find true communities, we had to "level the playing field" by normalizing our edge weights.
+
+        We developed a Similarity Score to penalize the sheer size of a channel, ensuring that a "Galaxy" is formed by genuine audience overlap rather than just popularity.
+        Imagine trying to see stars near the sun—their light is drowned out. Similarly, mega-channels like PewDiePie overshadow genuine connections. Our Similarity Score acts like a solar filter: it dims the giants proportionally to their size, revealing the authentic audience overlaps that define true communities.
+    </p>
+    <p>
+    To see the true shape of the galaxies, we had to apply <strong>Gravitational Shielding</strong>. By using our similarity score, we effectively "muted" the blinding light of the Black Holes. This allowed us to see the faint, genuine connections between smaller stars that were previously invisible in the glare of the platform's giants. 
+    </p>
+
+    <details class="math-deep-dive" style="border: 1px solid #ffffffff; padding: 20px; border-radius: 8px; background-color: #ffffffff; margin: 20px 0;color: #000000;">
+        <summary style="font-weight: bold; cursor: pointer; font-size: 1.1em;">📊 The Mathematics of Normalization (Similarity Score)</summary>
+        <div class="math-content">
+            <p><strong>The Problem:</strong> PewDiePie and T-Series might share 100,000 commenters simply because they each have 100 million subscribers. Meanwhile, two niche gaming channels sharing 500 commenters might have a much stronger cultural connection.</p>
+            
+            <p><strong>The Solution:</strong> We penalize large channels proportionally to their size:</p>
+            
+            $$size\_factor = \left( \frac{total\_commenters}{median\_commenters} \right)^\beta$$
+            
+            $$penalty(channel1, channel2) = (size\_factor(channel1) \cdot size\_factor(channel2))^\alpha$$
+            
+            $$Similarity\_Score = \frac{shared\_commenters}{penalty}$$
+
+            <ul style="margin-top: 15px;">
+                <li><strong>size_factor</strong>: How much larger is this channel than typical channels?</li>
+                <li><strong>penalty</strong>: Expected overlap if connections were random</li>
+                <li><strong>α, β</strong>: Tuning parameters (we used α=0.5, β=1)</li>
+            </ul>
+            
+            <p><strong>Result:</strong> Two mega-channels need exponentially more shared commenters to appear "connected" than two small channels. This reveals genuine communities rather than just popularity contests.</p>
+        </div>
+    </details>
+
+    
+
+    <p>
+        With our normalized map in hand, we applied the Louvain Community Detection algorithm. Think of this as a way to find where the "gas clouds" of users naturally condense into distinct structures.
+    </p>
+
+    <div class="insight-box" style="background: #132f34ff; padding: 15px; border-left: 4px solid #17a2b8; margin: 20px 0;color: #ffffff">
+    ✨ <strong>The Breakthrough:</strong> With gravitational shielding applied, distinct galaxies emerge from the chaos. Each represents a true audience community bound by shared interests, not just shared fame.
+    </div>
+    <p>
+        Louvain seeks to maximize Modularity—a metric that measures how much "denser" the connections are within a galaxy compared to a random universe. Our map achieved a Modularity score of 0.655.
+        In the world of network science, a score above 0.5 is a significant discovery. It confirms that the YouNiverse is not a chaotic cloud of random stars, but a structured system of distinct, high-density galaxies bound by shared cultures, languages, and interests.
+    </p>
+
+
+    <h2>The Architecture of the YouNiverse</h2>
+    
+    <p>
+        By applying the Louvain algorithm, we successfully charted <span class="highlight">52 distinct communities</span> within the cosmic map. It became immediately clear that this universe is highly polarized: while some regions are vast, mainstream <strong>Super-Galaxies</strong>, others are small, isolated <strong>Niche Constellations</strong>. 
+    </p>
+
+    <p>
+        The scale varies dramatically—the smallest of these communities contain as few as two channels, existing like distant binary stars in the deep void of the YouNiverse.
+    </p>
+
+    <div class="viz-container">
+        <div class="viz-title">The 31 Biggest Galaxies of the YouNiverse</div>
+        <div id="full-network-viz" class="viz-placeholder">
             <iframe src="./a.html" width="100%" height="600px" frameborder="0"></iframe>
         </div>
     </div>
-    
-    <h3>What We Found</h3>
-    
-    <div class="stats-grid">
+        <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-number">XX</div>
+            <div class="stat-number">52</div>
             <div class="stat-label">Galaxies Detected</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">X.XX</div>
+            <div class="stat-number">0.655</div>
             <div class="stat-label">Modularity Score</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">XX%</div>
+            <div class="stat-number">80%</div>
             <div class="stat-label">Channels in Top 5 Galaxies</div>
         </div>
     </div>
-    
-    <h3>Temporal Evolution</h3>
+
+
+    <h3>The Core vs. The Periphery</h3>
     <p>
-        The YouNiverse is not static. Galaxies form, grow, merge, and sometimes fade over time. Our temporal analysis reveals how the cosmic landscape has evolved from 2005 to 2019.
+        In the center of our map lies the <strong>Galactic Core</strong>. Here, the mainstream galaxies are so massive and their audiences so interconnected that their borders often blur together. Yet, despite this density, the Louvain algorithm reveals they remain distinct cultural entities with their own centers of gravity.
     </p>
-    
+
+    <p>
+        Stretching out from this core are thin, elongated edges—the <strong>Interstellar Bridges</strong>. These represent bridge channels that link the mainstream center to peripheral niche clusters. These channels serve as the connective tissue of the YouNiverse, allowing users to travel between vastly different content worlds.
+    </p>
+
+    <div class="quote">
+        "The YouNiverse is not a single mass, but a complex web where the mainstream core and niche satellites are held together by the gravity of shared audiences."
+    </div>
+
+    <h3>A Voyage into the Core</h3>
+    <p>
+        To understand the internal divisions of the most dominant communities, we must look past the "space dust" of the periphery. By zooming into the core, we can observe the fine-tuned interactions and sub-galaxies that shape the most popular regions of YouTube.
+    </p>
+
     <div class="viz-container">
-        <div class="viz-title">Evolution of the YouNiverse (2005-2019)</div>
-        <div id="temporal-viz" class="viz-placeholder">
-            <!-- Temporal slider visualization will be inserted here -->
-            [Interactive timeline coming soon]
+        <div class="viz-title">Core Exploration Map </div>
+        <p style="font-size: 0.9em; color: #666;">
+            This view uses radial expansion to decompress the center, revealing the 'Black Hole' channels that anchor each major galaxy.
+        </p>
+        <div id="interactive-core-viz">
+            <iframe src="./b.html" width="100%" height="850px" frameborder="0"></iframe>
         </div>
+    </div>
+
+    <h3>What We've Discovered</h3>
+    <p>
+        By building our cosmic map from 8.6 billion comments across 137,000 channels, we've revealed something remarkable: <strong>YouTube isn't a chaotic cloud of random content</strong>. It's a structured universe with 52 distinct cultural galaxies, each with its own centers of gravity, its own audiences, and its own identity.
+    </p>
+
+    <p>
+        The modularity score of 0.655 confirms what we suspected: users don't wander randomly across YouTube. They orbit within specific communities, occasionally traveling between galaxies through bridge channels, but largely remaining within their cultural home.
+    </p>
+
+    <p>
+        With our map complete, we can now begin the real voyage: <strong>descending into each galaxy to meet its inhabitants, understand its culture, and trace the journeys of travelers between worlds.</strong>
+    </p>
+
+    <div class="quote">
+        "The YouNiverse is not a single universe, but a multiverse, 52 parallel worlds occupying the same digital space, each invisible to the others unless you know where to look."
     </div>
 </section>
 
