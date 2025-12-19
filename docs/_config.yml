@@ -1,0 +1,27 @@
+# Jekyll configuration for YouNiverse Data Story
+title: "YouNiverse: Voyage Through Video Galaxies"
+description: "Mapping the Hidden Galaxies of YouTube"
+baseurl: "/ada-2025-project-zlayjiya"
+url: "https://epfl-ada.github.io"
+
+# Build settings
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+highlighter: rouge
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - vendor/
+
+# Custom variables
+authors:
+  - Adam
+  - Yassine
+  - Elyas
+  - Mehdi
+  - Mohamed
