@@ -100,7 +100,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         <div class="viz-title">Distribution of Views and Subscribers</div>
         <div id="power-law-chart" class="viz-placeholder">
             <!-- Plotly chart will be inserted here -->
-            [Interactive visualization coming soon]
+            {% include_relative powerlaw.html %}
         </div>
     </div>
     
@@ -113,7 +113,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         <div class="viz-title">Growth of Videos Over Time</div>
         <div id="growth-chart" class="viz-placeholder">
             <!-- Plotly chart will be inserted here -->
-            [Interactive visualization coming soon]
+            {% include_relative youtube_growth.html %}
         </div>
     </div>
     
@@ -126,7 +126,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         <div class="viz-title">Distribution of Official YouTube Categories</div>
         <div id="category-chart" class="viz-placeholder">
             <!-- Plotly chart will be inserted here -->
-            [Interactive visualization coming soon]
+            {% include_relative pie_chart.html %}
         </div>
     </div>
 </section>
@@ -159,7 +159,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         <div class="viz-title">The YouNiverse Network</div>
         <div id="network-viz" class="viz-placeholder">
             <!-- Network visualization will be inserted here -->
-            [Interactive network visualization coming soon]
+            <iframe src="./a.html" width="100%" height="600px" frameborder="0"></iframe>
         </div>
     </div>
     
