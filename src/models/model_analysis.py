@@ -237,8 +237,8 @@ def visualize_network(LCC, communities, node_df, viz_out_path, n_per_comm=10, mi
 
 
 def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_channel=50, 
-                   n_topics=4, use_descriptions=False, min_wordcount=5, max_freq=0.5, 
-                   passes=10, seed=42, nlp=None):
+                   n_topics=4, text_mode='combined', desc_max_chars=200, min_wordcount=5, 
+                   max_freq=0.5, passes=10, seed=42, nlp=None):
     """
     Detects topics/categories for a given community using LDA (following Lab 9 methodology).
     Uses spacy for preprocessing and gensim for topic modeling.
@@ -248,15 +248,21 @@ def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_cha
     community : set or list
         Set of channel IDs forming a community
     video_metadata_df : pd.DataFrame
-        DataFrame with columns: 'channel_id', 'title', 'description' (optional)
+        DataFrame with columns: 'channel_id', 'title', 'description', 'tags' (optional)
     k_channels : int
         Number of channels to randomly sample from the community
     n_videos_per_channel : int
         Maximum number of videos to sample per channel
     n_topics : int
         Number of topics to extract with LDA
-    use_descriptions : bool
-        If True, use video descriptions instead of titles
+    text_mode : str
+        Text source for topic detection:
+        - 'title': use only video titles
+        - 'description': use only descriptions
+        - 'tags': use only tags
+        - 'combined': use title + tags + truncated description (recommended by TA)
+    desc_max_chars : int
+        Maximum characters to keep from description when using 'combined' mode
     min_wordcount : int
         Minimum word count for dictionary filtering
     max_freq : float
@@ -340,20 +346,61 @@ def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_cha
     videos_sample = pd.concat(sampled_videos, ignore_index=True)
     print(f"Sampled {len(videos_sample)} videos")
     
-    # Get texts
-    text_field = 'description' if use_descriptions else 'title'
-    if text_field not in videos_sample.columns:
-        print(f"Column '{text_field}' not found")
+    # Get texts based on text_mode
+    def combine_text_fields(row):
+        """Combine title + tags + truncated description (TA recommended approach)"""
+        parts = []
+        
+        # Add title
+        title = str(row.get('title', '')).strip()
+        if title:
+            parts.append(title)
+        
+        # Add tags (comma-separated string)
+        tags = str(row.get('tags', '')).strip()
+        if tags:
+            # Tags are usually comma-separated, convert to space-separated
+            tags_cleaned = tags.replace(',', ' ')
+            parts.append(tags_cleaned)
+        
+        # Add truncated description
+        desc = str(row.get('description', '')).strip()
+        if desc:
+            # Truncate description to first N characters
+            desc_truncated = desc[:desc_max_chars]
+            parts.append(desc_truncated)
+        
+        return ' '.join(parts)
+    
+    if text_mode == 'combined':
+        print(f"Using combined mode: title + tags + description (truncated to {desc_max_chars} chars)")
+        texts = videos_sample.apply(combine_text_fields, axis=1).tolist()
+    elif text_mode == 'title':
+        if 'title' not in videos_sample.columns:
+            print("Column 'title' not found")
+            return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+        texts = videos_sample['title'].fillna('').astype(str).tolist()
+    elif text_mode == 'description':
+        if 'description' not in videos_sample.columns:
+            print("Column 'description' not found")
+            return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+        texts = videos_sample['description'].fillna('').astype(str).tolist()
+    elif text_mode == 'tags':
+        if 'tags' not in videos_sample.columns:
+            print("Column 'tags' not found")
+            return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+        texts = videos_sample['tags'].fillna('').astype(str).tolist()
+    else:
+        print(f"Unknown text_mode: {text_mode}. Use 'title', 'description', 'tags', or 'combined'")
         return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
     
-    texts = videos_sample[text_field].fillna('').astype(str).tolist()
     texts = [t for t in texts if len(t.strip()) > 0]
     
     if len(texts) == 0:
         print("No valid texts")
         return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
     
-    print(f"Processing {len(texts)} {text_field}s with spacy...")
+    print(f"Processing {len(texts)} texts with spacy...")
     
     # Preprocess with spacy
     processed_docs = []

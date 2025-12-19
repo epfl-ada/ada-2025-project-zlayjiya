@@ -194,7 +194,8 @@ def stream_video_metadata_from_zip(zip_path, channel_filter, max_videos_per_chan
                             records.append({
                                 'channel_id': channel_id,
                                 'title': record.get('title', ''),
-                                'description': record.get('description', '')
+                                'description': record.get('description', ''),
+                                'tags': record.get('tags', '')
                             })
                             
                             channel_counts[channel_id] += 1
