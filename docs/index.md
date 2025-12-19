@@ -216,7 +216,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
     <div class="viz-container">
         <div id="raw-network-viz" class="viz-placeholder">
-            <img src='USER 1.png' width="100%">
+            <img src='USER1.png' width="100%">
         </div>
     </div>
 
