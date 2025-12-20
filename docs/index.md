@@ -237,7 +237,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </p>
 
     <p>
-        Stretching out from this core are thin, elongated edges—the <strong>Interstellar Bridges</strong>. These represent bridge channels that link the mainstream center to peripheral niche clusters. These channels serve as the connective tissue of the YouNiverse, allowing users to travel between vastly different content worlds.
+        Stretching out from this core are thin, elongated edges : the <strong>Interstellar Bridges</strong>. These represent bridge channels that link the mainstream center to peripheral niche clusters. These channels serve as the connective tissue of the YouNiverse, allowing users to travel between vastly different content worlds.
     </p>
 
     <div class="quote">
