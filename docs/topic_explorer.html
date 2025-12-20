@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 15px;
+            background: #0d1117;
+            font-family: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #FFFFFF;
+        }
+        .title { text-align: center; font-size: 1.2em; font-weight: 600; margin-bottom: 12px; color: #8b5cf6; }
+        .galaxy-selector { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 12px; }
+        .galaxy-btn {
+            background: rgba(40, 40, 60, 0.8);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: #e2e2ed;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 0.75em;
+        }
+        .galaxy-btn:hover { border-color: rgba(139, 92, 246, 0.7); background: rgba(139, 92, 246, 0.2); }
+        .galaxy-btn.active { background: rgba(139, 92, 246, 0.4); border-color: #8b5cf6; box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
+        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .galaxy-card {
+            background: linear-gradient(135deg, rgba(20, 25, 35, 0.95) 0%, rgba(30, 20, 50, 0.9) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .galaxy-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .galaxy-icon { font-size: 2em; }
+        .galaxy-name { color: #8b5cf6; font-size: 1em; font-weight: 600; margin: 0; }
+        .galaxy-meta { color: #a0a0c0; font-size: 0.8em; margin: 3px 0 0 0; }
+        .topic-list { margin-top: 10px; }
+        .topic-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+        }
+        .topic-num { background: rgba(6, 182, 212, 0.3); color: #06b6d4; padding: 2px 8px; border-radius: 10px; font-size: 0.7em; font-weight: 600; min-width: 50px; text-align: center; }
+        .topic-words { color: #e2e2ed; font-size: 0.78em; }
+        .insight-box {
+            background: rgba(6, 182, 212, 0.12);
+            border-left: 3px solid #06b6d4;
+            padding: 10px 12px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.8em;
+            color: #e2e2ed;
+            margin-top: 10px;
+        }
+        #chart-container { height: 280px; }
+    </style>
+</head>
+<body>
+    <div class="title">🔭 TOPIC DETECTION ACROSS GALAXIES (LDA)</div>
+    
+    <div class="galaxy-selector">
+        <button class="galaxy-btn active" data-id="0">🇮🇳 Indian</button>
+        <button class="galaxy-btn" data-id="1">🎮 Kids Gaming</button>
+        <button class="galaxy-btn" data-id="2">🎵 Music/EDM</button>
+        <button class="galaxy-btn" data-id="3">💄 Beauty/Lifestyle</button>
+        <button class="galaxy-btn" data-id="4">⚔️ Gaming/Esports</button>
+        <button class="galaxy-btn" data-id="5">🐾 Animals/Wellness</button>
+    </div>
+    
+    <div class="content-grid">
+        <div class="galaxy-card">
+            <div class="galaxy-header">
+                <span class="galaxy-icon" id="g-icon">🇮🇳</span>
+                <div>
+                    <h3 class="galaxy-name" id="g-name">Indian Entertainment Hub</h3>
+                    <p class="galaxy-meta" id="g-meta">Entertainment • 3,187 channels • 2,204 videos analyzed</p>
+                </div>
+            </div>
+            <div class="topic-list" id="topic-list"></div>
+            <div class="insight-box" id="insight">💡 Language creates strong gravitational bonds.</div>
+        </div>
+        <div id="chart-container"></div>
+    </div>
+
+<script>
+const bg_color = "#0d1117";
+const font_stack = "'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+
+// Real data extracted from pyLDAvis LDA files
+const galaxyData = {
+    0: { 
+        icon: "🇮🇳", name: "Indian Entertainment Hub", 
+        meta: "Entertainment • 3,187 channels • 2,204 videos", 
+        topics: [
+            ["Pubg", "PUBG_Mobile", "mobile", "Subscribe", "trick"],
+            ["bihar", "flood", "Clash", "Clans", "clash"],
+            ["Headlines", "modi", "India", "punjabi", "Video"],
+            ["paheli", "paheliyan", "riddle", "Riddles", "puzzle"],
+            ["odisha", "otv", "samachar", "Odisha", "odia"],
+            ["vlog", "Editing", "indian", "vlogs", "daily"]
+        ],
+        insight: "💡 Language creates strong gravitational bonds. PUBG Mobile and regional news (Bihar, Odisha) dominate.",
+        topWords: {terms: ["news", "song", "bihar", "video", "vlog", "hindi", "PUBG", "India", "live", "Mobile"], freqs: [2624, 1316, 1147, 1138, 1016, 1019, 693, 697, 726, 718]}
+    },
+    1: { 
+        icon: "🎮", name: "Kids Gaming Universe", 
+        meta: "Gaming • 2,547 channels • 2,166 videos",
+        topics: [
+            ["nerf", "Nerf", "gun", "Spirit", "Box"],
+            ["minecraft", "Minecraft", "dragon", "Little", "roleplay"],
+            ["pokemon", "scammer", "fortnite", "save", "world"],
+            ["fact", "animal", "discovery", "mysterious", "creature"],
+            ["Memes", "Jinx", "comedy", "Reaction", "skit"],
+            ["nerf", "Nerf", "Spirit", "gun", "Box"]
+        ],
+        insight: "💡 Kid-friendly gaming: Nerf battles, Minecraft, Pokémon. Scammer get scammed content popular.",
+        topWords: {terms: ["nerf", "fortnite", "minecraft", "pokemon", "little", "kelly", "battle", "game", "story", "scammer"], freqs: [1940, 1373, 1303, 1172, 1149, 685, 797, 816, 690, 615]}
+    },
+    2: { 
+        icon: "🎵", name: "Music & Electronic Nebula", 
+        meta: "Music • 3,063 channels • 1,986 videos",
+        topics: [
+            ["simply", "Red", "Pop", "hard", "Live"],
+            ["project", "Moon", "Seoul", "MBC", "science"],
+            ["trailer", "Trailer", "Movie", "new_trailer", "Clips"],
+            ["claw", "yellow", "Piano", "Instrumental", "Sad"],
+            ["makeup", "dubstep", "tutorial", "bass", "korean"],
+            ["Cyrus", "Noah", "gangster", "vevo", "rap"]
+        ],
+        insight: "💡 EDM (Yellow Claw, dubstep), K-pop (Seoul), and trailer music. Piano instrumentals popular.",
+        topWords: {terms: ["makeup", "project", "trap", "dubstep", "Piano", "trailer", "yellow", "claw", "good", "Cyrus"], freqs: [1114, 1001, 618, 562, 569, 583, 556, 560, 529, 234]}
+    },
+    3: { 
+        icon: "💄", name: "Beauty & Lifestyle Galaxy", 
+        meta: "Howto & Style • 2,145 channels • 2,467 videos",
+        topics: [
+            ["recipe", "sugar", "food", "dessert", "POPSUGAR"],
+            ["luxury", "gacha", "gacha_life", "Gacha", "chanel"],
+            ["hacker", "fitness", "zorgo", "workout", "guide"],
+            ["taylor", "reilly", "draw", "Convos", "art"],
+            ["Tom", "Daley", "blesiv", "culture", "gay"],
+            ["royale", "high", "college", "roblox", "school"]
+        ],
+        insight: "🔥 Most engaged! Gacha Life, Roblox Royale High, Tom Daley, and makeup tutorials.",
+        topWords: {terms: ["makeup", "high", "life", "try", "luxury", "gacha", "royale", "food", "roblox", "year"], freqs: [1604, 965, 857, 889, 792, 652, 626, 623, 548, 510]}
+    },
+    4: { 
+        icon: "⚔️", name: "Gaming & Esports Arena", 
+        meta: "Gaming • 2,529 channels • 2,312 videos",
+        topics: [
+            ["vape", "short", "future_short", "cinema", "film"],
+            ["csgo", "dokkan", "siege", "rainbow", "shroud"],
+            ["Total", "Warhammer", "Total_War", "Online", "War"],
+            ["warp", "zone", "legend", "dragon", "bot"],
+            ["boxbox", "riven", "Nerdist", "pentakill", "LoL"],
+            ["rap_battle", "photography", "erb", "epic_rap", "Battles"]
+        ],
+        insight: "💡 Hardcore gaming: CSGO, Dokkan Battle, Total War. Epic Rap Battles and vape culture.",
+        topWords: {terms: ["vape", "play", "battle", "funny", "rap", "legend", "short", "future", "csgo", "dokkan"], freqs: [1718, 992, 935, 830, 719, 716, 635, 629, 589, 602]}
+    },
+    5: { 
+        icon: "🐾", name: "Animals & Wellness Cluster", 
+        meta: "Pets & Animals • 1,068 channels • 2,496 videos",
+        topics: [
+            ["fox", "earth", "flat_earth", "illuminati", "dollar"],
+            ["yoga", "stock", "Conan", "SNL", "invest"],
+            ["dua", "gun", "amazon", "muslim", "prayer"],
+            ["dog", "pitbull", "puppy", "storage", "farm"],
+            ["homeless", "kitten", "UFC", "invisible", "mma"],
+            ["prison", "journal", "pen", "doodle", "bullet"]
+        ],
+        insight: "💡 Longest videos (18.4 min). Pets, yoga, meditation, and alternative content (flat earth, UFO).",
+        topWords: {terms: ["animal", "yoga", "dog", "video", "homeless", "cat", "stock", "cute", "funny", "dua"], freqs: [1376, 1166, 1135, 1030, 988, 835, 612, 511, 508, 450]}
+    }
+};
+
+function updateDisplay(id) {
+    const data = galaxyData[id];
+    document.getElementById('g-icon').textContent = data.icon;
+    document.getElementById('g-name').textContent = data.name;
+    document.getElementById('g-meta').textContent = data.meta;
+    document.getElementById('insight').innerHTML = data.insight;
+    
+    // Update topic list
+    let topicHtml = '';
+    data.topics.forEach((topic, i) => {
+        topicHtml += `<div class="topic-item"><span class="topic-num">Topic ${i+1}</span><span class="topic-words">${topic.join(', ')}</span></div>`;
+    });
+    document.getElementById('topic-list').innerHTML = topicHtml;
+    
+    // Update chart with real frequencies
+    const colors = ['#8b5cf6', '#06b6d4', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'];
+    const terms = data.topWords.terms.slice().reverse();
+    const freqs = data.topWords.freqs.slice().reverse();
+    
+    Plotly.newPlot('chart-container', [{
+        type: 'bar',
+        y: terms,
+        x: freqs,
+        orientation: 'h',
+        marker: { 
+            color: colors[id], 
+            line: { color: '#FFFFFF', width: 1 }
+        },
+        text: freqs.map(f => f.toLocaleString()),
+        textposition: 'outside',
+        textfont: { color: '#a0a0c0', size: 9 },
+        hovertemplate: '<b>%{y}</b>: %{x:,} occurrences<extra></extra>'
+    }], {
+        paper_bgcolor: bg_color,
+        plot_bgcolor: bg_color,
+        font: { family: font_stack, color: '#FFFFFF', size: 11 },
+        title: { text: '<b>TOP TERM FREQUENCIES</b>', font: { size: 13, color: colors[id] }, x: 0.5 },
+        xaxis: { 
+            showgrid: true, 
+            gridcolor: 'rgba(255,255,255,0.05)',
+            zeroline: false,
+            tickfont: { size: 9, color: '#888888' }
+        },
+        yaxis: { tickfont: { size: 10, color: '#e2e2ed' } },
+        margin: { l: 80, r: 50, t: 40, b: 30 },
+        bargap: 0.25
+    }, {responsive: true, displayModeBar: false});
+}
+
+document.querySelectorAll('.galaxy-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.galaxy-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        updateDisplay(this.dataset.id);
+    });
+});
+
+updateDisplay(0);
+</script>
+</body>
+</html>

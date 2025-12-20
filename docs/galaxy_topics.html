@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; background: #0a0a1a; font-family: 'Inter', sans-serif; }
+        .container { padding: 20px; }
+        .galaxy-card {
+            background: linear-gradient(135deg, rgba(20, 20, 40, 0.9) 0%, rgba(40, 30, 60, 0.8) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        .galaxy-card:hover {
+            border-color: rgba(139, 92, 246, 0.6);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+        }
+        .galaxy-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .galaxy-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+        .galaxy-name {
+            color: #ffffff;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin: 0;
+        }
+        .galaxy-category {
+            color: #a0a0c0;
+            font-size: 0.85em;
+            margin: 3px 0 0 0;
+        }
+        .topic-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .topic-tag {
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            color: #e2e2ed;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+        }
+        .topic-tag.highlight {
+            background: rgba(236, 72, 153, 0.3);
+            border-color: rgba(236, 72, 153, 0.5);
+        }
+        .metrics {
+            display: flex;
+            gap: 20px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        .metric {
+            text-align: center;
+        }
+        .metric-value {
+            color: #06b6d4;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        .metric-label {
+            color: #a0a0c0;
+            font-size: 0.7em;
+        }
+        .insight {
+            background: rgba(6, 182, 212, 0.1);
+            border-left: 3px solid #06b6d4;
+            padding: 10px 15px;
+            margin-top: 10px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85em;
+            color: #e2e2ed;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Galaxy 0 -->
+    <div class="galaxy-card">
+        <div class="galaxy-header">
+            <span class="galaxy-icon">🇮🇳</span>
+            <div>
+                <p class="galaxy-name">Indian Entertainment Hub</p>
+                <p class="galaxy-category">Entertainment • 3,187 channels</p>
+            </div>
+        </div>
+        <div class="topic-list">
+            <span class="topic-tag highlight">PUBG Mobile</span>
+            <span class="topic-tag">Hindi News</span>
+            <span class="topic-tag">Bihar</span>
+            <span class="topic-tag">Odisha</span>
+            <span class="topic-tag">Paheliyan</span>
+            <span class="topic-tag">Vlog</span>
+        </div>
+        <div class="insight">💡 A massive regional galaxy where language creates strong gravitational bonds. Mobile gaming (PUBG) acts as a universal connector.</div>
+    </div>
+
+    <!-- Galaxy 1 -->
+    <div class="galaxy-card">
+        <div class="galaxy-header">
+            <span class="galaxy-icon">🎵</span>
+            <div>
+                <p class="galaxy-name">Mainstream Music Universe</p>
+                <p class="galaxy-category">Music • 3,063 channels</p>
+            </div>
+        </div>
+        <div class="topic-list">
+            <span class="topic-tag highlight">The Weeknd</span>
+            <span class="topic-tag">MTV</span>
+            <span class="topic-tag">Piano</span>
+            <span class="topic-tag">Miss Universe</span>
+            <span class="topic-tag">Intro Templates</span>
+            <span class="topic-tag">Gummy Bear</span>
+        </div>
+        <div class="insight">💡 High views, low engagement—a "passive consumption" galaxy. Viewers listen but rarely interact.</div>
+    </div>
+
+    <!-- Galaxy 2 -->
+    <div class="galaxy-card">
+        <div class="galaxy-header">
+            <span class="galaxy-icon">🎮</span>
+            <div>
+                <p class="galaxy-name">Gaming Galaxy Alpha (Sandbox)</p>
+                <p class="galaxy-category">Gaming • 2,547 channels</p>
+            </div>
+        </div>
+        <div class="topic-list">
+            <span class="topic-tag highlight">Minecraft</span>
+            <span class="topic-tag highlight">Fortnite</span>
+            <span class="topic-tag">Mario Maker</span>
+            <span class="topic-tag">Roblox</span>
+            <span class="topic-tag">FNAF</span>
+            <span class="topic-tag">Thug Life</span>
+        </div>
+        <div class="insight">💡 Creative sandbox games dominate. Long videos (16 min avg) and highly engaged communities.</div>
+    </div>
+
+    <!-- Galaxy 3 -->
+    <div class="galaxy-card">
+        <div class="galaxy-header">
+            <span class="galaxy-icon">🎯</span>
+            <div>
+                <p class="galaxy-name">Gaming Galaxy Beta (Competitive)</p>
+                <p class="galaxy-category">Gaming • 2,529 channels</p>
+            </div>
+        </div>
+        <div class="topic-list">
+            <span class="topic-tag highlight">Halo</span>
+            <span class="topic-tag highlight">Rainbow Six Siege</span>
+            <span class="topic-tag">Destiny</span>
+            <span class="topic-tag">Pokemon</span>
+            <span class="topic-tag">Skyrim</span>
+            <span class="topic-tag">Nintendo</span>
+        </div>
+        <div class="insight">💡 Competitive and story-driven games. Highest gaming engagement (19 likes/1000 views).</div>
+    </div>
+
+    <!-- Galaxy 4 -->
+    <div class="galaxy-card" style="border-color: rgba(245, 158, 11, 0.5); box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);">
+        <div class="galaxy-header">
+            <span class="galaxy-icon">💄</span>
+            <div>
+                <p class="galaxy-name">Lifestyle & Fashion Nebula</p>
+                <p class="galaxy-category">Howto & Style • 2,145 channels • ⭐ HIGHEST ENGAGEMENT</p>
+            </div>
+        </div>
+        <div class="topic-list">
+            <span class="topic-tag highlight">Roblox Royale High</span>
+            <span class="topic-tag">Makeup Tutorial</span>
+            <span class="topic-tag">Fashion Haul</span>
+            <span class="topic-tag">Baby/Family</span>
+            <span class="topic-tag">Nail Art</span>
+            <span class="topic-tag">Life Hacks</span>
+        </div>
+        <div class="insight">🔥 <strong>Most engaged galaxy!</strong> 27.1 likes per 1000 views. Dedicated niche audiences who actively interact.</div>
+    </div>
+
+    <!-- Galaxy 5 -->
+    <div class="galaxy-card">
+        <div class="galaxy-header">
+            <span class="galaxy-icon">📰</span>
+            <div>
+                <p class="galaxy-name">News & Wellness Cluster</p>
+                <p class="galaxy-category">News & Politics • 1,068 channels</p>
+            </div>
+        </div>
+        <div class="topic-list">
+            <span class="topic-tag">Hijab Content</span>
+            <span class="topic-tag">Vegan</span>
+            <span class="topic-tag highlight">Meditation</span>
+            <span class="topic-tag">Tiny House</span>
+            <span class="topic-tag">Van Life</span>
+            <span class="topic-tag">Sleep Hypnosis</span>
+        </div>
+        <div class="insight">💡 Longest videos (18.4 min). A mix of news, wellness, and alternative lifestyle content.</div>
+    </div>
+
+    <!-- Galaxy 6 -->
+    <div class="galaxy-card">
+        <div class="galaxy-header">
+            <span class="galaxy-icon">🏀</span>
+            <div>
+                <p class="galaxy-name">Hip-Hop & Sports Arena</p>
+                <p class="galaxy-category">Music • 1,067 channels</p>
+            </div>
+        </div>
+        <div class="topic-list">
+            <span class="topic-tag highlight">NBA</span>
+            <span class="topic-tag highlight">NFL</span>
+            <span class="topic-tag">Type Beats</span>
+            <span class="topic-tag">Eminem</span>
+            <span class="topic-tag">LaMelo Ball</span>
+            <span class="topic-tag">Sneakers</span>
+        </div>
+        <div class="insight">💡 Sports and hip-hop culture intertwined. "Type Beat" producers orbit alongside sports content.</div>
+    </div>
+
+    <!-- Galaxy 9 -->
+    <div class="galaxy-card" style="border-color: rgba(20, 184, 166, 0.5);">
+        <div class="galaxy-header">
+            <span class="galaxy-icon">✨</span>
+            <div>
+                <p class="galaxy-name">Viral & ASMR Void</p>
+                <p class="galaxy-category">Entertainment • 549 channels • ⚠️ LOWEST ENGAGEMENT</p>
+            </div>
+        </div>
+        <div class="topic-list">
+            <span class="topic-tag highlight">ASMR</span>
+            <span class="topic-tag">Satisfying Videos</span>
+            <span class="topic-tag">Life Hacks</span>
+            <span class="topic-tag">Mukbang</span>
+            <span class="topic-tag">Magic Tricks</span>
+            <span class="topic-tag">Power Rangers</span>
+        </div>
+        <div class="insight">⚠️ <strong>Paradox galaxy:</strong> Highest median views (135K) but lowest engagement (4.1). Viral clickbait content that users watch but don't engage with.</div>
+    </div>
+</div>
+</body>
+</html>

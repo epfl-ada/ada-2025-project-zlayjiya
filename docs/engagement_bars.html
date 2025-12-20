@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; background: #1A1A1A; }
+    </style>
+</head>
+<body>
+<div id="chart" style="width:100%;height:550px;"></div>
+<script>
+// Background matches your 'Floating Dashboard' aesthetic
+const bg_color = "#1A1A1A";
+const font_stack = "'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+
+// Galaxy engagement data - sorted by engagement rate
+const data = [
+    {name: "💄 Lifestyle & Fashion", engagement: 27.1, views: 106490, duration: 11.5, color: "#f59e0b"},
+    {name: "🎯 Gaming (Competitive)", engagement: 19.0, views: 75660, duration: 15.8, color: "#06b6d4"},
+    {name: "📰 News & Wellness", engagement: 18.5, views: 52081, duration: 18.4, color: "#10b981"},
+    {name: "🚗 Automotive & Outdoor", engagement: 17.2, views: 73264, duration: 13.5, color: "#6366f1"},
+    {name: "🎮 Gaming (Sandbox)", engagement: 17.1, views: 101074, duration: 16.0, color: "#3b82f6"},
+    {name: "🏀 Hip-Hop & Sports", engagement: 15.3, views: 78056, duration: 10.8, color: "#ef4444"},
+    {name: "🇵🇭 Asian Content", engagement: 15.3, views: 71144, duration: 14.5, color: "#a855f7"},
+    {name: "🇮🇳 Indian Entertainment", engagement: 13.3, views: 31841, duration: 12.5, color: "#8b5cf6"},
+    {name: "🎵 Mainstream Music", engagement: 8.0, views: 77887, duration: 8.0, color: "#ec4899"},
+    {name: "✨ Viral & ASMR", engagement: 4.1, views: 135755, duration: 16.2, color: "#14b8a6"}
+];
+
+const trace = {
+    x: data.map(d => d.name),
+    y: data.map(d => d.engagement),
+    type: 'bar',
+    marker: {
+        color: data.map(d => d.color),
+        line: {
+            color: '#FFFFFF',
+            width: 1
+        }
+    },
+    text: data.map(d => d.engagement.toFixed(1)),
+    textposition: 'outside',
+    textfont: {color: '#FFFFFF', size: 13, family: font_stack},
+    hovertemplate: data.map(d => 
+        `<b>${d.name}</b><br>` +
+        `Engagement: <b>${d.engagement.toFixed(1)}</b> likes/1000 views<br>` +
+        `Median Views: ${d.views.toLocaleString()}<br>` +
+        `Avg Duration: ${d.duration.toFixed(1)} min<extra></extra>`
+    )
+};
+
+const layout = {
+    title: {
+        text: "<span style='text-shadow: 2px 2px 0 #000;'>ENGAGEMENT RATE BY GALAXY</span>",
+        x: 0.5,
+        y: 0.95,
+        font: {size: 20, family: font_stack, color: "#FFFFFF"}
+    },
+    paper_bgcolor: bg_color,
+    plot_bgcolor: bg_color,
+    hovermode: "closest",
+    font: {
+        family: font_stack,
+        size: 12,
+        color: "#FFFFFF"
+    },
+    xaxis: {
+        tickangle: -35,
+        tickfont: {size: 11, color: '#AAAAAA', family: font_stack},
+        gridcolor: 'rgba(255,255,255,0.05)',
+        linecolor: '#444444',
+        showgrid: false
+    },
+    yaxis: {
+        title: {
+            text: "<span style='color:#8b5cf6'>LIKES PER 1000 VIEWS</span>",
+            font: {family: font_stack, size: 13}
+        },
+        gridcolor: 'rgba(255,255,255,0.05)',
+        linecolor: '#8b5cf6',
+        tickfont: {color: '#8b5cf6', family: font_stack},
+        range: [0, 32],
+        zeroline: false
+    },
+    margin: {l: 70, r: 30, t: 80, b: 140},
+    bargap: 0.25,
+    showlegend: false,
+    hoverlabel: {
+        bgcolor: "#111111",
+        font_size: 14,
+        font_family: font_stack,
+        font_color: "#FFFFFF",
+        bordercolor: "#06b6d4"
+    },
+    annotations: [
+        {
+            x: "💄 Lifestyle & Fashion",
+            y: 27.1,
+            text: "🔥 Most Engaged!",
+            showarrow: true,
+            arrowhead: 2,
+            arrowcolor: "#f59e0b",
+            arrowsize: 1,
+            arrowwidth: 2,
+            font: {color: "#f59e0b", size: 12, family: font_stack},
+            ax: 50,
+            ay: -35,
+            bgcolor: "rgba(26,26,26,0.8)",
+            borderpad: 4
+        },
+        {
+            x: "✨ Viral & ASMR",
+            y: 4.1,
+            text: "High views,<br>low interaction",
+            showarrow: true,
+            arrowhead: 2,
+            arrowcolor: "#14b8a6",
+            arrowsize: 1,
+            arrowwidth: 2,
+            font: {color: "#14b8a6", size: 11, family: font_stack},
+            ax: -60,
+            ay: -50,
+            bgcolor: "rgba(26,26,26,0.8)",
+            borderpad: 4
+        }
+    ]
+};
+
+Plotly.newPlot('chart', [trace], layout, {responsive: true, displayModeBar: false});
+</script>
+</body>
+</html>

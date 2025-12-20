@@ -356,6 +356,21 @@ def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_cha
     
     STOPWORDS = spacy.lang.en.stop_words.STOP_WORDS
     
+    # YouTube-specific stopwords to filter common noise
+    YOUTUBE_STOPWORDS = {
+        'video', 'videos', 'watch', 'subscribe', 'channel', 'like', 'comment',
+        'share', 'new', 'best', 'top', 'official', 'full', 'hd', 'hq', '4k',
+        'episode', 'part', 'season', 'trailer', 'clip', 'scene', 'movie',
+        'free', 'download', 'link', 'description', 'follow', 'instagram',
+        'twitter', 'facebook', 'tiktok', 'snapchat', 'social', 'media',
+        'http', 'https', 'www', 'com', 'bit', 'ly', 'youtu', 'youtube',
+        'please', 'thank', 'thanks', 'hello', 'hey', 'today', 'day', 'week',
+        'year', 'time', 'thing', 'stuff', 'lot', 'way', 'guy', 'people',
+        'world', 'life', 'really', 'actually', 'literally', 'basically',
+        'amazing', 'awesome', 'insane', 'crazy', 'epic', 'ultimate'
+    }
+    ALL_STOPWORDS = STOPWORDS | YOUTUBE_STOPWORDS
+    
     # Sample channels
     community_list = list(community)
     k_actual = min(k_channels, len(community_list))
@@ -417,9 +432,24 @@ def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_cha
         
         return ' '.join(parts)
     
+    def combine_title_desc(row):
+        """Combine title + truncated description only (no tags - less noise)"""
+        parts = []
+        title = str(row.get('title', '')).strip()
+        if title:
+            parts.append(title)
+        desc = str(row.get('description', '')).strip()
+        if desc:
+            desc_truncated = desc[:desc_max_chars]
+            parts.append(desc_truncated)
+        return ' '.join(parts)
+    
     if text_mode == 'combined':
         print(f"Using combined mode: title + tags + description (truncated to {desc_max_chars} chars)")
         texts = videos_sample.apply(combine_text_fields, axis=1).tolist()
+    elif text_mode == 'title_desc':
+        print(f"Using title_desc mode: title + description (truncated to {desc_max_chars} chars) - NO TAGS")
+        texts = videos_sample.apply(combine_title_desc, axis=1).tolist()
     elif text_mode == 'title':
         if 'title' not in videos_sample.columns:
             print("Column 'title' not found")
@@ -436,7 +466,7 @@ def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_cha
             return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
         texts = videos_sample['tags'].fillna('').astype(str).tolist()
     else:
-        print(f"Unknown text_mode: {text_mode}. Use 'title', 'description', 'tags', or 'combined'")
+        print(f"Unknown text_mode: {text_mode}. Use 'title', 'title_desc', 'description', 'tags', or 'combined'")
         return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
     
     texts = [t for t in texts if len(t.strip()) > 0]
@@ -451,9 +481,9 @@ def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_cha
     processed_docs = []
     for doc in nlp.pipe(texts, n_process=1, batch_size=50):
         # Lemmatize, remove punctuation and stopwords
-        doc_tokens = [token.lemma_ for token in doc if token.is_alpha and not token.is_stop]
-        # Remove stopwords and keep only words of length 3+
-        doc_tokens = [token for token in doc_tokens if token not in STOPWORDS and len(token) > 2]
+        doc_tokens = [token.lemma_.lower() for token in doc if token.is_alpha and not token.is_stop]
+        # Remove stopwords (including YouTube-specific) and keep only words of length 3+
+        doc_tokens = [token for token in doc_tokens if token not in ALL_STOPWORDS and len(token) > 2]
         processed_docs.append(doc_tokens)
     
     docs = processed_docs
