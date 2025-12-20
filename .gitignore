@@ -163,3 +163,13 @@ cython_debug/
 
 # Ignore __init__.py files recursively
 **/__init__.py
+
+data/*
+
+# Jekyll
+docs/vendor/
+docs/_site/
+docs/.jekyll-cache/
+
+# DS_Store
+.DS_Store

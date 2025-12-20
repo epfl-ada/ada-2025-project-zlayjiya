@@ -3,6 +3,7 @@ import networkx as nx
 from collections import Counter
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 
 def filter_edges(edges_df, channel_df, min_subscribers=200_000, min_weight=3):
     """
@@ -76,6 +77,35 @@ def build_graph(edges_df, channels_df):
     print(f"Graph built: {G.number_of_nodes():,} nodes, {G.number_of_edges():,} edges")
     return G
 
+
+import networkx as nx
+import igraph as ig
+import leidenalg
+
+def run_leiden_on_nx(G, weight='weight', resolution=1.0):
+    """
+    Runs the Leiden algorithm on a NetworkX graph using the leidenalg backend.
+    """
+    # 1. Convert NetworkX graph to igraph
+    # This is necessary because leidenalg operates on igraph objects
+    h = ig.Graph.from_networkx(G)
+    
+    # 2. Run the Leiden algorithm
+    # We use ModularityVertexPartition to mirror Louvain's behavior
+    partition = leidenalg.find_partition(
+        h, 
+        leidenalg.ModularityVertexPartition, 
+        weights=h.es[weight] if weight in h.es.attributes() else None,
+        resolution_parameter=resolution
+    )
+    
+    # 3. Convert back to NetworkX-style communities (list of sets)
+    communities = []
+    for community in partition:
+        communities.append(set(h.vs[community]['_nx_name']))
+        
+    return communities
+
 def find_communities(G, nodes_out_path, comm_out_path):
     """
     Finds the LCC, runs Louvain, calculates metrics, and saves results.
@@ -91,7 +121,7 @@ def find_communities(G, nodes_out_path, comm_out_path):
     print(f"LCC:   {n_lcc:,} nodes, {m_lcc:,} edges  ({(n_lcc/n if n else 0):.1%} of nodes)")
 
     print("Detecting communities using Louvain...")
-    communities = nx.community.louvain_communities(LCC, weight="weight_normalized", seed=42)
+    communities = nx.community.louvain_communities(LCC, weight="weight_normalized",seed=42)
     modularity = nx.community.modularity(LCC, communities, weight="weight_normalized")
     print(f"Found {len(communities)} communities (modularity: {modularity:.3f})")
     
@@ -170,7 +200,7 @@ def analyze_communities(LCC, node_df, communities, max_show=5):
         print()
 
 
-def visualize_network(LCC, communities, node_df, viz_out_path, n_per_comm=10, min_comm_nodes=20, seed=42):
+def visualize_network(LCC, communities, node_df, viz_out_path, n_per_comm=10, min_comm_nodes=20, seed=42,random=False):
     """
     Generates and saves the network visualization.
    
@@ -185,26 +215,40 @@ def visualize_network(LCC, communities, node_df, viz_out_path, n_per_comm=10, mi
     def name_of(uid):
         nm = (meta.get(uid, {}) or {}).get("name_cc") or uid
         return nm if len(str(nm)) > 0 else uid
-
+    
     top_per_comm = {}
     for cid, nodes_c in enumerate(communities):
         if(len(nodes_c)> min_comm_nodes):
             if not nodes_c: continue
             best = max(nodes_c, key=lambda u: strength.get(u, 0))
             top_per_comm[cid] = name_of(best)
+    if not random:
 
-    selected = set()
-    for nodes_c in communities:
-        if(len(nodes_c) > 5):
-            top_nodes = sorted(nodes_c, key=lambda u: strength.get(u, 0), reverse=True)
-            selected.update(top_nodes[:n_per_comm])
+        selected = set()
+        for nodes_c in communities:
+            if(len(nodes_c) > 5):
+                top_nodes = sorted(nodes_c, key=lambda u: strength.get(u, 0), reverse=True)
+                selected.update(top_nodes[:n_per_comm])
 
-    edges_to_keep = [
-        (u, v) for u, v, d in LCC.edges(data=True)
-        if u in selected and v in selected and d.get("weight_raw", 0) >= 2
-    ]
-    H = LCC.edge_subgraph(edges_to_keep).copy()
-    H.remove_nodes_from(list(nx.isolates(H)))
+        edges_to_keep = [
+            (u, v) for u, v, d in LCC.edges(data=True)
+            if u in selected and v in selected and d.get("weight_raw", 0) >= 2
+        ]
+        H = LCC.edge_subgraph(edges_to_keep).copy()
+        H.remove_nodes_from(list(nx.isolates(H)))
+    else:
+        selected = set()
+        for nodes_c in communities:
+            if len(nodes_c) > 5:
+                # Random sample without replacement
+                sample_size = min(n_per_comm, len(nodes_c))
+                random_nodes = np.random.choice(list(nodes_c), size=sample_size, replace=False)
+                selected.update(random_nodes)
+
+        edges_to_keep = [(u, v) for u, v, d in LCC.edges(data=True) 
+                        if u in selected and v in selected and d.get("weight_raw", 0) >= 2]
+        H = LCC.edge_subgraph(edges_to_keep).copy()
+        H.remove_nodes_from(list(nx.isolates(H)))
     print(f"Visualization subgraph: {H.number_of_nodes()} nodes, {H.number_of_edges()} edges")
 
     pos = nx.spring_layout(H, weight="weight_raw", seed=seed, k=2, iterations=50)
@@ -233,3 +277,238 @@ def visualize_network(LCC, communities, node_df, viz_out_path, n_per_comm=10, mi
     plt.savefig(viz_out_path, dpi=150, bbox_inches="tight")
     print(f"✓ Saved {viz_out_path}")
     plt.show()
+
+
+def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_channel=50, 
+                   n_topics=4, text_mode='combined', desc_max_chars=200, min_wordcount=5, 
+                   max_freq=0.5, passes=10, seed=42, nlp=None):
+    """
+    Detects topics/categories for a given community using LDA (following Lab 9 methodology).
+    Uses spacy for preprocessing and gensim for topic modeling.
+    
+    Parameters:
+    -----------
+    community : set or list
+        Set of channel IDs forming a community
+    video_metadata_df : pd.DataFrame
+        DataFrame with columns: 'channel_id', 'title', 'description', 'tags' (optional)
+    k_channels : int
+        Number of channels to randomly sample from the community
+    n_videos_per_channel : int
+        Maximum number of videos to sample per channel
+    n_topics : int
+        Number of topics to extract with LDA
+    text_mode : str
+        Text source for topic detection:
+        - 'title': use only video titles
+        - 'description': use only descriptions
+        - 'tags': use only tags
+        - 'combined': use title + tags + truncated description (recommended by TA)
+    desc_max_chars : int
+        Maximum characters to keep from description when using 'combined' mode
+    min_wordcount : int
+        Minimum word count for dictionary filtering
+    max_freq : float
+        Maximum document frequency for dictionary filtering
+    passes : int
+        Number of passes for LDA training
+    seed : int
+        Random seed for reproducibility
+    nlp : spacy model (optional)
+        Spacy NLP model for text processing. If None, will try to load 'en_core_web_sm'
+        
+    Returns:
+    --------
+    dict with keys:
+        - 'topics': list of topics (each topic is a list of (word, weight) tuples)
+        - 'model': the trained LDA model
+        - 'corpus': the corpus used
+        - 'dictionary': the dictionary used
+        - 'n_videos': number of videos analyzed
+        - 'sampled_channels': list of channel IDs sampled
+    """
+    try:
+        import spacy
+        from gensim.models.phrases import Phrases
+        from gensim.corpora import Dictionary
+        from gensim.models import LdaMulticore
+    except ImportError as e:
+        print(f"Missing required library: {e}")
+        print("Install with: pip install spacy gensim")
+        return {'topics': [], 'n_videos': 0, 'sampled_channels': []}
+    
+    print(f"=== Topic Detection for Community ({len(community)} channels) ===")
+    
+    # Set random seed
+    random.seed(seed)
+    np.random.seed(seed)
+    
+    # Load spacy model
+    if nlp is None:
+        try:
+            nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
+        except:
+            print("Spacy model 'en_core_web_sm' not found")
+            print("Install with: python -m spacy download en_core_web_sm")
+            return {'topics': [], 'n_videos': 0, 'sampled_channels': []}
+    
+    STOPWORDS = spacy.lang.en.stop_words.STOP_WORDS
+    
+    # Sample channels
+    community_list = list(community)
+    k_actual = min(k_channels, len(community_list))
+    sampled_channels = random.sample(community_list, k_actual)
+    print(f"Sampled {k_actual} channels from community")
+    
+    # Filter and sample videos
+    if 'channel_id' not in video_metadata_df.columns:
+        print("No 'channel_id' column found in video metadata")
+        return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+    
+    videos_from_community = video_metadata_df[
+        video_metadata_df['channel_id'].isin(sampled_channels)
+    ].copy()
+    
+    if len(videos_from_community) == 0:
+        print("No videos found for sampled channels")
+        return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+    
+    # Sample videos per channel
+    sampled_videos = []
+    for channel in sampled_channels:
+        channel_videos = videos_from_community[videos_from_community['channel_id'] == channel]
+        n_sample = min(n_videos_per_channel, len(channel_videos))
+        if n_sample > 0:
+            sampled = channel_videos.sample(n=n_sample, random_state=seed)
+            sampled_videos.append(sampled)
+    
+    if not sampled_videos:
+        print("No videos sampled")
+        return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+    
+    videos_sample = pd.concat(sampled_videos, ignore_index=True)
+    print(f"Sampled {len(videos_sample)} videos")
+    
+    # Get texts based on text_mode
+    def combine_text_fields(row):
+        """Combine title + tags + truncated description (TA recommended approach)"""
+        parts = []
+        
+        # Add title
+        title = str(row.get('title', '')).strip()
+        if title:
+            parts.append(title)
+        
+        # Add tags (comma-separated string)
+        tags = str(row.get('tags', '')).strip()
+        if tags:
+            # Tags are usually comma-separated, convert to space-separated
+            tags_cleaned = tags.replace(',', ' ')
+            parts.append(tags_cleaned)
+        
+        # Add truncated description
+        desc = str(row.get('description', '')).strip()
+        if desc:
+            # Truncate description to first N characters
+            desc_truncated = desc[:desc_max_chars]
+            parts.append(desc_truncated)
+        
+        return ' '.join(parts)
+    
+    if text_mode == 'combined':
+        print(f"Using combined mode: title + tags + description (truncated to {desc_max_chars} chars)")
+        texts = videos_sample.apply(combine_text_fields, axis=1).tolist()
+    elif text_mode == 'title':
+        if 'title' not in videos_sample.columns:
+            print("Column 'title' not found")
+            return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+        texts = videos_sample['title'].fillna('').astype(str).tolist()
+    elif text_mode == 'description':
+        if 'description' not in videos_sample.columns:
+            print("Column 'description' not found")
+            return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+        texts = videos_sample['description'].fillna('').astype(str).tolist()
+    elif text_mode == 'tags':
+        if 'tags' not in videos_sample.columns:
+            print("Column 'tags' not found")
+            return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+        texts = videos_sample['tags'].fillna('').astype(str).tolist()
+    else:
+        print(f"Unknown text_mode: {text_mode}. Use 'title', 'description', 'tags', or 'combined'")
+        return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+    
+    texts = [t for t in texts if len(t.strip()) > 0]
+    
+    if len(texts) == 0:
+        print("No valid texts")
+        return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
+    
+    print(f"Processing {len(texts)} texts with spacy...")
+    
+    # Preprocess with spacy
+    processed_docs = []
+    for doc in nlp.pipe(texts, n_process=1, batch_size=50):
+        # Lemmatize, remove punctuation and stopwords
+        doc_tokens = [token.lemma_ for token in doc if token.is_alpha and not token.is_stop]
+        # Remove stopwords and keep only words of length 3+
+        doc_tokens = [token for token in doc_tokens if token not in STOPWORDS and len(token) > 2]
+        processed_docs.append(doc_tokens)
+    
+    docs = processed_docs
+    print(f"Preprocessed {len(docs)} documents")
+    
+    # Add bigrams
+    print("Adding bigrams...")
+    bigram = Phrases(docs, min_count=5)
+    for idx in range(len(docs)):
+        for token in bigram[docs[idx]]:
+            if '_' in token:
+                docs[idx].append(token)
+    
+    # Create dictionary and corpus
+    print("Creating dictionary and corpus...")
+    dictionary = Dictionary(docs)
+    dictionary.filter_extremes(no_below=min_wordcount, no_above=max_freq)
+    corpus = [dictionary.doc2bow(doc) for doc in docs]
+    
+    print(f'Number of unique tokens: {len(dictionary)}')
+    print(f'Number of documents: {len(corpus)}')
+    
+    if len(dictionary) == 0:
+        print("Dictionary is empty after filtering")
+        return {'topics': [], 'n_videos': len(texts), 'sampled_channels': sampled_channels}
+    
+    # Train LDA model
+    print(f"Training LDA model with {n_topics} topics...")
+    try:
+        model = LdaMulticore(
+            corpus=corpus,
+            num_topics=n_topics,
+            id2word=dictionary,
+            workers=4,
+            passes=passes,
+            random_state=seed
+        )
+        
+        # Extract topics
+        print(f"\nDetected {n_topics} topics:\n")
+        topics = []
+        for topic_id in range(n_topics):
+            topic_words = model.show_topic(topic_id, topn=10)
+            topics.append(topic_words)
+            words_str = ', '.join([f"{word}" for word, _ in topic_words[:5]])
+            print(f"Topic {topic_id}: {words_str}")
+        
+        return {
+            'topics': topics,
+            'model': model,
+            'corpus': corpus,
+            'dictionary': dictionary,
+            'n_videos': len(texts),
+            'sampled_channels': sampled_channels,
+            'docs': docs
+        }
+    
+    except Exception as e:
+        print(f"LDA training failed: {e}")
+        return {'topics': [], 'n_videos': len(texts), 'sampled_channels': sampled_channels}
