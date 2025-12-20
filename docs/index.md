@@ -90,7 +90,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     <h2>Before We Explore: First Glimpses of the YouNiverse</h2>
     
     <p>
-        To answer these questions, we turned to the YouNiverse dataset. And the name truly does it justice, its size is that of a universe. Data from 73 million videos , 137 thousand channels and 8.6 billion comments from 449 million users on a timeframe from May 2005 to October 2019.
+        To answer these questions, we turned to the YouNiverse dataset. And the name truly does it justice, its size is that of a universe. Data from 73 million videos , 137 thousand channels and 8.6 billion comments from 449 million users on a timeframe from May 2005 to October 2019. The dataset claims to only hold data from english speaking videos (more on that later).
     </p>
 
     <p>
@@ -189,19 +189,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </div>
     </details>
 
-    
 
-    <p>
-        With our normalized map in hand, we applied the Louvain Community Detection algorithm. Think of this as a way to find where the "gas clouds" of users naturally condense into distinct structures.
-    </p>
-
-    <div class="insight-box" style="background: #132f34ff; padding: 15px; border-left: 4px solid #17a2b8; margin: 20px 0;color: #ffffff">
-    ✨ <strong>The Breakthrough:</strong> With gravitational shielding applied, distinct galaxies emerge from the chaos. Each represents a true audience community bound by shared interests, not just shared fame.
-    </div>
-    <p>
-        Louvain seeks to maximize Modularity—a metric that measures how much "denser" the connections are within a galaxy compared to a random universe. Our map achieved a Modularity score of 0.655.
-        In the world of network science, a score above 0.5 is a significant discovery. It confirms that the YouNiverse is not a chaotic cloud of random stars, but a structured system of distinct, high-density galaxies bound by shared cultures, languages, and interests.
-    </p>
     <h3>Filtering the Cosmic Noise</h3>
     <p>
         Even with gravitational shielding applied, our universe still contained faint, unreliable connections, like distant radio signals lost in static. To build a clean map of meaningful relationships, we applied two critical filters to remove the cosmic noise.
@@ -238,7 +226,15 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 </details>
 
     <p>
-        The result? A cleaner cosmic map where every connection carries weight, and every channel has established its place in the universe. With the noise filtered out, we were ready to discover the true galaxy structure hidden within.
+        With our normalized map in hand, we applied the Louvain Community Detection algorithm. Think of this as a way to find where the "gas clouds" of users naturally condense into distinct structures.
+    </p>
+
+    <div class="insight-box" style="background: #132f34ff; padding: 15px; border-left: 4px solid #17a2b8; margin: 20px 0;color: #ffffff">
+    ✨ <strong>The Breakthrough:</strong> With gravitational shielding applied, distinct galaxies emerge from the chaos. Each represents a true audience community bound by shared interests, not just shared fame.
+    </div>
+    <p>
+        Louvain seeks to maximize Modularity—a metric that measures how much "denser" the connections are within a galaxy compared to a random universe. Our map achieved a Modularity score of 0.655.
+        In the world of network science, a score above 0.5 is a significant discovery. It confirms that the YouNiverse is not a chaotic cloud of random stars, but a structured system of distinct, high-density galaxies bound by shared cultures, languages, and interests.
     </p>
 
     <h2>The Architecture of the YouNiverse</h2>
@@ -303,7 +299,97 @@ title: "YouNiverse: Voyage Through Video Galaxies"
             <iframe src="./b.html" width="100%" height="500px" frameborder="0" style="border:none; display: block;"></iframe>
         </div>
     </div>
+    <h3>First Contact: A Glimpse Into Three Galaxies</h3>
+    <p>
+        Before we systematically analyze all galaxies, let's descend into three interesting, yet very small compared to the size of the major galaxies, ones. We will quickly analyze what sort of channels lie in them to determine how they came to be. They define three contrasting types of communities. Do not hesitate to click on the little nodes to get the names of the channels and their total strength in the graph.
+    </p>
 
+    <!-- Galaxy 1: Graph Left, Text Right -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; margin: 40px 0; height: 400px; padding: 30px; background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%); border-radius: 16px; border: 2px solid rgba(100, 181, 246, 0.3);">
+        
+        <div class="viz-network" >
+            <!-- Insert your galaxy visualization here -->
+            <iframe src="./galaxy_25.html" width="100%" height="300px" frameborder="0"></iframe>
+        </div>
+        
+        <div>
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <div style="font-size: 2.5em; margin-right: 15px;">🎾</div>
+                <div>
+                    <h4 style="color: #64b5f6; margin: 0;">Tennis Terror</h4>
+                    <p style="color: #aaa; font-size: 0.9em; margin: 5px 0 0 0;">
+                        Galaxy #25 • 6 channels • Biggest channel : Tennis TV
+                    </p>
+                </div>
+            </div>
+            <p style="color: #ddd; line-height: 1.7; margin-bottom: 15px;">
+                A small, tight-knit community around a passion for one sport : Tennis.  
+            </p>
+            
+        </div>
+        
+    </div>
+
+    <!-- Galaxy 2: Text Left, Graph Right -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; margin: 40px 0; height: 400px;padding: 30px; background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%); border-radius: 16px; border: 2px solid rgba(171, 71, 188, 0.3);">
+        
+        <div>
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <div style="font-size: 2.5em; margin-right: 15px;">🇲🇦🇹🇳</div>
+                <div>
+                    <h4 style="color: #ab47bc; margin: 0;">Maghrebi Power</h4>
+                    <p style="color: #aaa; font-size: 0.9em; margin: 5px 0 0 0;">
+                        Galaxy #25 • 32 channels • Biggest channel : 7liwa
+                    </p>
+                </div>
+            </div>
+            <p style="color: #ddd; line-height: 1.7; margin-bottom: 15px;">
+                A single galaxy with what seems to be two different galaxies connected by two heavily interacting channels. Quick overview of these channels leads us to see that on one part we have some Moroccan singers and on the other side Tunisian ones.
+            </p>
+        </div>
+        
+        <div class="viz-network">
+            <!-- Insert your galaxy visualization here -->
+            <iframe src="./galaxy_26.html" width="100%" height="300px" frameborder="0"></iframe>
+        </div>
+        
+    </div>
+
+    <!-- Galaxy 3: Graph Left, Text Right -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; margin: 40px 0; padding: 30px; background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%); border-radius: 16px; height: 400px;border: 2px solid rgba(255, 193, 7, 0.3);">
+        
+    <div class="viz-network">
+        <!-- Insert your galaxy visualization here -->
+        <iframe src="./galaxy_24.html" width="100%" height="300px" frameborder="0"></iframe>
+        <!-- OR -->
+        <!-- <img src="galaxy_news.png" width="100%" style="border-radius: 8px;"> -->
+    </div>
+    
+    <div>
+        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+            <div style="font-size: 2.5em; margin-right: 15px;">🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
+            <div>
+                <h4 style="color: #ffc107; margin: 0;">English Learners</h4>
+                <p style="color: #aaa; font-size: 0.9em; margin: 5px 0 0 0;">
+                    Galaxy #24 • 45 channels • Biggest channel : Go Natural English
+                </p>
+            </div>
+        </div>
+        <p style="color: #ddd; line-height: 1.7; margin-bottom: 15px;">
+            Probably a hub for recharging your spacecraft before going exploring. This is a community based around learning the biggest language on the website (and the world), English. 
+        </p>
+
+    </div>
+    
+    </div>
+
+    <div class="quote">
+        "From isolated echo chambers to sprawling hubs, each galaxy reveals a different way communities form and interact."
+    </div>
+
+    <p>
+        These three examples showcase the diversity we've discovered. In the next chapter, we will systematically analyze what truly distinguishes all major galaxies in the YouNiverse.
+    </p>
     <h3>What We've Discovered</h3>
     <p>
         By building our cosmic map from 8.6 billion comments across 19,000 channels, we've revealed something remarkable: <strong>YouTube isn't a chaotic cloud of random content</strong>. It's a structured universe with 52 distinct cultural galaxies, each with its own centers of gravity, its own audiences, and its own identity.

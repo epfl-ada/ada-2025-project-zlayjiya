@@ -340,6 +340,7 @@ p {
     font-weight: 600;
     margin-bottom: 20px;
     text-align: center;
+    padding-top:20px;
 }
 
 .viz-placeholder {
