@@ -5,6 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
+from src.utils.general_utils import gini
+
 def filter_edges(edges_df, channel_df, min_subscribers=200_000, min_weight=3):
     """
     Filters the edge list based on subscriber count and edge weight.
@@ -512,3 +514,551 @@ def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_cha
     except Exception as e:
         print(f"LDA training failed: {e}")
         return {'topics': [], 'n_videos': len(texts), 'sampled_channels': sampled_channels}
+
+
+
+def visualize_core_network(
+    LCC,
+    communities,
+    node_df,
+    viz_out_path,
+    n_per_comm=15,
+    num_top_communities=5,
+    weight_threshold=5,
+    seed=42,
+):
+    """
+    Zoom into the “galactic core” by plotting only the largest communities with thicker edges.
+    """
+    print(f"Focusing on the top {num_top_communities} largest galaxies...")
+
+    sorted_communities = sorted(communities, key=len, reverse=True)
+    core_communities = sorted_communities[:num_top_communities]
+    node2comm = {node: cid for cid, comm in enumerate(core_communities) for node in comm}
+    core_nodes_all = set(node2comm.keys())
+
+    strength = {u: sum(d.get("weight_raw", 0) for _, d in LCC[u].items()) for u in core_nodes_all}
+    meta = node_df.set_index("channel_id").to_dict(orient="index")
+
+    def name_of(uid):
+        nm = (meta.get(uid, {}) or {}).get("name_cc") or uid
+        return nm if len(str(nm)) > 0 else uid
+
+    selected = set()
+    top_per_comm = {}
+    for cid, nodes_c in enumerate(core_communities):
+        top_nodes = sorted(nodes_c, key=lambda u: strength.get(u, 0), reverse=True)
+        selected.update(top_nodes[:n_per_comm])
+        if top_nodes:
+            top_per_comm[cid] = name_of(top_nodes[0])
+
+    edges_to_keep = [
+        (u, v) for u, v, d in LCC.edges(data=True)
+        if u in selected and v in selected and d.get("weight_raw", 0) >= weight_threshold
+    ]
+
+    H = LCC.edge_subgraph(edges_to_keep).copy()
+    H.remove_nodes_from(list(nx.isolates(H)))
+    print(f"Core visualization: {H.number_of_nodes()} nodes, {H.number_of_edges()} edges")
+
+    pos = nx.spring_layout(H, weight="weight_raw", seed=seed, k=1.5, iterations=100)
+
+    comm_colors = plt.cm.Set1(np.linspace(0, 1, num_top_communities))
+    node_colors = [comm_colors[node2comm[n]] for n in H.nodes()]
+    node_sizes = [50 * np.log10(strength.get(n, 1) + 10) for n in H.nodes()]
+
+    plt.figure(figsize=(16, 12), facecolor='white')
+    nx.draw_networkx_edges(H, pos, width=0.5, alpha=0.2, edge_color="black")
+    nx.draw_networkx_nodes(
+        H, pos, node_color=node_colors, node_size=node_sizes,
+        edgecolors="black", linewidths=0.5, alpha=0.8
+    )
+
+    label_targets = {}
+    for nodes_c in core_communities:
+        top_3 = sorted(nodes_c, key=lambda u: strength.get(u, 0), reverse=True)[:3]
+        for node in top_3:
+            if node in H:
+                label_targets[node] = name_of(node)
+
+    nx.draw_networkx_labels(H, pos, labels=label_targets, font_size=8, font_weight='bold')
+
+    plt.title(
+        f"Voyage into the Core: Interaction between Top {num_top_communities} Galaxies",
+        fontsize=15,
+    )
+    plt.axis("off")
+    plt.savefig(viz_out_path, dpi=300, bbox_inches="tight")
+    plt.show()
+
+
+def visualize_core_interactive(
+    LCC,
+    communities,
+    node_df,
+    html_out_path,
+    num_top_communities=5,
+    n_per_comm=20,
+    seed=42,
+):
+    """
+    Interactive PyVis view of the core communities with a small legend overlay.
+    """
+    try:
+        from pyvis.network import Network
+        import matplotlib.colors as mcolors
+    except ImportError as e:
+        raise ImportError("pyvis is required for visualize_core_interactive. Install with `pip install pyvis`.") from e
+
+    print(f"🔭 Zooming into the top {num_top_communities} galaxies...")
+
+    sorted_communities = sorted(communities, key=len, reverse=True)
+    core_communities = sorted_communities[:num_top_communities]
+    node2comm = {node: cid for cid, comm in enumerate(core_communities) for node in comm}
+    core_nodes_all = set(node2comm.keys())
+
+    strength = {u: sum(d.get("weight_raw", 0) for _, d in LCC[u].items()) for u in core_nodes_all}
+    meta = node_df.set_index("channel_id").to_dict(orient="index")
+
+    def name_of(uid):
+        nm = (meta.get(uid, {}) or {}).get("name_cc") or uid
+        return str(nm) if len(str(nm)) > 0 else str(uid)
+
+    selected = set()
+    for nodes_c in core_communities:
+        top_nodes = sorted(nodes_c, key=lambda u: strength.get(u, 0), reverse=True)
+        selected.update(top_nodes[:n_per_comm])
+
+    edges_to_keep = [
+        (u, v) for u, v, d in LCC.edges(data=True)
+        if u in selected and v in selected and d.get("weight_raw", 0) >= 3
+    ]
+    H = LCC.edge_subgraph(edges_to_keep).copy()
+    H.remove_nodes_from(list(nx.isolates(H)))
+
+    pos = nx.spring_layout(H, weight="weight_raw", seed=seed, k=5.0, iterations=200)
+    center_x = np.mean([p[0] for p in pos.values()])
+    center_y = np.mean([p[1] for p in pos.values()])
+
+    expanded_pos = {}
+    distances = {node: np.sqrt((p[0]-center_x)**2 + (p[1]-center_y)**2) for node, p in pos.items()}
+    max_dist = max(distances.values()) if distances else 1.0
+
+    for node, (x, y) in pos.items():
+        dist = distances[node]
+        norm_dist = dist / max_dist
+        expansion_factor = 1.0 + (3.5 * (1 - norm_dist)**2)
+        expanded_pos[node] = (center_x + (x - center_x) * expansion_factor,
+                              center_y + (y - center_y) * expansion_factor)
+
+    pos = expanded_pos
+    x_range = max(p[0] for p in pos.values()) - min(p[0] for p in pos.values())
+    y_range = max(p[1] for p in pos.values()) - min(p[1] for p in pos.values())
+
+    net = Network(height='850px', width='100%', bgcolor='#ffffff', font_color='black', cdn_resources='remote')
+    net.toggle_physics(False)
+
+    comm_colors = plt.cm.Set1(np.linspace(0, 1, num_top_communities))
+    SPREAD = 4500
+
+    for node in H.nodes():
+        cid = node2comm[node]
+        color = mcolors.to_hex(comm_colors[cid])
+        x = ((pos[node][0] - min(p[0] for p in pos.values())) / x_range - 0.5) * SPREAD
+        y = ((pos[node][1] - min(p[1] for p in pos.values())) / y_range - 0.5) * SPREAD
+        size = 12 + (np.log10(strength.get(node, 1) + 1) * 15)
+        net.add_node(
+            node, x=x, y=y, label=name_of(node), color=color, size=size,
+            title=f"Channel: {name_of(node)}<br>Galaxy Cluster: {cid}",
+            borderWidth=1.5, font={'size': 20, 'strokeWidth': 3, 'strokeColor': '#ffffff'}
+        )
+
+    for u, v, d in H.edges(data=True):
+        w = d.get("weight_raw", 1)
+        width = 0.8 + (np.log10(w) * 2.0)
+        net.add_edge(u, v, width=width, color='rgba(150,150,150,0.25)')
+
+    legend_html = """
+    <div style="position: absolute; top: 15px; left: 15px; width: 230px; background: rgba(255,255,255,0.9); 
+                border: 2px solid #333; padding: 15px; font-family: 'Segoe UI', sans-serif; z-index: 1000; border-radius: 10px;">
+        <b style="font-size: 14px; display: block; margin-bottom: 10px; border-bottom: 1px solid #333;">Dominant Galactic Hubs</b>
+    """
+    for cid, nodes_c in enumerate(core_communities):
+        best = max(nodes_c, key=lambda u: strength.get(u, 0))
+        color = mcolors.to_hex(comm_colors[cid])
+        name = name_of(best)
+        legend_html += f'<div style="margin-bottom: 6px;"><span style="color:{color}; font-size: 18px;">●</span> <b>Hub {cid}:</b> {name}</div>'
+    legend_html += "</div>"
+
+    net.save_graph(html_out_path)
+    with open(html_out_path, 'r', encoding='utf-8') as f:
+        content = f.read().replace('<body>', f'<body>{legend_html}')
+    with open(html_out_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+
+    print(f"✅ Core-only interactive map saved: {html_out_path}")
+
+
+
+
+def compute_comm_flows(edges_normalized, node_df, comm_summary):
+    """
+    Build community-to-community flow matrices and mobility metrics.
+    Returns a dict with edges_comm, pair_strength, flow_norm, flow_share, communities_sorted, mobility_df.
+    """
+    # Map channel -> community
+    channel_to_comm = node_df.set_index("channel_id")["community"]
+
+    edges_comm = (
+        edges_normalized[["src", "dst", "weight", "weight_raw"]]
+        .assign(
+            src_comm=lambda df: df["src"].map(channel_to_comm),
+            dst_comm=lambda df: df["dst"].map(channel_to_comm),
+        )
+        .dropna(subset=["src_comm", "dst_comm"])
+        .astype({"src_comm": int, "dst_comm": int})
+    )
+    edges_comm["is_cross"] = edges_comm["src_comm"] != edges_comm["dst_comm"]
+
+    communities_sorted = sorted(node_df["community"].unique())
+    pair_strength = (
+        edges_comm.groupby(["src_comm", "dst_comm"])[["weight", "weight_raw"]]
+        .sum()
+        .reset_index()
+    )
+
+    flow_norm = pd.DataFrame(0.0, index=communities_sorted, columns=communities_sorted)
+    flow_raw = pd.DataFrame(0.0, index=communities_sorted, columns=communities_sorted)
+    for _, row in pair_strength.iterrows():
+        a, b, w_norm, w_raw = int(row.src_comm), int(row.dst_comm), row.weight, row.weight_raw
+        flow_norm.loc[a, b] += w_norm
+        flow_raw.loc[a, b] += w_raw
+
+    flow_norm_no_diag = flow_norm.copy()
+    np.fill_diagonal(flow_norm_no_diag.values, 0)
+    flow_share = flow_norm_no_diag.div(flow_norm_no_diag.sum(axis=1), axis=0).fillna(0)
+
+    total_strength = (
+        edges_comm.groupby("src_comm")["weight"].sum()
+        .add(edges_comm.groupby("dst_comm")["weight"].sum(), fill_value=0)
+    )
+    cut_cross = edges_comm[edges_comm["is_cross"]].groupby(["src_comm", "dst_comm"])["weight"].sum()
+    cut_per_comm = cut_cross.groupby(level=0).sum().add(cut_cross.groupby(level=1).sum(), fill_value=0)
+    external_share = (cut_per_comm / total_strength).fillna(0)
+
+    mobility_rows = []
+    for cid in communities_sorted:
+        row = flow_share.loc[cid]
+        dests = row[row > 0]
+        if dests.empty:
+            entropy = 0.0
+            top_share = 0.0
+            gini_out = 0.0
+        else:
+            p = dests / dests.sum()
+            entropy = -np.sum(p * np.log2(p))
+            top_share = p.max()
+            gini_out = gini(p)
+        mobility_rows.append(
+            {
+                "community": cid,
+                "external_share": float(external_share.get(cid, 0)),
+                "entropy_out": float(entropy),
+                "gini_out": float(gini_out),
+                "top_dest_share": float(top_share),
+            }
+        )
+
+    mode_category = node_df.groupby("community")["category_cc"].agg(
+        lambda s: s.mode().iat[0] if not s.mode().empty else "Unknown"
+    )
+
+    mobility_df = (
+        pd.DataFrame(mobility_rows)
+        .merge(comm_summary[["community", "n_nodes", "avg_degree"]], on="community", how="left")
+        .merge(mode_category.rename("top_category"), on="community", how="left")
+        .sort_values(["external_share", "entropy_out"])
+    )
+
+    return {
+        "edges_comm": edges_comm,
+        "pair_strength": pair_strength,
+        "flow_norm": flow_norm,
+        "flow_share": flow_share,
+        "communities_sorted": communities_sorted,
+        "mobility_df": mobility_df,
+    }
+
+
+def top_destinations(flow_share, communities_sorted):
+    """
+    Rank top partner per community (by share of outgoing flow).
+    """
+    rows = []
+    for cid in communities_sorted:
+        row = flow_share.loc[cid]
+        if row.sum() == 0:
+            continue
+        top_vals = row.sort_values(ascending=False).head(3)
+        rows.append(
+            {
+                "community": cid,
+                "top_partner": int(top_vals.index[0]),
+                "share_to_top": float(top_vals.iloc[0]),
+                "second_partner": int(top_vals.index[1]) if len(top_vals) > 1 else None,
+                "share_to_second": float(top_vals.iloc[1]) if len(top_vals) > 1 else None,
+            }
+        )
+    return pd.DataFrame(rows).sort_values("share_to_top", ascending=False)
+
+
+def plot_chord_backbone(pair_strength, communities_sorted, top_n=100, out_path="reports/figures/community_chord_simple.png"):
+    """
+    Plot undirected backbone of community flows (chord-like arcs).
+    """
+    import matplotlib.pyplot as plt
+
+
+    flows = pair_strength.copy()
+    flows = flows[flows["src_comm"] != flows["dst_comm"]]
+    flows["a"] = flows[["src_comm", "dst_comm"]].min(axis=1)
+    flows["b"] = flows[["src_comm", "dst_comm"]].max(axis=1)
+    flows = flows.groupby(["a", "b"], as_index=False)["weight"].sum()
+    flows = flows.rename(columns={"a": "c1", "b": "c2"})
+    flows = flows.sort_values("weight", ascending=False).head(top_n)
+
+    order = sorted(communities_sorted)
+    theta = np.linspace(0, 2 * np.pi, len(order), endpoint=False)
+    coords = {c: (np.cos(t), np.sin(t)) for c, t in zip(order, theta)}
+
+    w = flows["weight"]
+    w_norm = (w - w.min()) / (w.max() - w.min() + 1e-9)
+    widths = 1.0 + 6 * w_norm
+    colors = plt.cm.viridis(0.2 + 0.8 * w_norm)
+    alphas = 0.25 + 0.65 * w_norm
+    sm = plt.cm.ScalarMappable(cmap=plt.cm.viridis, norm=plt.Normalize(vmin=w.min(), vmax=w.max()))
+    sm.set_array([])
+
+    fig, ax = plt.subplots(figsize=(11, 11))
+    fig.patch.set_facecolor("white")
+    ax.set_facecolor("white")
+
+    for (c1, c2, weight), lw, col, a in zip(flows[["c1", "c2", "weight"]].itertuples(index=False, name=None), widths, colors, alphas):
+        x0, y0 = coords[c1]
+        x1, y1 = coords[c2]
+        ctrl = np.array([0, 0])
+        t = np.linspace(0, 1, 150)
+        curve = (1 - t)[:, None] ** 2 * np.array([x0, y0]) + 2 * (1 - t)[:, None] * t[:, None] * ctrl + t[:, None] ** 2 * np.array([x1, y1])
+        ax.plot(curve[:, 0], curve[:, 1], color=col, alpha=a, linewidth=lw, solid_capstyle="round")
+
+    for c in order:
+        x, y = coords[c]
+        ax.scatter(x, y, s=150, color="white", edgecolor="black", zorder=3)
+        ax.text(x * 1.12, y * 1.12, f"C{c}", ha="center", va="center", fontsize=11, weight="bold")
+
+    ax.set_aspect("equal")
+    ax.axis("off")
+    plt.title("Flux inter-community", fontsize=12)
+    cbar = plt.colorbar(sm, ax=ax, fraction=0.035, pad=0.02)
+    cbar.set_label("Undirected flow weight (yellow = strongest)", fontsize=9)
+    plt.text(0, -1.18, "Edge width scales with flow strength", ha="center", va="center", fontsize=6)
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.show()
+
+    # Affiche un petit tableau affichant les 5 liens les plus forts juste après le plot
+    flows.sort_values("weight", ascending=False).head(5)
+    
+
+
+def find_echo_candidates(mobility_df, ext_quantile=0.25, entropy_quantile=0.5):
+    """
+    Identify low-openness, low-diversity communities and return (candidates, q_ext, q_ent).
+    """
+    q_ext = mobility_df["external_share"].quantile(ext_quantile)
+    q_ent = mobility_df["entropy_out"].quantile(entropy_quantile)
+    echo_candidates = mobility_df[
+        (mobility_df["external_share"] <= q_ext) & (mobility_df["entropy_out"] <= q_ent)
+    ].copy()
+    echo_candidates = echo_candidates.sort_values(["external_share", "entropy_out"])
+    return echo_candidates, q_ext, q_ent
+
+
+def plot_echo_share(mobility_df, echo_candidates, q_ext, out_path="reports/figures/echo_chamber_external_share.png"):
+    """
+    Plot external share bar chart highlighting echo candidates.
+    """
+    import matplotlib.pyplot as plt
+
+    colors = ["#d62728" if es <= q_ext else "#1f77b4" for es in mobility_df["external_share"]]
+    plt.figure(figsize=(12, 5))
+    plt.bar(mobility_df["community"].astype(str), mobility_df["external_share"], color=colors)
+    plt.axhline(q_ext, color="black", linestyle="--", label="25e percentile share")
+    plt.ylabel("Part des flux sortants")
+    plt.xlabel("ID communauté")
+    plt.title("External share par communauté (plus bas = plus fermé)")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.show()
+
+
+def compute_bridge_channels(LCC, node_df, communities, betweenness_k=800, cross_share_min=0.5, cross_strength_min=1000):
+    """
+    Compute bridge channels and aggregated category info.
+    """
+    # Betweenness
+    G_bt = LCC.copy()
+    for u, v, d in G_bt.edges(data=True):
+        w = d.get("weight", 1.0)
+        d["length"] = 1 / (w + 1e-9)
+    betweenness = nx.betweenness_centrality(G_bt, k=betweenness_k, weight="length", seed=42)
+    node_df = node_df.copy()
+    node_df["betweenness"] = node_df["channel_id"].map(betweenness).fillna(0)
+
+    comm_map = node_df.set_index("channel_id")["community"].to_dict()
+    bridge_rows = []
+    for u in LCC.nodes():
+        total_raw = 0.0
+        cross_raw = 0.0
+        for v, data in LCC[u].items():
+            w = data.get("weight_raw", data.get("weight", 0))
+            total_raw += w
+            if comm_map.get(u) != comm_map.get(v):
+                cross_raw += w
+        cross_share = cross_raw / total_raw if total_raw > 0 else 0.0
+        bridge_rows.append(
+            {
+                "channel_id": u,
+                "name": LCC.nodes[u].get("name_cc", u),
+                "community": comm_map.get(u),
+                "total_strength": total_raw,
+                "cross_strength": cross_raw,
+                "cross_share": cross_share,
+                "degree": LCC.degree(u),
+                "betweenness": betweenness.get(u, 0.0),
+            }
+        )
+
+    bridge_df = pd.DataFrame(bridge_rows).sort_values(
+        ["cross_share", "betweenness", "cross_strength"], ascending=[False, False, False]
+    )
+    bridge_top = bridge_df[
+        (bridge_df["cross_share"] >= cross_share_min) & (bridge_df["cross_strength"] > cross_strength_min)
+    ]
+
+    bridge_top_cat = bridge_top.merge(node_df[["channel_id", "category_cc"]], on="channel_id", how="left")
+
+    top_channels = (
+        bridge_df.merge(node_df[["channel_id", "category_cc"]], on="channel_id", how="left")
+        .sort_values(
+            ["community", "cross_share", "betweenness", "cross_strength"], ascending=[True, False, False, False]
+        )
+        .groupby("community")
+        .head(10)
+    )
+
+    agg = (
+        bridge_top_cat.groupby(["community", "category_cc"])
+        .agg(
+            n_channels=("channel_id", "count"),
+            cross_strength=("cross_strength", "sum"),
+            avg_cross_share=("cross_share", "mean"),
+        )
+        .reset_index()
+    )
+    agg["share_strength"] = agg.groupby("community")["cross_strength"].transform(lambda s: s / s.sum())
+
+    return {
+        "bridge_df": bridge_df,
+        "bridge_top": bridge_top,
+        "top_channels": top_channels,
+        "bridge_top_cat": bridge_top_cat,
+        "agg": agg,
+    }
+
+
+def plot_bridge_top_channels(top_channels, topN=10, out_path="reports/figures/bridge_channels_static_overview.png"):
+    """
+    Static multipanel barplot of top bridge channels per community.
+    """
+    import seaborn as sns
+    
+
+    communities = sorted(top_channels["community"].unique())
+    palette = sns.color_palette("tab20", len(communities))
+    comm_color = {c: palette[i % len(palette)] for i, c in enumerate(communities)}
+
+    fig, axes = plt.subplots(
+        nrows=len(communities), figsize=(10, max(4, 2 * len(communities))), constrained_layout=True, sharex=False
+    )
+    if len(communities) == 1:
+        axes = [axes]
+
+    for ax, comm in zip(axes, communities):
+        data = top_channels[top_channels["community"] == comm].sort_values("cross_strength", ascending=False).head(topN)
+        if data.empty:
+            ax.set_axis_off()
+            continue
+        sns.barplot(data=data, y="name", x="cross_strength", color=comm_color.get(comm, "#1f77b4"), ax=ax)
+        for i, row in data.reset_index().iterrows():
+            ax.text(row["cross_strength"] * 1.01, i, f"{row['cross_share']:.2f}", va="center", fontsize=7)
+        ax.set_ylabel("Channel")
+        ax.set_xlabel("Cross strength")
+        ax.set_title(f"Top {topN} bridge channels — comm {comm}")
+
+    plt.suptitle("Bridge channels by community (static overview)", fontsize=14)
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.show()
+
+
+def plot_bridge_categories(agg, out_path="reports/figures/bridge_categories_top3.png"):
+    """
+    Plot top 3 bridge categories per community.
+    """
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+
+    cat_top3 = (
+        agg.sort_values(["community", "cross_strength"], ascending=[True, False]).groupby("community").head(3)
+    )
+
+    plt.figure(figsize=(10, 5))
+    sns.barplot(data=cat_top3, x="community", y="cross_strength", hue="category_cc", palette="tab10")
+    plt.ylabel("Cross strength (bridges)")
+    plt.xlabel("Community")
+    plt.title("Top bridge categories (cross strength)")
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.show()
+
+
+def plot_directional_flows(flow_norm, top_n=20, out_path="reports/figures/bridge_community_topflows.png"):
+    """
+    Plot strongest directional flows between communities (normalized weights).
+    """
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+
+    flow_long = flow_norm.stack().reset_index()
+    flow_long.columns = ["community_src", "community_dst", "weight"]
+    flow_long = flow_long[flow_long["community_src"] != flow_long["community_dst"]]
+    flow_long = flow_long[flow_long["weight"] > 0]
+    top_flows = flow_long.sort_values("weight", ascending=False).head(top_n)
+
+    plt.figure(figsize=(10, 6))
+    sns.barplot(
+        data=top_flows,
+        y=top_flows.apply(lambda r: f"C{int(r.community_src)} → C{int(r.community_dst)}", axis=1),
+        x="weight",
+        hue="weight",
+        palette="crest",
+    )
+    plt.xlabel("Normalized flow")
+    plt.ylabel("Source → destination")
+    plt.title("Top cross-community flows (normalized)")
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.show()
+
