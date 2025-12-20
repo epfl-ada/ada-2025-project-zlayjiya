@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         lastScroll = currentScroll;
     });
+    /*
     
     // Intersection Observer for fade-in animations
     const observerOptions = {
@@ -58,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
         section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
         observer.observe(section);
     });
-    
+    */
     // Add visible class styles
     const style = document.createElement('style');
     style.textContent = `
