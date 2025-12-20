@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         lastScroll = currentScroll;
     });
-    
+    /** 
     // Intersection Observer for fade-in animations
     const observerOptions = {
         root: null,
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }, observerOptions);
-    
+    */
     // Observe all sections
     document.querySelectorAll('.section').forEach(section => {
         section.style.opacity = '0';
