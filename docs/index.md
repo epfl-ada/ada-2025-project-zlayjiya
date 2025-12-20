@@ -419,11 +419,11 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
     <h3>Reading the Stars: Topic Detection with LDA</h3>
     <p>
-        We deployed <strong>Latent Dirichlet Allocation (LDA)</strong> on video titles, tags, and descriptions from each galaxy. This natural language processing technique reveals the hidden thematic structure within each community—the actual topics people talk about, not just the labels YouTube assigns.
+        We deployed <strong>Latent Dirichlet Allocation (LDA)</strong> on video titles and descriptions from the 10 largest galaxies. Using POS-filtering (nouns, proper nouns, adjectives) and bigram detection, we extract the hidden thematic structure within each community—the actual topics people talk about, not just the labels YouTube assigns.
     </p>
     
     <p>
-        The results reveal a rich tapestry of cultures, languages, and subcultures orbiting within our YouNiverse.
+        The results largely validate YouTube's categorization while revealing rich subcultures within each galaxy. Regional ecosystems also emerge, with entire non-English communities thriving in an allegedly "English-only" dataset.
     </p>
 
     <div class="viz-container">
@@ -440,9 +440,8 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #8b5cf6; margin: 20px 0; color: #ffffff; border-radius: 4px;">
         <strong>🌍 Language-Based Galaxies Discovered:</strong>
         <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
-            <li><strong>🇮🇳 Hindi/Indian Galaxy (3,187 channels):</strong> PUBG Mobile, Hindi news, regional content from Bihar, Odisha</li>
-            <li><strong>🇵🇭 Southeast Asian Galaxy (594 channels):</strong> Filipino, Khmer, Vietnamese content creators</li>
-            <li><strong>🇲🇦🇹🇳 Maghrebi Galaxy:</strong> Moroccan and Tunisian music (discovered in Chapter III)</li>
+            <li><strong>🇮🇳 Galaxy #0 - Indian Entertainment Hub (3,187 channels):</strong> Bollywood dominates (Filmfare, Salman Khan, Varun Dhawan). Hindi beauty tips, Navratri celebrations, and PUBG Mobile.</li>
+            <li><strong>🇵🇭 Galaxy #7 - Filipino Entertainment Hub (596 channels):</strong> Mobile Legends: Bang Bang is the gravitational center. ABS-CBN content, Himig Handog music, and Filipino language (ang, lang, ako, ikaw).</li>
         </ul>
     </div>
 
@@ -453,6 +452,25 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     <div class="quote">
         "In the YouNiverse, language isn't just communication—it's gravity. Speakers of the same language orbit together, regardless of content type."
     </div>
+
+    <h3>Categories Confirmed: LDA Validates YouTube Labels</h3>
+    <p>
+        Interestingly, our LDA analysis largely <span class="highlight">confirms YouTube's category assignments</span>. The detected topics align remarkably well with the official labels:
+    </p>
+
+    <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #10b981; margin: 20px 0; color: #ffffff; border-radius: 4px;">
+        <strong>✅ Category-Topic Alignment:</strong>
+        <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
+            <li><strong>Galaxy #1 (Gaming 48%):</strong> GTA mods, Roblox, Minecraft roleplay ✓</li>
+            <li><strong>Galaxy #2 (Music 64%):</strong> Ariana Grande, Nicki Minaj, chill playlists ✓</li>
+            <li><strong>Galaxy #3 (Howto & Style 31%):</strong> Vlogs, makeup tutorials, hauls ✓</li>
+            <li><strong>Galaxy #9 (Autos & Vehicles 42%):</strong> Car reviews, bikes, off-road ✓</li>
+        </ul>
+    </div>
+
+    <p>
+        This validates that <strong>co-commenting behavior reflects genuine content affinity</strong>. Users who comment together genuinely share interests that match the channel's official category—the community structure is real.
+    </p>
 
     <h3>Behavioral Signatures: How Galaxies Engage</h3>
     <p>
@@ -475,19 +493,19 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         
         <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(40, 30, 20, 0.8) 100%); border: 2px solid rgba(245, 158, 11, 0.4); border-radius: 12px; padding: 25px;">
             <div style="font-size: 2em; margin-bottom: 10px;">🏆</div>
-            <h4 style="color: #f59e0b; margin: 0 0 10px 0;">Most Engaged: Lifestyle & Fashion</h4>
+            <h4 style="color: #f59e0b; margin: 0 0 10px 0;">Most Engaged: Galaxy #3 - Vlogs & Lifestyle</h4>
             <p style="color: #e2e2ed; font-size: 0.95em; margin: 0;">
-                <strong>27.1 likes per 1000 views</strong><br>
-                Makeup tutorials, fashion hauls, and Roblox Royale High create devoted communities that actively participate. These aren't passive viewers—they're fans.
+                <strong>26.9 likes per 1000 views</strong><br>
+                Makeup tutorials, hauls, and vlogs create devoted communities. These viewers don't just watch—they comment, share tips, and build relationships with creators.
             </p>
         </div>
         
         <div style="background: linear-gradient(135deg, rgba(20, 184, 166, 0.2) 0%, rgba(20, 40, 40, 0.8) 100%); border: 2px solid rgba(20, 184, 166, 0.4); border-radius: 12px; padding: 25px;">
             <div style="font-size: 2em; margin-bottom: 10px;">👁️</div>
-            <h4 style="color: #14b8a6; margin: 0 0 10px 0;">The Viral Void: ASMR & Satisfying</h4>
+            <h4 style="color: #14b8a6; margin: 0 0 10px 0;">The Viral Void: Galaxy #8 - ASMR & Kids</h4>
             <p style="color: #e2e2ed; font-size: 0.95em; margin: 0;">
-                <strong>135K median views, only 4.1 engagement</strong><br>
-                The algorithmic sweet spot: content optimized for clicks but not connection. Viewers watch, but they don't stay. A galaxy of "content consumers," not communities.
+                <strong>133K median views, only 4.0 engagement</strong><br>
+                Slime, soap cutting, and satisfying compilations—optimized for the algorithm, not connection. Viewers consume passively without forming lasting communities.
             </p>
         </div>
         
@@ -500,21 +518,21 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-number">18.4</div>
-            <div class="stat-label">min - News & Wellness<br>(Longest videos)</div>
+            <div class="stat-number">18.3</div>
+            <div class="stat-label">min - Galaxy #5 Fitness<br>(Workout videos, vegan recipes)</div>
         </div>
         <div class="stat-card">
             <div class="stat-number">8.0</div>
-            <div class="stat-label">min - Mainstream Music<br>(Shortest videos)</div>
+            <div class="stat-label">min - Galaxy #2 Pop Music<br>(Music videos, playlists)</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">16.0</div>
-            <div class="stat-label">min - Gaming<br>(Long-form content)</div>
+            <div class="stat-number">16.1</div>
+            <div class="stat-label">min - Galaxy #1 Gaming<br>(Let's plays, GTA mods)</div>
         </div>
     </div>
 
     <p>
-        <strong>Gaming galaxies</strong> orbit around long-form content—let's plays, walkthroughs, and streams that demand 15-16 minutes of attention. <strong>Music</strong>, by contrast, lives in 8-minute bursts: music videos, lyric videos, and song compilations.
+        <strong>Fitness content (Galaxy #5)</strong> demands the longest attention—Buff Dudes workouts, vegan recipes, and Law of Attraction manifestation videos average 18+ minutes. <strong>Pop Music (Galaxy #2)</strong> lives in quick 8-minute bursts: music videos and playlist compilations.
     </p>
 
     <h3>The Galaxy Classification System</h3>
@@ -526,17 +544,17 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         <div style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 10px; padding: 20px; text-align: center;">
             <div style="font-size: 2.5em;">🌐</div>
             <h4 style="color: #8b5cf6; margin: 10px 0 5px 0;">Global Galaxies</h4>
-            <p style="color: #a0a0c0; font-size: 0.85em; margin: 0;">Gaming, Music<br>Transcend language barriers</p>
+            <p style="color: #a0a0c0; font-size: 0.85em; margin: 0;">#1 Gaming, #2 Music, #8 ASMR<br>Content transcends language</p>
         </div>
         <div style="background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); border-radius: 10px; padding: 20px; text-align: center;">
             <div style="font-size: 2.5em;">🗣️</div>
             <h4 style="color: #ec4899; margin: 10px 0 5px 0;">Regional Galaxies</h4>
-            <p style="color: #a0a0c0; font-size: 0.85em; margin: 0;">Indian, Filipino, Maghrebi<br>Bound by language</p>
+            <p style="color: #a0a0c0; font-size: 0.85em; margin: 0;">#0 Indian, #7 Filipino<br>Bound by language</p>
         </div>
         <div style="background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 10px; padding: 20px; text-align: center;">
             <div style="font-size: 2.5em;">🎯</div>
-            <h4 style="color: #06b6d4; margin: 10px 0 5px 0;">Niche Galaxies</h4>
-            <p style="color: #a0a0c0; font-size: 0.85em; margin: 0;">Lifestyle, Automotive<br>High engagement, tight communities</p>
+            <h4 style="color: #06b6d4; margin: 10px 0 5px 0;">Engaged Galaxies</h4>
+            <p style="color: #a0a0c0; font-size: 0.85em; margin: 0;">#3 Vlogs, #5 Fitness<br>High engagement, tight communities</p>
         </div>
     </div>
 

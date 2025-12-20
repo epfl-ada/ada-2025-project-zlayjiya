@@ -4,17 +4,17 @@
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <style>
         body { margin: 0; padding: 0; background: #0d1117; font-family: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        .tab-container { display: flex; justify-content: center; gap: 10px; padding: 15px; background: #0d1117; }
+        .tab-container { display: flex; justify-content: center; gap: 8px; padding: 15px; background: #0d1117; flex-wrap: wrap; }
         .tab-btn {
             background: rgba(40, 40, 60, 0.8);
             border: 2px solid rgba(139, 92, 246, 0.3);
             border-radius: 8px;
-            padding: 10px 20px;
+            padding: 8px 16px;
             color: #e2e2ed;
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: inherit;
-            font-size: 0.9em;
+            font-size: 0.85em;
         }
         .tab-btn:hover { border-color: rgba(139, 92, 246, 0.7); background: rgba(139, 92, 246, 0.2); }
         .tab-btn.active { background: rgba(139, 92, 246, 0.4); border-color: #8b5cf6; box-shadow: 0 0 15px rgba(139, 92, 246, 0.3); }
@@ -26,28 +26,31 @@
 <div class="tab-container">
     <button class="tab-btn active" data-chart="engagement">⚡ Engagement Rate</button>
     <button class="tab-btn" data-chart="duration">⏱️ Video Duration</button>
-    <button class="tab-btn" data-chart="views">👁️ Total Views</button>
+    <button class="tab-btn" data-chart="median">📊 Median Views</button>
+    <button class="tab-btn" data-chart="total">👁️ Total Views</button>
 </div>
 
 <div id="engagement" class="chart-container active" style="width:100%;height:480px;"></div>
 <div id="duration" class="chart-container" style="width:100%;height:480px;"></div>
-<div id="views" class="chart-container" style="width:100%;height:480px;"></div>
+<div id="median" class="chart-container" style="width:100%;height:480px;"></div>
+<div id="total" class="chart-container" style="width:100%;height:480px;"></div>
 
 <script>
 const bg_color = "#0d1117";
 const font_stack = "'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
+// Data from community_engagement_metrics.csv - ordered by community ID
 const galaxies = [
-    {name: "💄 Lifestyle", engagement: 27.1, duration: 11.5, views: 219.7, color: "#f59e0b"},
-    {name: "🎯 Gaming (Comp)", engagement: 19.0, duration: 15.8, views: 205.3, color: "#06b6d4"},
-    {name: "📰 News & Wellness", engagement: 18.5, duration: 18.4, views: 63.4, color: "#10b981"},
-    {name: "🚗 Automotive", engagement: 17.2, duration: 13.5, views: 31.4, color: "#6366f1"},
-    {name: "🎮 Gaming (Sandbox)", engagement: 17.1, duration: 16.0, views: 306.5, color: "#3b82f6"},
-    {name: "🏀 Hip-Hop & Sports", engagement: 15.3, duration: 10.8, views: 119.1, color: "#ef4444"},
-    {name: "🇵🇭 Asian Content", engagement: 15.3, duration: 14.5, views: 38.6, color: "#a855f7"},
-    {name: "🇮🇳 Indian Entertainment", engagement: 13.3, duration: 12.5, views: 296.4, color: "#8b5cf6"},
-    {name: "🎵 Mainstream Music", engagement: 8.0, duration: 8.0, views: 1227.5, color: "#ec4899"},
-    {name: "✨ Viral & ASMR", engagement: 4.1, duration: 16.2, views: 200.3, color: "#14b8a6"}
+    {id: 0, name: "#0 🇮🇳 Indian", engagement: 13.26, duration: 12.5, median: 31.4, total: 295.3, color: "#8b5cf6"},
+    {id: 1, name: "#1 🎮 Gaming/Memes", engagement: 18.71, duration: 16.1, median: 100.4, total: 347.8, color: "#06b6d4"},
+    {id: 2, name: "#2 🎵 Pop Music", engagement: 8.01, duration: 8.0, median: 77.9, total: 1244.5, color: "#ec4899"},
+    {id: 3, name: "#3 📹 Vlogs/Lifestyle", engagement: 26.87, duration: 11.5, median: 104.2, total: 223.2, color: "#f59e0b"},
+    {id: 4, name: "#4 📱 Tech/Gaming", engagement: 17.23, duration: 15.9, median: 72.6, total: 150.1, color: "#10b981"},
+    {id: 5, name: "#5 💪 Fitness", engagement: 18.74, duration: 18.3, median: 53.3, total: 67.5, color: "#3b82f6"},
+    {id: 6, name: "#6 🎤 Urban/Beauty", engagement: 16.24, duration: 11.0, median: 76.1, total: 99.5, color: "#ef4444"},
+    {id: 7, name: "#7 🇵🇭 Filipino", engagement: 15.60, duration: 14.4, median: 72.4, total: 37.8, color: "#a855f7"},
+    {id: 8, name: "#8 🎨 ASMR/Kids", engagement: 4.05, duration: 16.0, median: 133.0, total: 210.5, color: "#14b8a6"},
+    {id: 9, name: "#9 🚗 Automotive", engagement: 16.42, duration: 13.5, median: 76.2, total: 28.5, color: "#6366f1"}
 ];
 
 const baseLayout = {
@@ -60,64 +63,90 @@ const baseLayout = {
     hoverlabel: { bgcolor: "#111111", font_size: 13, font_family: font_stack, font_color: "#FFFFFF", bordercolor: "#06b6d4" }
 };
 
-// Engagement Chart
+// Sort by engagement for engagement chart
+const byEngagement = [...galaxies].sort((a, b) => b.engagement - a.engagement);
 Plotly.newPlot('engagement', [{
-    x: galaxies.map(g => g.name),
-    y: galaxies.map(g => g.engagement),
+    x: byEngagement.map(g => g.name),
+    y: byEngagement.map(g => g.engagement),
     type: 'bar',
-    marker: { color: galaxies.map(g => g.color), line: { color: '#FFFFFF', width: 1 } },
-    text: galaxies.map(g => g.engagement.toFixed(1)),
+    marker: { color: byEngagement.map(g => g.color), line: { color: '#FFFFFF', width: 1 } },
+    text: byEngagement.map(g => g.engagement.toFixed(1)),
     textposition: 'outside',
-    textfont: { color: '#FFFFFF', size: 11 },
+    textfont: { color: '#FFFFFF', size: 10 },
     hovertemplate: '<b>%{x}</b><br>Engagement: %{y:.1f} likes/1000 views<extra></extra>'
 }], {
     ...baseLayout,
     title: { text: "<b>ENGAGEMENT RATE</b> (likes per 1000 views)", x: 0.5, font: { size: 16, color: "#8b5cf6" } },
-    xaxis: { tickangle: -35, tickfont: { size: 10, color: '#AAAAAA' }, showgrid: false },
+    xaxis: { tickangle: -35, tickfont: { size: 9, color: '#AAAAAA' }, showgrid: false },
     yaxis: { title: "Likes / 1000 Views", gridcolor: 'rgba(255,255,255,0.05)', range: [0, 32] },
     annotations: [
-        { x: "💄 Lifestyle", y: 27.1, text: "🔥 Most Engaged", showarrow: true, arrowhead: 2, arrowcolor: "#f59e0b", font: { color: "#f59e0b", size: 10 }, ax: 40, ay: -30 }
+        { x: "#3 📹 Vlogs/Lifestyle", y: 26.87, text: "🔥 Most Engaged", showarrow: true, arrowhead: 2, arrowcolor: "#f59e0b", font: { color: "#f59e0b", size: 10 }, ax: 40, ay: -30 },
+        { x: "#8 🎨 ASMR/Kids", y: 4.05, text: "👁️ Viral Void", showarrow: true, arrowhead: 2, arrowcolor: "#14b8a6", font: { color: "#14b8a6", size: 10 }, ax: -40, ay: -40 }
     ]
 }, {responsive: true, displayModeBar: false});
 
-// Duration Chart  
+// Sort by duration for duration chart
+const byDuration = [...galaxies].sort((a, b) => b.duration - a.duration);
 Plotly.newPlot('duration', [{
-    x: galaxies.map(g => g.name),
-    y: galaxies.map(g => g.duration),
+    x: byDuration.map(g => g.name),
+    y: byDuration.map(g => g.duration),
     type: 'bar',
-    marker: { color: galaxies.map(g => g.color), line: { color: '#FFFFFF', width: 1 } },
-    text: galaxies.map(g => g.duration.toFixed(1) + " min"),
+    marker: { color: byDuration.map(g => g.color), line: { color: '#FFFFFF', width: 1 } },
+    text: byDuration.map(g => g.duration.toFixed(1) + " min"),
     textposition: 'outside',
-    textfont: { color: '#FFFFFF', size: 11 },
+    textfont: { color: '#FFFFFF', size: 10 },
     hovertemplate: '<b>%{x}</b><br>Avg Duration: %{y:.1f} minutes<extra></extra>'
 }], {
     ...baseLayout,
     title: { text: "<b>AVERAGE VIDEO DURATION</b> (minutes)", x: 0.5, font: { size: 16, color: "#06b6d4" } },
-    xaxis: { tickangle: -35, tickfont: { size: 10, color: '#AAAAAA' }, showgrid: false },
+    xaxis: { tickangle: -35, tickfont: { size: 9, color: '#AAAAAA' }, showgrid: false },
     yaxis: { title: "Minutes", gridcolor: 'rgba(255,255,255,0.05)', range: [0, 22] },
     annotations: [
-        { x: "📰 News & Wellness", y: 18.4, text: "📺 Longest", showarrow: true, arrowhead: 2, arrowcolor: "#10b981", font: { color: "#10b981", size: 10 }, ax: 40, ay: -30 },
-        { x: "🎵 Mainstream Music", y: 8.0, text: "🎵 Shortest", showarrow: true, arrowhead: 2, arrowcolor: "#ec4899", font: { color: "#ec4899", size: 10 }, ax: -40, ay: -40 }
+        { x: "#5 💪 Fitness", y: 18.3, text: "📺 Longest", showarrow: true, arrowhead: 2, arrowcolor: "#3b82f6", font: { color: "#3b82f6", size: 10 }, ax: 40, ay: -30 },
+        { x: "#2 🎵 Pop Music", y: 8.0, text: "🎵 Shortest", showarrow: true, arrowhead: 2, arrowcolor: "#ec4899", font: { color: "#ec4899", size: 10 }, ax: -40, ay: -40 }
     ]
 }, {responsive: true, displayModeBar: false});
 
-// Views Chart (Billions)
-Plotly.newPlot('views', [{
-    x: galaxies.map(g => g.name),
-    y: galaxies.map(g => g.views),
+// Sort by median views for median chart
+const byMedian = [...galaxies].sort((a, b) => b.median - a.median);
+Plotly.newPlot('median', [{
+    x: byMedian.map(g => g.name),
+    y: byMedian.map(g => g.median),
     type: 'bar',
-    marker: { color: galaxies.map(g => g.color), line: { color: '#FFFFFF', width: 1 } },
-    text: galaxies.map(g => g.views.toFixed(0) + "B"),
+    marker: { color: byMedian.map(g => g.color), line: { color: '#FFFFFF', width: 1 } },
+    text: byMedian.map(g => g.median.toFixed(0) + "K"),
     textposition: 'outside',
-    textfont: { color: '#FFFFFF', size: 11 },
-    hovertemplate: '<b>%{x}</b><br>Total Views: %{y:.1f} Billion<extra></extra>'
+    textfont: { color: '#FFFFFF', size: 10 },
+    hovertemplate: '<b>%{x}</b><br>Median Views: %{y:.1f}K<extra></extra>'
 }], {
     ...baseLayout,
-    title: { text: "<b>TOTAL VIEWS</b> (Billions)", x: 0.5, font: { size: 16, color: "#ec4899" } },
-    xaxis: { tickangle: -35, tickfont: { size: 10, color: '#AAAAAA' }, showgrid: false },
-    yaxis: { title: "Billion Views", gridcolor: 'rgba(255,255,255,0.05)' },
+    title: { text: "<b>MEDIAN VIEWS PER VIDEO</b> (thousands)", x: 0.5, font: { size: 16, color: "#10b981" } },
+    xaxis: { tickangle: -35, tickfont: { size: 9, color: '#AAAAAA' }, showgrid: false },
+    yaxis: { title: "Thousands of Views", gridcolor: 'rgba(255,255,255,0.05)', range: [0, 150] },
     annotations: [
-        { x: "🎵 Mainstream Music", y: 1227.5, text: "🌟 1.2 Trillion!", showarrow: true, arrowhead: 2, arrowcolor: "#ec4899", font: { color: "#ec4899", size: 10 }, ax: -50, ay: -30 }
+        { x: "#8 🎨 ASMR/Kids", y: 133.0, text: "🚀 Most Viral", showarrow: true, arrowhead: 2, arrowcolor: "#14b8a6", font: { color: "#14b8a6", size: 10 }, ax: 40, ay: -30 },
+        { x: "#0 🇮🇳 Indian", y: 31.4, text: "📉 Lowest Reach", showarrow: true, arrowhead: 2, arrowcolor: "#8b5cf6", font: { color: "#8b5cf6", size: 10 }, ax: -40, ay: -40 }
+    ]
+}, {responsive: true, displayModeBar: false});
+
+// Sort by total views for total chart
+const byTotal = [...galaxies].sort((a, b) => b.total - a.total);
+Plotly.newPlot('total', [{
+    x: byTotal.map(g => g.name),
+    y: byTotal.map(g => g.total),
+    type: 'bar',
+    marker: { color: byTotal.map(g => g.color), line: { color: '#FFFFFF', width: 1 } },
+    text: byTotal.map(g => g.total.toFixed(0) + "B"),
+    textposition: 'outside',
+    textfont: { color: '#FFFFFF', size: 10 },
+    hovertemplate: '<b>%{x}</b><br>Total Views: %{y:.1f} billion<extra></extra>'
+}], {
+    ...baseLayout,
+    title: { text: "<b>TOTAL VIEWS</b> (billions)", x: 0.5, font: { size: 16, color: "#ec4899" } },
+    xaxis: { tickangle: -35, tickfont: { size: 9, color: '#AAAAAA' }, showgrid: false },
+    yaxis: { title: "Billions of Views", gridcolor: 'rgba(255,255,255,0.05)', range: [0, 1400] },
+    annotations: [
+        { x: "#2 🎵 Pop Music", y: 1244.5, text: "👑 Music Dominates", showarrow: true, arrowhead: 2, arrowcolor: "#ec4899", font: { color: "#ec4899", size: 10 }, ax: 40, ay: -30 }
     ]
 }, {responsive: true, displayModeBar: false});
 

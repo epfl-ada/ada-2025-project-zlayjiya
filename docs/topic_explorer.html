@@ -63,12 +63,16 @@
     <div class="title">🔭 TOPIC DETECTION ACROSS GALAXIES (LDA)</div>
     
     <div class="galaxy-selector">
-        <button class="galaxy-btn active" data-id="0">🇮🇳 Indian</button>
-        <button class="galaxy-btn" data-id="1">🎮 Kids Gaming</button>
-        <button class="galaxy-btn" data-id="2">🎵 Music/EDM</button>
-        <button class="galaxy-btn" data-id="3">💄 Beauty/Lifestyle</button>
-        <button class="galaxy-btn" data-id="4">⚔️ Gaming/Esports</button>
-        <button class="galaxy-btn" data-id="5">🐾 Animals/Wellness</button>
+        <button class="galaxy-btn active" data-id="0">🇮🇳 #0 Indian</button>
+        <button class="galaxy-btn" data-id="1">🎮 #1 Gaming/Memes</button>
+        <button class="galaxy-btn" data-id="2">🎵 #2 Pop Music</button>
+        <button class="galaxy-btn" data-id="3">📹 #3 Vlogs/Lifestyle</button>
+        <button class="galaxy-btn" data-id="4">📱 #4 Tech Reviews</button>
+        <button class="galaxy-btn" data-id="5">💪 #5 Fitness</button>
+        <button class="galaxy-btn" data-id="6">🎤 #6 Urban/Beauty</button>
+        <button class="galaxy-btn" data-id="7">🇵🇭 #7 Filipino</button>
+        <button class="galaxy-btn" data-id="8">🎨 #8 ASMR/Kids</button>
+        <button class="galaxy-btn" data-id="9">🚗 #9 Automotive</button>
     </div>
     
     <div class="content-grid">
@@ -77,7 +81,7 @@
                 <span class="galaxy-icon" id="g-icon">🇮🇳</span>
                 <div>
                     <h3 class="galaxy-name" id="g-name">Indian Entertainment Hub</h3>
-                    <p class="galaxy-meta" id="g-meta">Entertainment • 3,187 channels • 2,204 videos analyzed</p>
+                    <p class="galaxy-meta" id="g-meta">Entertainment • 3,187 channels • 3,166 videos analyzed</p>
                 </div>
             </div>
             <div class="topic-list" id="topic-list"></div>
@@ -90,91 +94,147 @@
 const bg_color = "#0d1117";
 const font_stack = "'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
-// Real data extracted from pyLDAvis LDA files
+// Real data extracted from pyLDAvis LDA files and community_topics_summary.csv
 const galaxyData = {
     0: { 
         icon: "🇮🇳", name: "Indian Entertainment Hub", 
-        meta: "Entertainment • 3,187 channels • 2,204 videos", 
+        meta: "Entertainment (23%) • 3,187 channels • 3,166 videos analyzed", 
         topics: [
-            ["Pubg", "PUBG_Mobile", "mobile", "Subscribe", "trick"],
-            ["bihar", "flood", "Clash", "Clans", "clash"],
-            ["Headlines", "modi", "India", "punjabi", "Video"],
-            ["paheli", "paheliyan", "riddle", "Riddles", "puzzle"],
-            ["odisha", "otv", "samachar", "Odisha", "odia"],
-            ["vlog", "Editing", "indian", "vlogs", "daily"]
+            ["skin", "hair", "aur", "dosto", "home"],
+            ["filmfare", "good", "khan", "bollywood", "hindi"],
+            ["song", "hunny_sharma", "music", "hunnyshubham", "sharma"],
+            ["film", "navratri", "puja", "salman_khan", "filmfare"],
+            ["bollywood_tashan", "varun_dhawan", "ranveer_singh", "campaign_marketing", "marketing_celeb"],
+            ["pubg_mobile", "whatsapp_status", "august", "aniket_beniwal", "music"]
         ],
-        insight: "💡 Language creates strong gravitational bonds. PUBG Mobile and regional news (Bihar, Odisha) dominate.",
-        topWords: {terms: ["news", "song", "bihar", "video", "vlog", "hindi", "PUBG", "India", "live", "Mobile"], freqs: [2624, 1316, 1147, 1138, 1016, 1019, 693, 697, 726, 718]}
+        insight: "💡 Bollywood dominates with stars like Salman Khan, Varun Dhawan. Hindi content (hair, skin tips) and PUBG Mobile drive engagement.",
+        topWords: {terms: ["song", "bollywood_tashan", "hunny_sharma", "filmfare", "film", "navratri", "puja", "music", "khan", "hunnyshubham"], freqs: [335, 204, 228, 223, 208, 126, 87, 162, 141, 84]}
     },
     1: { 
-        icon: "🎮", name: "Kids Gaming Universe", 
-        meta: "Gaming • 2,547 channels • 2,166 videos",
+        icon: "🎮", name: "Gaming & Memes Universe", 
+        meta: "Gaming (48%) • 3,063 channels • 3,139 videos analyzed",
         topics: [
-            ["nerf", "Nerf", "gun", "Spirit", "Box"],
-            ["minecraft", "Minecraft", "dragon", "Little", "roleplay"],
-            ["pokemon", "scammer", "fortnite", "save", "world"],
-            ["fact", "animal", "discovery", "mysterious", "creature"],
-            ["Memes", "Jinx", "comedy", "Reaction", "skit"],
-            ["nerf", "Nerf", "Spirit", "gun", "Box"]
+            ["game", "creepy_pasta", "memes_compilation", "patreon", "dank_memes"],
+            ["police", "minecraft", "server", "roleplay", "doni_bobes"],
+            ["bodybuilder", "challenge", "super_mario", "maker", "test"],
+            ["gta", "mod", "gta_online", "online", "gta_mods"],
+            ["roblox", "hot", "clothing_group", "merch", "twitch"],
+            ["auto", "grand_theft", "fortnite", "join", "game"]
         ],
-        insight: "💡 Kid-friendly gaming: Nerf battles, Minecraft, Pokémon. Scammer get scammed content popular.",
-        topWords: {terms: ["nerf", "fortnite", "minecraft", "pokemon", "little", "kelly", "battle", "game", "story", "scammer"], freqs: [1940, 1373, 1303, 1172, 1149, 685, 797, 816, 690, 615]}
+        insight: "💡 GTA mods, Roblox, and Minecraft roleplay dominate. Meme compilations and dank memes fuel this community.",
+        topWords: {terms: ["gta", "mod", "roblox", "bodybuilder", "challenge", "police", "hot", "clothing_group", "merch", "twitch"], freqs: [348, 294, 292, 242, 220, 145, 144, 128, 141, 111]}
     },
     2: { 
-        icon: "🎵", name: "Music & Electronic Nebula", 
-        meta: "Music • 3,063 channels • 1,986 videos",
+        icon: "🎵", name: "Pop Music & Artists Nebula", 
+        meta: "Music (64%) • 2,547 channels • 3,104 videos analyzed",
         topics: [
-            ["simply", "Red", "Pop", "hard", "Live"],
-            ["project", "Moon", "Seoul", "MBC", "science"],
-            ["trailer", "Trailer", "Movie", "new_trailer", "Clips"],
-            ["claw", "yellow", "Piano", "Instrumental", "Sad"],
-            ["makeup", "dubstep", "tutorial", "bass", "korean"],
-            ["Cyrus", "Noah", "gangster", "vevo", "rap"]
+            ["martin_jensen", "aldo_jones", "musicast", "auto", "tour"],
+            ["magic", "support_chill", "nation_music", "kissed", "playlist_chill"],
+            ["cent", "music", "jessie", "nicki_minaj", "ariana_grande"],
+            ["evanescence", "music", "black_antenna", "christmas", "mhd"],
+            ["song", "zhu", "buy_aldo", "jones_merchandise", "code"],
+            ["music", "sanpaokey_music", "lorde", "pixie_lott", "pania_dance"]
         ],
-        insight: "💡 EDM (Yellow Claw, dubstep), K-pop (Seoul), and trailer music. Piano instrumentals popular.",
-        topWords: {terms: ["makeup", "project", "trap", "dubstep", "Piano", "trailer", "yellow", "claw", "good", "Cyrus"], freqs: [1114, 1001, 618, 562, 569, 583, 556, 560, 529, 234]}
+        insight: "💡 Pop stars (Ariana Grande, Nicki Minaj, Lorde) meet chill playlists. Martin Jensen and EDM artists connect this galaxy.",
+        topWords: {terms: ["martin_jensen", "cent", "aldo_jones", "evanescence", "magic", "support_chill", "nation_music", "sanpaokey_music", "kissed", "playlist_chill"], freqs: [133, 140, 118, 91, 112, 91, 91, 92, 70, 69]}
     },
     3: { 
-        icon: "💄", name: "Beauty & Lifestyle Galaxy", 
-        meta: "Howto & Style • 2,145 channels • 2,467 videos",
+        icon: "📹", name: "Vlogging & Lifestyle Galaxy", 
+        meta: "Howto & Style (31%) • 2,219 channels • 2,219 videos analyzed",
         topics: [
-            ["recipe", "sugar", "food", "dessert", "POPSUGAR"],
-            ["luxury", "gacha", "gacha_life", "Gacha", "chanel"],
-            ["hacker", "fitness", "zorgo", "workout", "guide"],
-            ["taylor", "reilly", "draw", "Convos", "art"],
-            ["Tom", "Daley", "blesiv", "culture", "gay"],
-            ["royale", "high", "college", "roblox", "school"]
+            ["vlogs_postmate", "code_uber", "code_main", "girl", "american_girl"],
+            ["minecraft_livestream", "fan_server", "donation_info", "join_team", "kaooshkraft_website"],
+            ["haul", "vlog", "makeup", "product", "hair"],
+            ["vlog", "vlogs", "apple_podcasts", "stitcher_tunein", "pretty_basic"],
+            ["minecraft", "minecraft_modern", "minecraft_smp", "tumblr_maxnosleeve", "standard_minecraft"],
+            ["makeup", "college", "boat", "copyright_disclaimer", "section_copyright"]
         ],
-        insight: "🔥 Most engaged! Gacha Life, Roblox Royale High, Tom Daley, and makeup tutorials.",
-        topWords: {terms: ["makeup", "high", "life", "try", "luxury", "gacha", "royale", "food", "roblox", "year"], freqs: [1604, 965, 857, 889, 792, 652, 626, 623, 548, 510]}
+        insight: "🔥 Highest engagement (26.9%)! Vlogs, hauls, and makeup tutorials dominate. Minecraft SMP servers create a surprising crossover.",
+        topWords: {terms: ["minecraft", "vlogs_postmate", "code_uber", "code_main", "minecraft_livestream", "minecraft_modern", "fan_server", "american_girl", "girl", "makeup"], freqs: [185, 142, 137, 131, 73, 72, 62, 93, 123, 243]}
     },
     4: { 
-        icon: "⚔️", name: "Gaming & Esports Arena", 
-        meta: "Gaming • 2,529 channels • 2,312 videos",
+        icon: "📱", name: "Tech Reviews & Gaming Cluster", 
+        meta: "Gaming (46%) • 1,874 channels • 1,874 videos analyzed",
         topics: [
-            ["vape", "short", "future_short", "cinema", "film"],
-            ["csgo", "dokkan", "siege", "rainbow", "shroud"],
-            ["Total", "Warhammer", "Total_War", "Online", "War"],
-            ["warp", "zone", "legend", "dragon", "bot"],
-            ["boxbox", "riven", "Nerdist", "pentakill", "LoL"],
-            ["rap_battle", "photography", "erb", "epic_rap", "Battles"]
+            ["ios", "game", "device", "music", "change"],
+            ["amazon_affiliate", "help_purchase", "amazon_amazon", "music", "fun"],
+            ["review", "chilla_frilla", "unboxing_review", "news", "sure"],
+            ["apple", "stand_boom", "iphone", "pole_lighting", "kit_portable"],
+            ["star_wars", "game", "fun_fun", "reason", "join_journey"],
+            ["thought", "ipad", "favorite", "film", "good"]
         ],
-        insight: "💡 Hardcore gaming: CSGO, Dokkan Battle, Total War. Epic Rap Battles and vape culture.",
-        topWords: {terms: ["vape", "play", "battle", "funny", "rap", "legend", "short", "future", "csgo", "dokkan"], freqs: [1718, 992, 935, 830, 719, 716, 635, 629, 589, 602]}
+        insight: "💡 Apple ecosystem (iPhone, iPad) reviews and unboxings. Amazon affiliates drive tech purchasing decisions.",
+        topWords: {terms: ["thought", "review", "apple", "ipad", "stand_boom", "iphone", "chilla_frilla", "pole_lighting", "amazon_affiliate", "kit_portable"], freqs: [318, 238, 113, 123, 88, 86, 97, 80, 102, 66]}
     },
     5: { 
-        icon: "🐾", name: "Animals & Wellness Cluster", 
-        meta: "Pets & Animals • 1,068 channels • 2,496 videos",
+        icon: "💪", name: "Fitness & Wellness Zone", 
+        meta: "Entertainment (18%) • 1,068 channels • 1,108 videos analyzed",
         topics: [
-            ["fox", "earth", "flat_earth", "illuminati", "dollar"],
-            ["yoga", "stock", "Conan", "SNL", "invest"],
-            ["dua", "gun", "amazon", "muslim", "prayer"],
-            ["dog", "pitbull", "puppy", "storage", "farm"],
-            ["homeless", "kitten", "UFC", "invisible", "mma"],
-            ["prison", "journal", "pen", "doodle", "bullet"]
+            ["tutorial", "vice", "bodyweight_exercise", "tiny_house", "war"],
+            ["food", "series", "tour", "restaurant", "good"],
+            ["workout", "squat", "buff_dudes", "mufti_menk", "gym"],
+            ["vegan", "strength_wars", "recipe", "powerlifter", "strength_war"],
+            ["buff_dudes", "bodybuilder", "bulking_plan", "fight_breakdown", "prank"],
+            ["law_attraction", "love", "manifestation", "secret", "manifest"]
         ],
-        insight: "💡 Longest videos (18.4 min). Pets, yoga, meditation, and alternative content (flat earth, UFO).",
-        topWords: {terms: ["animal", "yoga", "dog", "video", "homeless", "cat", "stock", "cute", "funny", "dua"], freqs: [1376, 1166, 1135, 1030, 988, 835, 612, 511, 508, 450]}
+        insight: "💡 Longest videos (18.4 min avg). Fitness (Buff Dudes), vegan recipes, and Law of Attraction content dominate.",
+        topWords: {terms: ["law_attraction", "vegan", "buff_dudes", "strength_wars", "workout", "recipe", "bodybuilder", "bulking_plan", "love", "manifestation"], freqs: [265, 192, 249, 137, 178, 100, 107, 106, 121, 93]}
+    },
+    6: { 
+        icon: "🎤", name: "Urban Music & Beauty Scene", 
+        meta: "Entertainment (26%) + Music (25%) • 1,067 channels • 1,016 videos analyzed",
+        topics: [
+            ["type_beat", "nfl", "madden", "shop_mike", "rich_merch"],
+            ["challenge", "makeup", "story", "business_inquiries", "bobby"],
+            ["yung_gravy", "yung_bleu", "music", "wayne", "soundcloud"],
+            ["intro_song", "watching_previous", "feat_chainz", "migos_deadz", "noahmadesmk_matalaystax"],
+            ["funny", "gameplay", "boy", "noahmadesmk", "button_boy"],
+            ["hair", "wig", "product", "got", "girl"]
+        ],
+        insight: "💡 Hip-hop artists (Yung Gravy, Yung Bleu) meet beauty tutorials. Type beats and wig/hair content merge here.",
+        topWords: {terms: ["hair", "yung_gravy", "yung_bleu", "funny", "intro_song", "gameplay", "boy", "watching_previous", "wig", "challenge"], freqs: [271, 185, 178, 120, 107, 81, 87, 84, 130, 135]}
+    },
+    7: { 
+        icon: "🇵🇭", name: "Filipino Entertainment Hub", 
+        meta: "Entertainment (24%) • 596 channels • 584 videos analyzed",
+        topics: [
+            ["ang", "lang", "himig_handog", "ako", "ikaw"],
+            ["star_music", "website_page", "licensing_copyright", "abs_cbn", "starpop_fair"],
+            ["mobile_legend", "bang_bang", "wowowin", "starpop_fair", "action"],
+            ["bell", "hand", "street_food", "food", "yang"],
+            ["logo", "music", "knife", "himig_handog", "philippines"],
+            ["mobile_legends", "sand", "mobile_legend", "mobile", "bang_bang"]
+        ],
+        insight: "💡 Filipino language hub! Mobile Legends: Bang Bang dominates gaming, while ABS-CBN and Himig Handog drive music content.",
+        topWords: {terms: ["mobile_legend", "ang", "mobile_legends", "star_music", "website_page", "starpop_fair", "licensing_copyright", "lang", "abs_cbn", "himig_handog"], freqs: [451, 342, 324, 149, 136, 176, 107, 115, 87, 151]}
+    },
+    8: { 
+        icon: "🎨", name: "ASMR & Satisfying Kids Content", 
+        meta: "Entertainment (34%) • 557 channels • 557 videos analyzed",
+        topics: [
+            ["fun_creative", "kids_toddlers", "commons_attribution", "sounds_creative", "toddler_learning"],
+            ["slime", "asmr", "satisfying", "compilation", "sure"],
+            ["soap", "asmr", "trick", "old", "cartoon"],
+            ["paw_patrol", "survival", "james_robin", "christmas", "village"],
+            ["collaboration_group", "ice_cream", "minecraft", "aonecool_cool", "fun_entertaining"],
+            ["compilation", "cute", "animal", "original", "funny_pet"]
+        ],
+        insight: "👁️ Viral Void: 133K median views but only 4% engagement! Slime, ASMR, and kids content optimized for clicks, not community.",
+        topWords: {terms: ["slime", "asmr", "satisfying", "compilation", "soap", "ice_cream", "collaboration_group", "cute", "minecraft", "aonecool_cool"], freqs: [790, 757, 313, 486, 266, 346, 197, 196, 186, 186]}
+    },
+    9: { 
+        icon: "🚗", name: "Automotive & Outdoor Adventures", 
+        meta: "Autos & Vehicles (42%) • 549 channels • 535 videos analyzed",
+        topics: [
+            ["bike", "good", "monster", "damascus", "matt"],
+            ["car", "carbuyer", "carbuyer_auto", "express", "review_carbuyer"],
+            ["apparel_code", "joego_motorcycle", "music", "dress_shoes", "inquiry_shit"],
+            ["maverick", "knife", "garden", "tip", "water"],
+            ["car", "inquiry", "system", "bike", "power"],
+            ["offroad_park", "knife", "super_atv", "spyder_offroad", "rcv_axles"]
+        ],
+        insight: "💡 Car reviews (Carbuyer), bikes, and off-road adventures. Knife/Damascus steel content and outdoor gear reviews.",
+        topWords: {terms: ["offroad_park", "knife", "car", "carbuyer", "super_atv", "rcv_axles", "spyder_offroad", "bike", "carbuyer_auto", "express"], freqs: [186, 244, 351, 137, 130, 130, 130, 208, 83, 85]}
     }
 };
 
@@ -193,7 +253,7 @@ function updateDisplay(id) {
     document.getElementById('topic-list').innerHTML = topicHtml;
     
     // Update chart with real frequencies
-    const colors = ['#8b5cf6', '#06b6d4', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'];
+    const colors = ['#8b5cf6', '#06b6d4', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#f43f5e', '#84cc16', '#a855f7', '#14b8a6'];
     const terms = data.topWords.terms.slice().reverse();
     const freqs = data.topWords.freqs.slice().reverse();
     
@@ -222,7 +282,7 @@ function updateDisplay(id) {
             tickfont: { size: 9, color: '#888888' }
         },
         yaxis: { tickfont: { size: 10, color: '#e2e2ed' } },
-        margin: { l: 80, r: 50, t: 40, b: 30 },
+        margin: { l: 100, r: 50, t: 40, b: 30 },
         bargap: 0.25
     }, {responsive: true, displayModeBar: false});
 }
