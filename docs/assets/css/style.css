@@ -193,7 +193,7 @@ body {
 
 /* Main Content */
 .content {
-    max-width: 900px;
+    max-width: 1500px;
     margin: 0 auto;
     padding: 4rem 2rem;
 }
@@ -266,43 +266,80 @@ p {
 }
 
 .stat-card {
-    background: rgba(139, 92, 246, 0.1);
-    border: 1px solid rgba(139, 92, 246, 0.2);
-    border-radius: 12px;
     padding: 1.5rem;
+    background: linear-gradient(135deg, #0d1849ff 0%, #764ba2 100%);
+    padding: 30px;
+    border-radius: 12px;
     text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    color : #ffffff;
 }
 
 .stat-number {
-    font-family: var(--font-display);
-    font-size: 2.5rem;
-    font-weight: 700;
+    font-family: var(--font-display), "Inter", "Arial", sans-serif;
+    font-size: 3em;
+    font-weight: bold;
+    color: #0b0000ff;
+    margin-bottom: 10px;
+
+    /* The Gradient Logic */
     background: var(--gradient-1);
-    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-}
 
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+
+
+    /* THE FIXES: */
+    display: inline-block;           /* Fixes mask calculation for small glyphs */
+    line-height: 1.1;                /* Prevents vertical clipping of the % sign */
+    padding: 0 0.05em;               /* Gives the '.' and '%' a tiny bit of horizontal room */
+}
 .stat-label {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
     margin-top: 0.5rem;
+    color: rgba(255,255,255,0.8);
+    font-size: 1em;
 }
 
 /* Visualization containers */
 .viz-container {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: 2rem 0;
-    border: 1px solid rgba(139, 92, 246, 0.1);
+    background: #1A1A1A;
+    padding: 0;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 40px 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
+.viz-network {
+    background: #000000;
+    padding: 0;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 40px 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+#full-network-viz,
+#interactive-core-viz {
+    border-radius: 14px;     /* match card radius */
+    overflow: hidden;
+}
+
+.viz-container iframe {
+    display: block;          /* removes inline baseline gap */
+    border: none !important; /* kills default iframe border */
+    background: #050505;     /* matches graph background */
+}
+
 
 .viz-title {
     font-family: var(--font-display);
-    font-size: 1rem;
-    color: var(--text-secondary);
-    margin-bottom: 1rem;
+    color: #ffffff;
+    font-size: 1.4em;
+    font-weight: 600;
+    margin-bottom: 20px;
     text-align: center;
 }
 
@@ -313,6 +350,17 @@ p {
     justify-content: center;
     color: var(--text-secondary);
     font-style: italic;
+}
+
+
+
+.insight-box {
+    background: #132f34ff;
+    padding: 15px;
+    border-left: 4px solid #17a2b8;
+    margin: 20px 0;
+    color: #ffffff;
+    border-radius: 4px;
 }
 
 /* Question cards */
@@ -417,6 +465,15 @@ p {
     .content {
         padding: 2rem 1rem;
     }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 /* Utility classes */

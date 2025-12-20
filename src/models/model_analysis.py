@@ -77,6 +77,35 @@ def build_graph(edges_df, channels_df):
     print(f"Graph built: {G.number_of_nodes():,} nodes, {G.number_of_edges():,} edges")
     return G
 
+
+import networkx as nx
+import igraph as ig
+import leidenalg
+
+def run_leiden_on_nx(G, weight='weight', resolution=1.0):
+    """
+    Runs the Leiden algorithm on a NetworkX graph using the leidenalg backend.
+    """
+    # 1. Convert NetworkX graph to igraph
+    # This is necessary because leidenalg operates on igraph objects
+    h = ig.Graph.from_networkx(G)
+    
+    # 2. Run the Leiden algorithm
+    # We use ModularityVertexPartition to mirror Louvain's behavior
+    partition = leidenalg.find_partition(
+        h, 
+        leidenalg.ModularityVertexPartition, 
+        weights=h.es[weight] if weight in h.es.attributes() else None,
+        resolution_parameter=resolution
+    )
+    
+    # 3. Convert back to NetworkX-style communities (list of sets)
+    communities = []
+    for community in partition:
+        communities.append(set(h.vs[community]['_nx_name']))
+        
+    return communities
+
 def find_communities(G, nodes_out_path, comm_out_path):
     """
     Finds the LCC, runs Louvain, calculates metrics, and saves results.
@@ -92,7 +121,7 @@ def find_communities(G, nodes_out_path, comm_out_path):
     print(f"LCC:   {n_lcc:,} nodes, {m_lcc:,} edges  ({(n_lcc/n if n else 0):.1%} of nodes)")
 
     print("Detecting communities using Louvain...")
-    communities = nx.community.louvain_communities(LCC, weight="weight_normalized", seed=42)
+    communities = nx.community.louvain_communities(LCC, weight="weight_normalized",seed=42)
     modularity = nx.community.modularity(LCC, communities, weight="weight_normalized")
     print(f"Found {len(communities)} communities (modularity: {modularity:.3f})")
     
@@ -171,7 +200,7 @@ def analyze_communities(LCC, node_df, communities, max_show=5):
         print()
 
 
-def visualize_network(LCC, communities, node_df, viz_out_path, n_per_comm=10, min_comm_nodes=20, seed=42):
+def visualize_network(LCC, communities, node_df, viz_out_path, n_per_comm=10, min_comm_nodes=20, seed=42,random=False):
     """
     Generates and saves the network visualization.
    
@@ -186,26 +215,40 @@ def visualize_network(LCC, communities, node_df, viz_out_path, n_per_comm=10, mi
     def name_of(uid):
         nm = (meta.get(uid, {}) or {}).get("name_cc") or uid
         return nm if len(str(nm)) > 0 else uid
-
+    
     top_per_comm = {}
     for cid, nodes_c in enumerate(communities):
         if(len(nodes_c)> min_comm_nodes):
             if not nodes_c: continue
             best = max(nodes_c, key=lambda u: strength.get(u, 0))
             top_per_comm[cid] = name_of(best)
+    if not random:
 
-    selected = set()
-    for nodes_c in communities:
-        if(len(nodes_c) > 5):
-            top_nodes = sorted(nodes_c, key=lambda u: strength.get(u, 0), reverse=True)
-            selected.update(top_nodes[:n_per_comm])
+        selected = set()
+        for nodes_c in communities:
+            if(len(nodes_c) > 5):
+                top_nodes = sorted(nodes_c, key=lambda u: strength.get(u, 0), reverse=True)
+                selected.update(top_nodes[:n_per_comm])
 
-    edges_to_keep = [
-        (u, v) for u, v, d in LCC.edges(data=True)
-        if u in selected and v in selected and d.get("weight_raw", 0) >= 2
-    ]
-    H = LCC.edge_subgraph(edges_to_keep).copy()
-    H.remove_nodes_from(list(nx.isolates(H)))
+        edges_to_keep = [
+            (u, v) for u, v, d in LCC.edges(data=True)
+            if u in selected and v in selected and d.get("weight_raw", 0) >= 2
+        ]
+        H = LCC.edge_subgraph(edges_to_keep).copy()
+        H.remove_nodes_from(list(nx.isolates(H)))
+    else:
+        selected = set()
+        for nodes_c in communities:
+            if len(nodes_c) > 5:
+                # Random sample without replacement
+                sample_size = min(n_per_comm, len(nodes_c))
+                random_nodes = np.random.choice(list(nodes_c), size=sample_size, replace=False)
+                selected.update(random_nodes)
+
+        edges_to_keep = [(u, v) for u, v, d in LCC.edges(data=True) 
+                        if u in selected and v in selected and d.get("weight_raw", 0) >= 2]
+        H = LCC.edge_subgraph(edges_to_keep).copy()
+        H.remove_nodes_from(list(nx.isolates(H)))
     print(f"Visualization subgraph: {H.number_of_nodes()} nodes, {H.number_of_edges()} edges")
 
     pos = nx.spring_layout(H, weight="weight_raw", seed=seed, k=2, iterations=50)

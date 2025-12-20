@@ -5,78 +5,9 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 <head>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<style>
-/* Your custom styles here */
-.viz-container {
-    background: linear-gradient(135deg, #0a1628 0%, #1a2744 100%);
-    padding: 30px;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    margin: 40px 0;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
 
-.viz-title {
-    color: #ffffff;
-    font-size: 1.4em;
-    font-weight: 600;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.insight-box {
-    background: #132f34ff;
-    padding: 15px;
-    border-left: 4px solid #17a2b8;
-    margin: 20px 0;
-    color: #ffffff;
-    border-radius: 4px;
-}
-
-.stat-card {
-    background: linear-gradient(135deg, #0d1849ff 0%, #764ba2 100%);
-    padding: 30px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    color : #ffffff;
-}
-
-.stat-number {
-    font-size: 3em;
-    font-weight: bold;
-    color: #0b0000ff;
-    margin-bottom: 10px;
-}
-
-.stat-label {
-    color: rgba(255,255,255,0.8);
-    font-size: 1em;
-}
-
-.section-divider {
-    text-align: center;
-    margin: 40px 0;
-}
-
-.journey-progress {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 30px 0 50px 0;
-    padding: 0 50px;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.1); opacity: 0.7; }
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-</style>
 
 <!-- Section I: Introduction -->
 <section id="introduction" class="section">
@@ -168,19 +99,17 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </p>
     
     <div class="viz-container">
-        <div class="viz-title">Evolution of the YouNiverse</div>
         <div id="growth-chart" class="viz-placeholder">
-            {% include_relative youtube_growth.html %}
+            {% include_relative timeline_evolution.html %}
         </div>
     </div>
 
     <p>
-        When we peer through our telescope at these celestial bodies (channels), we notice a stark reality: size is not distributed equally. The distribution of views and subscribers follows a <strong> Power Law </strong> a mathematical signature of a "winner-takes-all" dynamic. A few 'Supermassive' channels command the vast majority of the YouNiverse's light, while millions of smaller stars twinkle in the background. The top 1% of channels capture over X% of all views—a cosmic inequality that shapes the entire ecosystem.
+        When we peer through our telescope at these celestial bodies (channels), we notice a stark reality: size is not distributed equally. The distribution of views and subscribers follows a <strong> Power Law </strong> a mathematical signature of a "winner-takes-all" dynamic. A few 'Supermassive' channels command the vast majority of the YouNiverse's light, while millions of smaller stars twinkle in the background. The top 1% of channels capture over 46% of all views, a cosmic inequality that shapes the entire ecosystem.
     </p>
 
 
     <div class="viz-container">
-        <div class="viz-title">Distribution of View Counts per Channel</div>
         <div id="power-law-chart" class="viz-placeholder">
             {% include_relative powerlaw.html %}
         </div>
@@ -192,7 +121,6 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </p>
 
     <div class="viz-container">
-        <div class="viz-title">Spectrum of Content: Category Distribution</div>
         <div id="category-chart" class="viz-placeholder">
             {% include_relative pie_chart.html %}
         </div>
@@ -275,13 +203,16 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </p>
 
     <p>
-        The scale varies dramatically—the smallest of these communities contain as few as two channels, existing like distant binary stars in the deep void of the YouNiverse.
+        The scale varies dramatically, the smallest of these communities contain as few as two channels, existing like distant binary stars in the deep void of the YouNiverse.
+    </p>
+    <p>
+        Before diving deeper, let's label our communities with the biggest channel in each. This gives us the first valuable insights into what sort of galaxies is there in the YouNiverse.
     </p>
 
-    <div class="viz-container">
-        <div class="viz-title">The 31 Biggest Galaxies of the YouNiverse</div>
+    <div class="viz-network">
+        <div class="viz-title">The 52 Galaxies of the YouNiverse</div>
         <div id="full-network-viz" class="viz-placeholder">
-            <iframe src="./a.html" width="100%" height="600px" frameborder="0"></iframe>
+            <iframe src="./a.html" width="100%" height="500px" frameborder="0"></iframe>
         </div>
     </div>
         <div class="stats-grid">
@@ -290,11 +221,11 @@ title: "YouNiverse: Voyage Through Video Galaxies"
             <div class="stat-label">Galaxies Detected</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">0.655</div>
+            <div class="stat-number">0</div>.<div class="stat-number">655</div>
             <div class="stat-label">Modularity Score</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">80%</div>
+            <div class="stat-number">80</div><div class="stat-number">%</div>
             <div class="stat-label">Channels in Top 5 Galaxies</div>
         </div>
     </div>
@@ -318,13 +249,13 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         To understand the internal divisions of the most dominant communities, we must look past the "space dust" of the periphery. By zooming into the core, we can observe the fine-tuned interactions and sub-galaxies that shape the most popular regions of YouTube.
     </p>
 
-    <div class="viz-container">
+    <div class="viz-network">
         <div class="viz-title">Core Exploration Map </div>
-        <p style="font-size: 0.9em; color: #666;">
-            This view uses radial expansion to decompress the center, revealing the 'Black Hole' channels that anchor each major galaxy.
+        <p style="font-size: 0.9em; color: #666;text-align: center;">
+            Showing the 5 biggest galaxies, those that form the core of our universe.
         </p>
         <div id="interactive-core-viz">
-            <iframe src="./b.html" width="100%" height="850px" frameborder="0"></iframe>
+            <iframe src="./b.html" width="100%" height="500px" frameborder="0" style="border:none; display: block;"></iframe>
         </div>
     </div>
 
