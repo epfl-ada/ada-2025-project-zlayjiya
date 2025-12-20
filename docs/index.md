@@ -146,6 +146,11 @@ title: "YouNiverse: Voyage Through Video Galaxies"
             <img src='USER1.png' width="100%">
         </div>
     </div>
+    <div style="text-align: center; margin-top: 10px; font-family: sans-serif;">
+        <p style="font-size: 1.2rem; color: #989292ff; max-width: 600px; margin: 0 auto; line-height: 1.4;">
+            Demonstration of graph creation using <strong>the top 3 channels </strong> of the user.
+        </p>
+    </div>
 
     <h3>Normalizing the gravitational bonds</h3>
     <p>

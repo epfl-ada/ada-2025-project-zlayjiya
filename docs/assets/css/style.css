@@ -6,8 +6,8 @@
 :root {
     --bg-dark: #0a0a1a;
     --bg-card: rgba(20, 20, 40, 0.8);
-    --text-primary: #e8e8f0;
-    --text-secondary: #a0a0c0;
+    --text-primary: #ffffff;
+    --text-secondary: #e2e2ed;
     --accent-purple: #8b5cf6;
     --accent-blue: #3b82f6;
     --accent-pink: #ec4899;
@@ -193,7 +193,7 @@ body {
 
 /* Main Content */
 .content {
-    max-width: 1500px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 4rem 2rem;
 }
@@ -205,7 +205,6 @@ body {
     background: var(--bg-card);
     border-radius: 20px;
     border: 1px solid rgba(139, 92, 246, 0.1);
-    backdrop-filter: blur(10px);
 }
 
 .section-number {
