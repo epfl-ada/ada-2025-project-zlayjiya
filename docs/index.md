@@ -407,10 +407,97 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         "The YouNiverse is not a single universe, but a multiverse, 52 parallel worlds occupying the same digital space, each invisible to the others unless you know where to look."
     </div>
 </section>
+<section id="temporal" class="section">
+    <span class="section-number">Chapter IV</span>
+    <h2>A Decade of Transformation</h2>
 
+    <h3>Slicing Time: Investigating the Invisible Shift</h3>
+    <p>
+        To truly understand the evolution of the YouNiverse, viewing it as a static map is not enough; we must observe it as a living organism. A dataset spanning 14 years flattens history—it hides the dramatic shifts in culture, influence, and structure that occurred between the first viral hits and the modern creator economy.
+    </p>
+    <p>
+        To capture this motion, we employed a <strong>temporal snapshot methodology</strong>. By slicing our data into distinct one-year windows, we isolated the interactions of each era. This allowed us to build independent universes for 2010, 2011, through to 2019, enabling us to watch the laws of digital gravity change in real-time. What we found was not a linear expansion, but a complete structural metamorphosis from a unified community to a fractured multiverse.
+    </p>
+
+    <h3>The Big Bang of Communities</h3>
+    <p>
+        The most fundamental shift in the ecosystem is a massive <strong>+518% fragmentation</strong> of the network structure. In 2010, our community detection algorithms identified only <strong>16 distinct clusters</strong>. At this stage, YouTube acted as a "digital town square": audiences were forced to mingle because there were simply fewer distinct cultural spaces to inhabit.
+    </p>
+    <p>
+        By 2019, this number had exploded to <strong>99 distinct communities</strong>. This fragmentation was driven by two major cosmic events visible on the timeline: the <strong>Gaming explosion</strong> (starting around 2012) and the <strong>Indian expansion</strong> (triggered by Jio in 2016).
+    </p>
+    <p>
+        <strong>The Implication:</strong> This is not an accidental fracture, but a necessary adaptation to abundance. As the platform flooded with content, the "shared experience" became impossible to maintain. To survive the cognitive load, audiences naturally segregated into <strong>cognitive silos</strong>. Viewers retreated into hyper-specific clusters—from K-Pop to Minecraft—turning shared interests into hermetic worlds that rarely interact.
+    </p>
+
+    <iframe src="./fragmentation.html" width="100%" height="500px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
+    <h3>The Connectivity Paradox</h3>
+<p>
+    This creation of silos leads us to a startling paradox: <strong>as the universe expanded, it became less connected</strong>. While the number of channels grew five-fold, the structural density of the network collapsed.
+</p>
+<p>
+    To understand the scale of this collapse, we must look at how density D is calculated:
+</p>
+
+<div style="text-align: center; margin: 20px 0; font-size: 1.2em;">
+    $$D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}$$
+</div>
+
+<p>
+    In 2010, the network density was <strong>0.05</strong>. In simple terms, out of all possible conversations between communities, 5% actually happened. It was a "small world" where distinct groups frequently rubbed shoulders. By 2019, this density had flatlined to <strong>0.002</strong>—a staggering <strong>96% drop</strong> in relative connectivity.
+</p>
+
+<iframe src="./density.html" width="100%" height="500px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
+
+<p>
+    This curve is the <strong>filter bubble made visible</strong>. The mathematical collapse of D represents the death of serendipity. As algorithms got better at prediction, they stopped building bridges between galaxies. Viewers stayed in their comfortable corners, and the "global conversation" of 2010 dissolved into thousands of private, parallel conversations.
+</p>
+<h3>Galaxies Rising and Fading</h3>
+    <p>
+        The heart of the YouNiverse has undergone a seismic transition. Our <strong>PageRank centrality</strong> analysis — a measure of structural influence based on how audiences move between channels — captures the fall of an empire and the birth of a new one.
+    </p>
+    
+    <ul>
+        <li><strong>The Great Passing of the Torch (2012):</strong> In 2010, Music (red curve 🔴) reigned supreme, commanding over 30% of the platform's total influence. By 2012, the graph shows a historic crossover: the beginning of the <strong>Gaming Era</strong> (green curve 🟢). Let's Play creators shifted from peripheral niches to becoming the platform's new centers of gravity.</li>
+        <li><strong>The Decline of Music:</strong> Once a central pillar, Music saw its structural influence steadily collapse as discovery migrated to dedicated streaming services. This trend shows YouTube evolving from a "video radio" into a home for community-driven creator content.</li>
+        <li><strong>The Quiet Ascent:</strong> While Gaming and Music fought for the top spot, other galaxies grew steadily. Categories like <strong>Entertainment</strong> (blue curve 🔵) and <strong>People & Blogs</strong> (purple curve 🟣) saw consistent growth, proving that the YouNiverse has diversified far beyond simple passive entertainment.</li>
+    </ul>
+
+    <iframe src="./pagerank.html" width="100%" height="500px" style="border:none; display:block; margin:20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe><h3>The Emergence of New Powers: The Jio Effect</h3>
+    <p>
+        While the Western core was busy transitioning into the Gaming Era, a seismic shift was happening on the periphery. Our temporal tracking reveals the emergence of massive regional superpowers that fundamentally changed the scale of the YouNiverse.
+    </p>
+    
+    <p>
+        The most prominent example is the <strong>"Jio Effect" of 2016</strong>. As seen in our fragmentation data, the entry of millions of Indian users led to a sudden spike in community detected. This era birthed the massive <strong>T-Series galaxy</strong>. As shown in the "Evolution of Top 5 Identities" chart, by 2016, T-Series shifted from a peripheral node to the third-largest community on the entire platform.
+    </p>
+
+    <iframe src="./top5_identities.html" width="100%" height="550px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
+
+    <p>
+        <strong>Parallel Worlds:</strong> What makes this growth remarkable is its isolation. Despite becoming a global giant, the T-Series galaxy grew with almost zero audience overlap with Western giants like PewDiePie. This proved that the YouNiverse was no longer a single shared experience, but a <strong>multiverse of parallel worlds</strong>. By 2019, YouTube had become a collection of massive, independent islands—vibrant and rich, yet structurally invisible to one another.
+    </p>
+<h3>Visualizing the Drift: A Universe in Motion</h3>
+    
+    <p>
+        Animating these annual snapshots through our physics engine reveals the structural explosion of the network. In 2010, the ecosystem appears as a compact, monolithic block: there are few communities, and they are all tightly interconnected within a restricted space, forming a cohesive mass.
+    </p>
+    <p>
+        Over the decade, the sheer pressure of growth fractures this block. The number of communities rises drastically, creating a centrifugal force that propels new "niche galaxies" outward. The final result in 2019 is no longer a unified network, but a vast archipelago: a fusing core persists at the center, surrounded by a multitude of specialized islands floating on the periphery, orbiting far from the central gravity without ever touching it.
+    </p>
+
+    <iframe src="./galaxy_explorer.html" width="100%" height="700px" style="border:none; display: block; margin: 20px auto;"></iframe>
+
+    <p class="caption" style="text-align: center; color: #888; font-size: 0.9em; margin-top: -10px;">
+        <em>Interactive Model: Drag nodes to explore connections, use the slider to travel through time.</em>
+    </p>
+    <div class="quote">
+        "The YouNiverse transformed from a unified town square into a constellation of isolated worlds."
+    </div>
+</section>
 <!-- Section IV: Galaxy Identity -->
 <section id="identity" class="section">
-    <span class="section-number">Chapter IV</span>
+    <span class="section-number">Chapter V</span>
     <h2>Understanding the Identity of Galaxies</h2>
     
     <p>
@@ -580,7 +667,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
 <!-- Section V: User Navigation -->
 <section id="navigation" class="section">
-    <span class="section-number">Chapter V</span>
+    <span class="section-number">Chapter VI</span>
     <h2>Navigating the YouNiverse: How Do Users Travel Between Galaxies?</h2>
     
     <h3>Mapping User Journeys</h3>
@@ -621,7 +708,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
 <!-- Section VI: Black Holes -->
 <section id="blackholes" class="section">
-    <span class="section-number">Chapter VI</span>
+    <span class="section-number">Chapter VII</span>
     <h2>The Black Holes of the YouNiverse</h2>
     <h3>When Attention Collapses Around a Few Stars</h3>
     

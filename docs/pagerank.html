@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>YouNiverse | Dynamic PageRank Evolution</title>
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* DARK MODE CSS */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            background-color: transparent; 
+            color: #e0e0e0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; /* Center vertically if needed */
+            min-height: 100vh; /* Full height */
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+        
+        #chart-container { 
+            background: transparent;
+            border: none; 
+            border-radius: 24px; 
+            box-shadow: none; 
+            width: 95vw; 
+            max-width: 1300px; 
+            height: 85vh; /* Slightly taller since header is gone */
+            padding: 30px; 
+            box-sizing: border-box; 
+        }
+    </style>
+</head>
+<body>
+
+    <div id="chart-container"></div>
+
+<script>
+    // --- DATA INJECTED FROM PYTHON ---
+    const years = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019];
+    const trends = {"Music": [0.31852134716913083, 0.30553552577074217, 0.20936813472797294, 0.16734175166263174, 0.1415728370399084, 0.1321792822639465, 0.11321981516497955, 0.11766109256574656, 0.12136776534613178, 0.0882868154017503], "Gaming": [0.09675335100473527, 0.17207552502767962, 0.2409544556481643, 0.31092040721448994, 0.31092941498915905, 0.30608518860492906, 0.30049858321197226, 0.2269554687678615, 0.21531248154223198, 0.259930612860708], "Entertainment": [0.17664782899072404, 0.1531111519972608, 0.17883274076692138, 0.18574299662231192, 0.20798918462025795, 0.19923244854396555, 0.2339984664970175, 0.2806352633618812, 0.27492531658704017, 0.2499529134888926], "People & Blogs": [0.05993605797475055, 0.0555918707936731, 0.06046270236432752, 0.0628057841538051, 0.07716704047624778, 0.09515786924750769, 0.08999702292165812, 0.10296060867856345, 0.09013475579036473, 0.0867038653527128], "News & Politics": [0.03015271949026299, 0.03073497347107335, 0.031740808580495654, 0.023205043244854593, 0.024548714455952435, 0.026704053161445092, 0.03311871499337016, 0.030714985677378043, 0.04621281031254372, 0.07752810214721247]};
+
+    const colors = {
+        "Music": "#e41a1c",
+        "Gaming": "#4daf4a",
+        "Entertainment": "#377eb8",
+        "People & Blogs": "#984ea3",
+        "News & Politics": "#ff7f00"
+    };
+
+    // Map categories to Plotly traces
+    const traces = Object.keys(trends).map(category => {
+        return {
+            x: years,
+            y: trends[category],
+            name: category,
+            mode: 'lines+markers',
+            line: { shape: 'spline', width: 4, color: colors[category] || '#999' },
+            marker: { size: 8 },
+            hovertemplate: `<b>${category}</b><br>Centrality: %{y:.4f}<extra></extra>`
+        };
+    });
+
+    const layout = {
+        title: { 
+            text: 'Evolution of Structural Influence (PageRank Sum)', 
+            font: { family: 'Inter', size: 22, weight: 900, color: '#ffffff' } 
+        },
+        font: {
+            family: 'Inter',
+            color: '#e0e0e0'
+        },
+        xaxis: { 
+            title: 'Year', 
+            gridcolor: '#444444', 
+            zeroline: false,
+            tickmode: 'linear',
+            tickcolor: '#e0e0e0'
+        },
+        yaxis: { 
+            title: 'Total PageRank Centrality', 
+            gridcolor: '#444444', 
+            zeroline: false,
+            tickcolor: '#e0e0e0'
+        },
+        legend: { 
+            orientation: 'h', 
+            y: -0.15, 
+            x: 0.5, 
+            xanchor: 'center',
+            font: { color: '#e0e0e0' }
+        },
+        margin: { l: 80, r: 50, t: 80, b: 100 },
+        hovermode: 'x unified',
+        paper_bgcolor: 'rgba(0,0,0,0)', 
+        plot_bgcolor: 'rgba(0,0,0,0)',  
+        annotations: [] 
+    };
+
+    // Optional: Dynamic annotations
+    if (years.includes(2012) && trends['Gaming']) {
+        const idx = years.indexOf(2012);
+        layout.annotations.push({
+            x: 2012, y: trends['Gaming'][idx],
+            text: 'Gaming Era', 
+            showarrow: true, 
+            arrowhead: 2, 
+            ax: -40, ay: -40,
+            arrowcolor: '#e0e0e0',
+            font: { color: '#ffffff' }
+        });
+    }
+
+    Plotly.newPlot('chart-container', traces, layout, {responsive: true});
+
+</script>
+</body>
+</html>
