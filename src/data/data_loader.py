@@ -127,7 +127,7 @@ def load_video_metadata_with_text(jsonl_path=None, sample_size=None, channel_fil
     return df
 
 
-def stream_video_metadata_from_zip(zip_path, channel_filter, max_videos_per_channel=None):
+def stream_video_metadata_from_zip(zip_path, channel_filter, max_videos_per_channel=None, fields='all'):
     """
     Streams video metadata directly from the YouNiverse dataset zip file.
     Much more efficient than extracting the entire file first.
@@ -140,18 +140,47 @@ def stream_video_metadata_from_zip(zip_path, channel_filter, max_videos_per_chan
         Only load videos from these channel IDs
     max_videos_per_channel : int, optional
         Maximum videos to load per channel
+    fields : str or list, optional
+        Which fields to extract:
+        - 'all': All available fields (default)
+        - 'text': Only text fields (title, description, tags) for topic detection
+        - list: Custom list of field names
+        
+        Available fields from YouNiverse:
+        - channel_id, title, description, tags
+        - view_count, like_count, dislike_count
+        - duration, upload_date, categories, display_id, crawl_date
     
     Returns:
     --------
-    DataFrame with 'channel_id', 'title', 'description' columns
+    DataFrame with requested columns
     """
     import zipfile
     import gzip
     import json
     from io import BytesIO
     
+    # Define field presets
+    TEXT_FIELDS = ['channel_id', 'title', 'description', 'tags']
+    ALL_FIELDS = [
+        'channel_id', 'title', 'description', 'tags',
+        'view_count', 'like_count', 'dislike_count',
+        'duration', 'upload_date', 'categories'
+    ]
+    
+    # Determine which fields to extract
+    if fields == 'all':
+        fields_to_extract = ALL_FIELDS
+    elif fields == 'text':
+        fields_to_extract = TEXT_FIELDS
+    elif isinstance(fields, list):
+        fields_to_extract = ['channel_id'] + [f for f in fields if f != 'channel_id']
+    else:
+        fields_to_extract = ALL_FIELDS
+    
     print(f"Streaming video metadata from {zip_path}...")
     print(f"Filtering for {len(channel_filter)} channels...")
+    print(f"Extracting fields: {fields_to_extract}")
     
     channel_filter = set(channel_filter)
     records = []
@@ -191,13 +220,16 @@ def stream_video_metadata_from_zip(zip_path, channel_filter, max_videos_per_chan
                             if max_videos_per_channel and channel_counts[channel_id] >= max_videos_per_channel:
                                 continue
                             
-                            records.append({
-                                'channel_id': channel_id,
-                                'title': record.get('title', ''),
-                                'description': record.get('description', ''),
-                                'tags': record.get('tags', '')
-                            })
+                            # Extract only requested fields
+                            extracted = {}
+                            for field in fields_to_extract:
+                                # Default values based on field type
+                                if field in ['view_count', 'like_count', 'dislike_count', 'duration']:
+                                    extracted[field] = record.get(field, 0)
+                                else:
+                                    extracted[field] = record.get(field, '')
                             
+                            records.append(extracted)
                             channel_counts[channel_id] += 1
                             
                             # Check if we're done

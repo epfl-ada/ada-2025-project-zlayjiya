@@ -331,9 +331,10 @@ def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_cha
     """
     try:
         import spacy
-        from gensim.models.phrases import Phrases
+        from gensim.models.phrases import Phrases, Phraser
         from gensim.corpora import Dictionary
-        from gensim.models import LdaMulticore
+        from gensim.models import LdaModel
+        import re
     except ImportError as e:
         print(f"Missing required library: {e}")
         print("Install with: pip install spacy gensim")
@@ -355,6 +356,21 @@ def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_cha
             return {'topics': [], 'n_videos': 0, 'sampled_channels': []}
     
     STOPWORDS = spacy.lang.en.stop_words.STOP_WORDS
+    
+    # YouTube-specific stopwords to filter common noise
+    YOUTUBE_STOPWORDS = {
+        'video', 'videos', 'watch', 'subscribe', 'channel', 'like', 'comment',
+        'share', 'new', 'best', 'top', 'official', 'full', 'hd', 'hq', '4k',
+        'episode', 'part', 'season', 'trailer', 'clip', 'scene', 'movie',
+        'free', 'download', 'link', 'description', 'follow', 'instagram',
+        'twitter', 'facebook', 'tiktok', 'snapchat', 'social', 'media',
+        'http', 'https', 'www', 'com', 'bit', 'ly', 'youtu', 'youtube',
+        'please', 'thank', 'thanks', 'hello', 'hey', 'today', 'day', 'week',
+        'year', 'time', 'thing', 'stuff', 'lot', 'way', 'guy', 'people',
+        'world', 'life', 'really', 'actually', 'literally', 'basically',
+        'amazing', 'awesome', 'insane', 'crazy', 'epic', 'ultimate'
+    }
+    ALL_STOPWORDS = STOPWORDS | YOUTUBE_STOPWORDS
     
     # Sample channels
     community_list = list(community)
@@ -391,35 +407,58 @@ def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_cha
     videos_sample = pd.concat(sampled_videos, ignore_index=True)
     print(f"Sampled {len(videos_sample)} videos")
     
+    # FIX: Handle NaN values properly (avoid "nan" tokens)
+    for col in ['title', 'description', 'tags']:
+        if col in videos_sample.columns:
+            videos_sample[col] = videos_sample[col].fillna('').astype(str)
+    
+    # URL pattern for stripping links from descriptions
+    URL_PATTERN = re.compile(r'https?://\S+|www\.\S+')
+    
     # Get texts based on text_mode
     def combine_text_fields(row):
         """Combine title + tags + truncated description (TA recommended approach)"""
         parts = []
         
         # Add title
-        title = str(row.get('title', '')).strip()
-        if title:
+        title = row.get('title', '').strip()
+        if title and title != 'nan':
             parts.append(title)
         
         # Add tags (comma-separated string)
-        tags = str(row.get('tags', '')).strip()
-        if tags:
-            # Tags are usually comma-separated, convert to space-separated
+        tags = row.get('tags', '').strip()
+        if tags and tags != 'nan':
             tags_cleaned = tags.replace(',', ' ')
             parts.append(tags_cleaned)
         
-        # Add truncated description
-        desc = str(row.get('description', '')).strip()
-        if desc:
-            # Truncate description to first N characters
+        # Add truncated description (strip URLs)
+        desc = row.get('description', '').strip()
+        if desc and desc != 'nan':
+            desc = URL_PATTERN.sub('', desc)  # Strip URLs
             desc_truncated = desc[:desc_max_chars]
             parts.append(desc_truncated)
         
         return ' '.join(parts)
     
+    def combine_title_desc(row):
+        """Combine title + truncated description only (no tags - less noise)"""
+        parts = []
+        title = row.get('title', '').strip()
+        if title and title != 'nan':
+            parts.append(title)
+        desc = row.get('description', '').strip()
+        if desc and desc != 'nan':
+            desc = URL_PATTERN.sub('', desc)  # Strip URLs
+            desc_truncated = desc[:desc_max_chars]
+            parts.append(desc_truncated)
+        return ' '.join(parts)
+    
     if text_mode == 'combined':
         print(f"Using combined mode: title + tags + description (truncated to {desc_max_chars} chars)")
         texts = videos_sample.apply(combine_text_fields, axis=1).tolist()
+    elif text_mode == 'title_desc':
+        print(f"Using title_desc mode: title + description (truncated to {desc_max_chars} chars) - NO TAGS")
+        texts = videos_sample.apply(combine_title_desc, axis=1).tolist()
     elif text_mode == 'title':
         if 'title' not in videos_sample.columns:
             print("Column 'title' not found")
@@ -436,7 +475,7 @@ def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_cha
             return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
         texts = videos_sample['tags'].fillna('').astype(str).tolist()
     else:
-        print(f"Unknown text_mode: {text_mode}. Use 'title', 'description', 'tags', or 'combined'")
+        print(f"Unknown text_mode: {text_mode}. Use 'title', 'title_desc', 'description', 'tags', or 'combined'")
         return {'topics': [], 'n_videos': 0, 'sampled_channels': sampled_channels}
     
     texts = [t for t in texts if len(t.strip()) > 0]
@@ -447,25 +486,35 @@ def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_cha
     
     print(f"Processing {len(texts)} texts with spacy...")
     
+    # POS tags to keep (content words only - much cleaner topics)
+    KEEP_POS = {"NOUN", "PROPN", "ADJ"}
+    
     # Preprocess with spacy
     processed_docs = []
     for doc in nlp.pipe(texts, n_process=1, batch_size=50):
-        # Lemmatize, remove punctuation and stopwords
-        doc_tokens = [token.lemma_ for token in doc if token.is_alpha and not token.is_stop]
-        # Remove stopwords and keep only words of length 3+
-        doc_tokens = [token for token in doc_tokens if token not in STOPWORDS and len(token) > 2]
+        # Filter by POS, lemmatize, remove punctuation
+        doc_tokens = [
+            token.lemma_.lower() 
+            for token in doc 
+            if token.is_alpha and token.pos_ in KEEP_POS and not token.is_stop
+        ]
+        # Remove stopwords (including YouTube-specific) and keep only words of length 3+
+        doc_tokens = [token for token in doc_tokens if token not in ALL_STOPWORDS and len(token) > 2]
         processed_docs.append(doc_tokens)
     
-    docs = processed_docs
-    print(f"Preprocessed {len(docs)} documents")
+    # Drop empty docs after preprocessing (reduces noise)
+    docs = [d for d in processed_docs if len(d) > 0]
+    print(f"Preprocessed {len(docs)} documents (dropped {len(processed_docs) - len(docs)} empty docs)")
     
-    # Add bigrams
+    if len(docs) == 0:
+        print("All documents were empty after preprocessing")
+        return {'topics': [], 'n_videos': len(texts), 'sampled_channels': sampled_channels}
+    
+    # Transform with bigrams (not append - avoids double counting)
     print("Adding bigrams...")
-    bigram = Phrases(docs, min_count=5)
-    for idx in range(len(docs)):
-        for token in bigram[docs[idx]]:
-            if '_' in token:
-                docs[idx].append(token)
+    bigram = Phrases(docs, min_count=5, threshold=10)
+    bigram_mod = Phraser(bigram)
+    docs = [bigram_mod[doc] for doc in docs]
     
     # Create dictionary and corpus
     print("Creating dictionary and corpus...")
@@ -480,16 +529,17 @@ def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_cha
         print("Dictionary is empty after filtering")
         return {'topics': [], 'n_videos': len(texts), 'sampled_channels': sampled_channels}
     
-    # Train LDA model
+    # Train LDA model (using LdaModel for alpha/eta='auto' support)
     print(f"Training LDA model with {n_topics} topics...")
     try:
-        model = LdaMulticore(
+        model = LdaModel(
             corpus=corpus,
             num_topics=n_topics,
             id2word=dictionary,
-            workers=4,
             passes=passes,
-            random_state=seed
+            random_state=seed,
+            alpha='auto',  # Learn optimal alpha (improves topic separation)
+            eta='auto'     # Learn optimal eta (improves word distribution)
         )
         
         # Extract topics

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Network Fragmentation | 2010-2019</title>
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* DARK MODE CSS */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            background-color: transparent; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            width: 100vw;
+            color: #e0e0e0;
+        }
+        
+        #chart-container { 
+            background: transparent;
+            border: none; 
+            border-radius: 20px; 
+            box-shadow: none; 
+            width: 100%; 
+            height: 100%; 
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="chart-container"></div>
+
+<script>
+    // --- DATA INJECTED FROM PYTHON ---
+    const years = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019];
+    const communitiesCount = [16, 27, 31, 57, 59, 67, 80, 96, 93, 99];
+    const growthPercent = 518;
+
+    // Configure the Scatter Trace
+    const trace = {
+        x: years,
+        y: communitiesCount,
+        mode: 'lines+markers+text',
+        name: 'Communities Count',
+        text: communitiesCount,
+        textposition: 'top center',
+        textfont: { family: 'Inter', weight: 700, size: 13, color: '#e0e0e0' },
+        line: { color: '#e41a1c', width: 4, shape: 'spline' }, // Red line
+        marker: { 
+            size: 10, 
+            color: '#e41a1c', 
+            line: { color: '#ffffff', width: 2 } 
+        },
+        fill: 'tozeroy', 
+        fillcolor: 'rgba(228, 26, 28, 0.1)', // Subtle red fill
+        type: 'scatter'
+    };
+
+    // Historical Annotations logic
+    const annotations = [
+        // Main Growth Box (Top Left)
+        {
+            xref: 'paper', yref: 'paper',
+            x: 0.04, y: 0.98,
+            text: `+${growthPercent}% Fragmentation`,
+            showarrow: false,
+            font: { family: 'Inter', size: 18, color: '#e41a1c', weight: 900 },
+            bgcolor: '#000000', // Black background for box
+            bordercolor: '#e41a1c',
+            borderwidth: 2,
+            borderpad: 8
+        }
+    ];
+
+    // Helper to add timeline events safely
+    const addEvent = (year, label, ax, ay) => {
+        const idx = years.indexOf(year);
+        if (idx !== -1) {
+            annotations.push({
+                x: year, 
+                y: communitiesCount[idx], 
+                text: label, 
+                showarrow: true, arrowhead: 2, ax: ax, ay: ay, 
+                arrowcolor: '#e0e0e0',
+                font: { size: 11, color: '#cccccc' } 
+            });
+        }
+    };
+
+    // Add specific historical events
+    addEvent(2012, 'PewDiePie era starts', 0, 40);
+    addEvent(2016, 'Massive Indian expansion (Jio)', 0, 40);
+    addEvent(2019, 'Peak Network Modularity', -40, 0);
+
+    const layout = {
+        title: {
+            text: 'YouTube Network Fragmentation (2010-2019)',
+            font: { family: 'Inter', size: 24, weight: 900, color: '#ffffff' },
+            pad: { t: 20 }
+        },
+        font: {
+            family: 'Inter',
+            color: '#e0e0e0'
+        },
+        xaxis: {
+            title: 'Analysis Year',
+            tickmode: 'linear',
+            gridcolor: '#444444',
+            zeroline: false,
+            tickcolor: '#e0e0e0',
+            font: { family: 'Inter', weight: 700 }
+        },
+        yaxis: {
+            title: 'Detected Communities (Louvain/Leiden)',
+            gridcolor: '#444444',
+            zeroline: false,
+            tickcolor: '#e0e0e0',
+            range: [0, Math.max(...communitiesCount) * 1.3] // Add space for annotations
+        },
+        margin: { l: 80, r: 50, t: 100, b: 80 },
+        hovermode: 'x unified',
+        annotations: annotations,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)'
+    };
+
+    // Render Plotly Chart
+    Plotly.newPlot('chart-container', [trace], layout, {responsive: true});
+
+</script>
+
+</body>
+</html>

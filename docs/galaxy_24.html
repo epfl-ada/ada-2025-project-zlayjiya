@@ -1,0 +1,388 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script>function neighbourhoodHighlight(params) {
+  // console.log("in nieghbourhoodhighlight");
+  allNodes = nodes.get({ returnType: "Object" });
+  // originalNodes = JSON.parse(JSON.stringify(allNodes));
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    highlightActive = true;
+    var i, j;
+    var selectedNode = params.nodes[0];
+    var degrees = 2;
+
+    // mark all nodes as hard to read.
+    for (let nodeId in allNodes) {
+      // nodeColors[nodeId] = allNodes[nodeId].color;
+      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
+      if (allNodes[nodeId].hiddenLabel === undefined) {
+        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+    var connectedNodes = network.getConnectedNodes(selectedNode);
+    var allConnectedNodes = [];
+
+    // get the second degree nodes
+    for (i = 1; i < degrees; i++) {
+      for (j = 0; j < connectedNodes.length; j++) {
+        allConnectedNodes = allConnectedNodes.concat(
+          network.getConnectedNodes(connectedNodes[j])
+        );
+      }
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (i = 0; i < allConnectedNodes.length; i++) {
+      // allNodes[allConnectedNodes[i]].color = "pink";
+      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
+      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[allConnectedNodes[i]].label =
+          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // all first degree nodes get their own color and their label back
+    for (i = 0; i < connectedNodes.length; i++) {
+      // allNodes[connectedNodes[i]].color = undefined;
+      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
+      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[connectedNodes[i]].label =
+          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // the main node gets its own color and its label back.
+    // allNodes[selectedNode].color = undefined;
+    allNodes[selectedNode].color = nodeColors[selectedNode];
+    if (allNodes[selectedNode].hiddenLabel !== undefined) {
+      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+      allNodes[selectedNode].hiddenLabel = undefined;
+    }
+  } else if (highlightActive === true) {
+    // console.log("highlightActive was true");
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      // allNodes[nodeId].color = "purple";
+      allNodes[nodeId].color = nodeColors[nodeId];
+      // delete allNodes[nodeId].color;
+      if (allNodes[nodeId].hiddenLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+        allNodes[nodeId].hiddenLabel = undefined;
+      }
+    }
+    highlightActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    // console.log("Nothing was selected");
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        // allNodes[nodeId].color = {};
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function filterHighlight(params) {
+  allNodes = nodes.get({ returnType: "Object" });
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    filterActive = true;
+    let selectedNodes = params.nodes;
+
+    // hiding all nodes and saving the label
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = true;
+      if (allNodes[nodeId].savedLabel === undefined) {
+        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+
+    for (let i=0; i < selectedNodes.length; i++) {
+      allNodes[selectedNodes[i]].hidden = false;
+      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
+        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
+        allNodes[selectedNodes[i]].savedLabel = undefined;
+      }
+    }
+
+  } else if (filterActive === true) {
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = false;
+      if (allNodes[nodeId].savedLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
+        allNodes[nodeId].savedLabel = undefined;
+      }
+    }
+    filterActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function selectNode(nodes) {
+  network.selectNodes(nodes);
+  neighbourhoodHighlight({ nodes: nodes });
+  return nodes;
+}
+
+function selectNodes(nodes) {
+  network.selectNodes(nodes);
+  filterHighlight({nodes: nodes});
+  return nodes;
+}
+
+function highlightFilter(filter) {
+  let selectedNodes = []
+  let selectedProp = filter['property']
+  if (filter['item'] === 'node') {
+    let allNodes = nodes.get({ returnType: "Object" });
+    for (let nodeId in allNodes) {
+      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
+        selectedNodes.push(nodeId)
+      }
+    }
+  }
+  else if (filter['item'] === 'edge'){
+    let allEdges = edges.get({returnType: 'object'});
+    // check if the selected property exists for selected edge and select the nodes connected to the edge
+    for (let edge in allEdges) {
+      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
+        selectedNodes.push(allEdges[edge]['from'])
+        selectedNodes.push(allEdges[edge]['to'])
+      }
+    }
+  }
+  selectNodes(selectedNodes)
+}</script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            
+            
+            
+            
+            
+
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #050505;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    
+    <style>
+    html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: #050505 !important;
+        overflow: hidden;
+    }
+    .card {
+        border: none !important;
+        outline: none !important;
+        border-radius: 0 !important;
+        background-color: black;
+    }
+    #mynetwork {
+        width: 100% !important;
+        background: #050505 !important;
+        border: #000000;
+    }
+    canvas {
+        display: block !important;
+        background: #050505 !important;
+    }
+    </style>
+    
+</head>
+
+
+    <body style="background-color:#050505; margin:0; overflow:hidden;">
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"borderWidth": 1, "color": {"background": "#9d4edd", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCxJGMJbjokfnr2-s4_RXPxQ", "label": "Speak English With V...", "shadow": {"color": "#9d4edd", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 70.69312565577032, "title": "Channel: Speak English With V...\nStrength: 1925", "x": 758.6034505573253, "y": 503.4432162239413}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCm4UxKBl7ha5QLyPNmEhWug", "label": "Career Zone IELTS In...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 54.06636680094075, "title": "Channel: Career Zone IELTS In...\nStrength: 283", "x": -1999.9999999999998, "y": 1731.1309942429125}, {"borderWidth": 1, "color": {"background": "#9d4edd", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCrRiVfHqBIIvSgKmgnSY66g", "label": "mmmEnglish", "shadow": {"color": "#9d4edd", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 68.67109067237723, "title": "Channel: mmmEnglish\nStrength: 1525", "x": 613.7656910286779, "y": 88.6565956409842}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCIgELCOfrcYA9jWF4TOJUnQ", "label": "The IELTS Listening ...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 55.831584878931615, "title": "Channel: The IELTS Listening ...\nStrength: 347", "x": -1900.9882905329755, "y": 1547.8975033226786}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UC32mYgIHS-e3C3Eyd2tRw6g", "label": "To Fluency", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 48.167249841905, "title": "Channel: To Fluency\nStrength: 143", "x": -839.4843770385867, "y": 1578.7325962290054}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCEKXieT70wByfvZwP1CxdPQ", "label": "JenniferESL", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 53.09667433239876, "title": "Channel: JenniferESL\nStrength: 253", "x": -1281.5746425951302, "y": -705.0057807704455}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCUeS2Jmgiu0OFaTeRqkuXtw", "label": "Mad English TV", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 52.08216878294802, "title": "Channel: Mad English TV\nStrength: 225", "x": 1723.3285683131976, "y": -139.10745832985066}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCfYYi6aJNg70mFYnbBKcMQw", "label": "A.J. Hoge", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 38.06425027550687, "title": "Channel: A.J. Hoge\nStrength: 44", "x": -2219.519621213065, "y": -392.2556835339832}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UC_OskgZBoS4dAnVUgJVexcw", "label": "Shaw English Online", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 40.56302500767287, "title": "Channel: Shaw English Online\nStrength: 59", "x": 970.5470847760884, "y": 2017.9484521238135}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCSHhm94gQifhWmO5LhQk2XQ", "label": "Crown Academy of Eng...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 54.938592961464295, "title": "Channel: Crown Academy of Eng...\nStrength: 313", "x": -642.7985763823705, "y": -1532.731120083927}, {"borderWidth": 1, "color": {"background": "#c77dff", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCNbeSPp8RYKmHUliYBUDizg", "label": "Oxford Online Englis...", "shadow": {"color": "#c77dff", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 59.13435564673517, "title": "Channel: Oxford Online Englis...\nStrength: 508", "x": -846.4052695609182, "y": 867.8567083297205}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCQ3A7Dnyz1_Fxaa5BCzAPMA", "label": "AcademicEnglishHelp", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 41.25826713285711, "title": "Channel: AcademicEnglishHelp\nStrength: 64", "x": -2046.6106932316698, "y": 1084.0879400041065}, {"borderWidth": 1, "color": {"background": "#c77dff", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCicjynhfFw2LiIQFnoS1JTw", "label": "Learn English with L...", "shadow": {"color": "#c77dff", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 67.08291101108017, "title": "Channel: Learn English with L...\nStrength: 1270", "x": -165.15188348407867, "y": -1354.6790321540977}, {"borderWidth": 1, "color": {"background": "#c77dff", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCwk6ifONlkvqnoMF2uyA05g", "label": "Learn English with P...", "shadow": {"color": "#c77dff", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 62.098260446157106, "title": "Channel: Learn English with P...\nStrength: 715", "x": 1460.8929968134285, "y": 462.95880690342193}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCPDQgXju7hqEGBwzLIeI7Zw", "label": "7ESL Learning Englis...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 33.62727528317975, "title": "Channel: 7ESL Learning Englis...\nStrength: 26", "x": 952.2221933744088, "y": -2150.080267139579}, {"borderWidth": 1, "color": {"background": "#c77dff", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCeTVoczn9NOZA9blls3YgUg", "label": "Learn English with E...", "shadow": {"color": "#c77dff", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 65.41550976387116, "title": "Channel: Learn English with E...\nStrength: 1048", "x": 205.02259182685955, "y": -33.29932741868987}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCglDIsg_Z9mE2oT9hsrbzFA", "label": "E2 IELTS", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 48.750414416729264, "title": "Channel: E2 IELTS\nStrength: 153", "x": -1765.1450938233654, "y": 1555.6249105655916}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCMTcsanYhBtOb096XegDZQA", "label": "AccurateEnglish", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 47.14419939295737, "title": "Channel: AccurateEnglish\nStrength: 127", "x": 2103.3339981898635, "y": 285.72164757191837}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCKgpamMlm872zkGDcBJHYDg", "label": "Learn English With T...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 52.27223959784289, "title": "Channel: Learn English With T...\nStrength: 230", "x": 775.7324610970327, "y": 1572.050425765869}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UC0Hg2Ks00kCekyjZG_LxOmg", "label": "English Like A Nativ...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 57.90844538698184, "title": "Channel: English Like A Nativ...\nStrength: 441", "x": 875.9724810107039, "y": 938.40714377306}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCy-dvmsfmvYXBmt_huqqo1A", "label": "English Jade - Learn...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 45.256744494103444, "title": "Channel: English Jade - Learn...\nStrength: 102", "x": -262.0587858435403, "y": -2222.0408746395724}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCJtBaL1PPmTc1ff0nsihR0g", "label": "Learn English with R...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 57.70967493629824, "title": "Channel: Learn English with R...\nStrength: 431", "x": -654.8109184747407, "y": -1752.343305842224}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCC3UrdqNf6rpWZoTiYbYk4A", "label": "Skillopedia - Skills...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 47.542095967296156, "title": "Channel: Skillopedia - Skills...\nStrength: 133", "x": -996.820793597351, "y": -1996.4119366232717}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UC8UA8eOwj0WQild7-asffqw", "label": "Learn English with S...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 33.62727528317975, "title": "Channel: Learn English with S...\nStrength: 26", "x": 2223.7495397697894, "y": -761.0821586502876}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UC1ZSvn6VIWqM68J_2USwH3Q", "label": "Julian Northbrook", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 46.213956807072236, "title": "Channel: Julian Northbrook\nStrength: 114", "x": 1685.6385652911465, "y": -984.9361181943733}, {"borderWidth": 1, "color": {"background": "#c77dff", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCrJHj7MDQhmQ9iFuACdoWCg", "label": "EnglishAnyone", "shadow": {"color": "#c77dff", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 59.48551739201578, "title": "Channel: EnglishAnyone\nStrength: 529", "x": -726.5851335936586, "y": -138.21675454193314}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCHaHD477h-FeBbVh9Sh7syA", "label": "BBC Learning English...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 50.00840004617788, "title": "Channel: BBC Learning English...\nStrength: 177", "x": -22.254330706673734, "y": 1810.1771379363108}, {"borderWidth": 1, "color": {"background": "#9d4edd", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UC4cmBAit8i_NJZE8qK8sfpA", "label": "EnglishLessons4U - L...", "shadow": {"color": "#9d4edd", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 70.41357672289413, "title": "Channel: EnglishLessons4U - L...\nStrength: 1864", "x": 563.5854333397878, "y": -1304.2326708571422}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCKjOCfT-w4ePd98Y_g8gTqg", "label": "Espresso English", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 34.54242509439325, "title": "Channel: Espresso English\nStrength: 29", "x": -2327.451631706854, "y": 131.9157338191698}, {"borderWidth": 1, "color": {"background": "#9d4edd", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCVBErcpqaokOf4fI5j73K_w", "label": "Learn English with E...", "shadow": {"color": "#9d4edd", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 69.95455665819446, "title": "Channel: Learn English with E...\nStrength: 1768", "x": -236.16696372737763, "y": -774.1064466721123}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UC02LvI6Ey3MonxQu8mB7wzg", "label": "English in Siberia w...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 41.650178254124725, "title": "Channel: English in Siberia w...\nStrength: 67", "x": 476.2796182340893, "y": -2258.193863235548}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCu4AP8qmYnXNUipUeyPQKig", "label": "Eat Sleep Dream Engl...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 45.506117305295405, "title": "Channel: Eat Sleep Dream Engl...\nStrength: 105", "x": 2148.840823547964, "y": 912.6113307523245}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UC2SUoo36iHgVLEK7EEVPIFQ", "label": "Interactive English", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 55.930853269562625, "title": "Channel: Interactive English\nStrength: 351", "x": 1454.0077003974593, "y": 953.2170623522474}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCBHtnQGUChkwG1eyWL5EA9g", "label": "ETJ English", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 51.848453616444125, "title": "Channel: ETJ English\nStrength: 219", "x": 1906.4448573195054, "y": 1075.4442208810053}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCQoIEhy6h5Bqzu-oOAjmeYg", "label": "Deep English", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 37.86905352972375, "title": "Channel: Deep English\nStrength: 43", "x": -1417.8859066076734, "y": 1746.9051963070879}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UC9VWyvdF-91McG6kt27MeKA", "label": "Mark Kulek", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 46.363717234923236, "title": "Channel: Mark Kulek\nStrength: 116", "x": 1678.5478651173994, "y": -1390.9437973107893}, {"borderWidth": 1, "color": {"background": "#c77dff", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UC-g0gSStENkYPXFRsKrlvyA", "label": "The English Coach", "shadow": {"color": "#c77dff", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 60.05632862376543, "title": "Channel: The English Coach\nStrength: 565", "x": 129.39810004599994, "y": 883.2281260089659}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCGLGVRO_9qDc8VDGGMTcUiQ", "label": "Speak English With T...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 33.62727528317975, "title": "Channel: Speak English With T...\nStrength: 26", "x": 1394.8441429614782, "y": 1891.5008219572874}, {"borderWidth": 1, "color": {"background": "#9d4edd", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UC9Pbt3q-ihROg1lmmmQdU2w", "label": "Go Natural English w...", "shadow": {"color": "#9d4edd", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 70.69763429310906, "title": "Channel: Go Natural English w...\nStrength: 1926", "x": -403.3812661668407, "y": 120.18004004368987}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCwA7Aepp7nRUJNa8roQ-6Bw", "label": "JamesESL English Les...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 55.37027879755775, "title": "Channel: JamesESL English Les...\nStrength: 329", "x": -144.9183054133247, "y": -1900.4976555011317}, {"borderWidth": 1, "color": {"background": "#c77dff", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCvn_XCl_mgQmt3sD753zdJA", "label": "Rachel\u0027s English", "shadow": {"color": "#c77dff", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 66.52552510808435, "title": "Channel: Rachel\u0027s English\nStrength: 1191", "x": 571.0324107736302, "y": -759.1154860877823}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCzBGtBze1AIcDmRwD2ZjiAA", "label": "Learn English with G...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 49.08239965311849, "title": "Channel: Learn English with G...\nStrength: 159", "x": 1026.528246178709, "y": -1650.0210258104025}, {"borderWidth": 1, "color": {"background": "#c77dff", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UC_0NfufarVw04vDfWFm8z_Q", "label": "English Lessons with...", "shadow": {"color": "#c77dff", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 65.13787415895801, "title": "Channel: English Lessons with...\nStrength: 1015", "x": 108.58120726980702, "y": -1230.486226494474}, {"borderWidth": 1, "color": {"background": "#7b2cbf", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UC8pPDhxSn1nee70LRKJ0p3g", "label": "Speak English With M...", "shadow": {"color": "#7b2cbf", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 44.55447210577696, "title": "Channel: Speak English With M...\nStrength: 94", "x": 839.5703537863069, "y": -2111.420698584318}, {"borderWidth": 1, "color": {"background": "#c77dff", "border": "#ffffff", "highlight": "#ff0054"}, "font": {"color": "white"}, "id": "UCaRMivfyupj3ucUyJbZbCNg", "label": "Anglo-Link", "shadow": {"color": "#c77dff", "enabled": true, "size": 5, "x": 0, "y": 0}, "shape": "dot", "size": 59.16841800269425, "title": "Channel: Anglo-Link\nStrength: 510", "x": -814.2076645161554, "y": -1133.058676469645}]);
+                  edges = new vis.DataSet([{"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UCVBErcpqaokOf4fI5j73K_w", "width": 3.5317839486049074}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 4.102100811172316}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UCrJHj7MDQhmQ9iFuACdoWCg", "width": 3.133812283508737}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UC4cmBAit8i_NJZE8qK8sfpA", "width": 3.4385620884816404}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UCicjynhfFw2LiIQFnoS1JTw", "width": 3.1990108241803723}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UCrRiVfHqBIIvSgKmgnSY66g", "width": 3.9580270541699356}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 3.52555000894817}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UCeTVoczn9NOZA9blls3YgUg", "width": 3.875630003463341}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UCwk6ifONlkvqnoMF2uyA05g", "width": 3.061355264146904}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UC32mYgIHS-e3C3Eyd2tRw6g", "width": 3.2768875230786128}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UCUeS2Jmgiu0OFaTeRqkuXtw", "width": 3.1885875342473806}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UCMTcsanYhBtOb096XegDZQA", "width": 2.757724967479859}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UC-g0gSStENkYPXFRsKrlvyA", "width": 3.768465420939754}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UC1ZSvn6VIWqM68J_2USwH3Q", "width": 2.7370425407514087}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UC_OskgZBoS4dAnVUgJVexcw", "width": 2.6707370470133287}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UCKgpamMlm872zkGDcBJHYDg", "width": 3.3381419040357203}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 2.8161020665254135}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UC0Hg2Ks00kCekyjZG_LxOmg", "width": 3.1222820405093006}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UCzBGtBze1AIcDmRwD2ZjiAA", "width": 2.777770909816831}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UCHaHD477h-FeBbVh9Sh7syA", "width": 2.7370425407514087}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UCBHtnQGUChkwG1eyWL5EA9g", "width": 2.7972183755633826}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UCNbeSPp8RYKmHUliYBUDizg", "width": 3.294984290180684}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UCGLGVRO_9qDc8VDGGMTcUiQ", "width": 2.622460021956227}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCxJGMJbjokfnr2-s4_RXPxQ", "to": "UC2SUoo36iHgVLEK7EEVPIFQ", "width": 3.3627275283179747}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCm4UxKBl7ha5QLyPNmEhWug", "to": "UCIgELCOfrcYA9jWF4TOJUnQ", "width": 4.073025563862302}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCm4UxKBl7ha5QLyPNmEhWug", "to": "UCglDIsg_Z9mE2oT9hsrbzFA", "width": 2.9348739355968507}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UCVBErcpqaokOf4fI5j73K_w", "width": 3.6709150284602554}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 3.8936766345956437}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UCrJHj7MDQhmQ9iFuACdoWCg", "width": 2.869675394925215}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UC4cmBAit8i_NJZE8qK8sfpA", "width": 3.386418929092822}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UCicjynhfFw2LiIQFnoS1JTw", "width": 3.562089027737337}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UCaRMivfyupj3ucUyJbZbCNg", "width": 2.919175785079603}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 3.321220388421187}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UCeTVoczn9NOZA9blls3YgUg", "width": 3.7145222003811424}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UCMTcsanYhBtOb096XegDZQA", "width": 2.757724967479859}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UCEKXieT70wByfvZwP1CxdPQ", "width": 2.7156818820794935}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UCwk6ifONlkvqnoMF2uyA05g", "width": 3.1105440342413657}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UC-g0gSStENkYPXFRsKrlvyA", "width": 3.0985906397344527}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UC_OskgZBoS4dAnVUgJVexcw", "width": 2.7370425407514087}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UCNbeSPp8RYKmHUliYBUDizg", "width": 3.378617138564111}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UC0Hg2Ks00kCekyjZG_LxOmg", "width": 3.31259189508755}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 2.8344537511509307}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UC2SUoo36iHgVLEK7EEVPIFQ", "width": 3.1990108241803723}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UCUeS2Jmgiu0OFaTeRqkuXtw", "width": 2.8523025861004925}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrRiVfHqBIIvSgKmgnSY66g", "to": "UCKgpamMlm872zkGDcBJHYDg", "width": 2.622460021956227}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCIgELCOfrcYA9jWF4TOJUnQ", "to": "UCglDIsg_Z9mE2oT9hsrbzFA", "width": 3.354634980487915}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCIgELCOfrcYA9jWF4TOJUnQ", "to": "UCQ3A7Dnyz1_Fxaa5BCzAPMA", "width": 2.622460021956227}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC32mYgIHS-e3C3Eyd2tRw6g", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 2.869675394925215}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC32mYgIHS-e3C3Eyd2tRw6g", "to": "UCrJHj7MDQhmQ9iFuACdoWCg", "width": 2.7972183755633826}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCEKXieT70wByfvZwP1CxdPQ", "to": "UCVBErcpqaokOf4fI5j73K_w", "width": 2.777770909816831}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCEKXieT70wByfvZwP1CxdPQ", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 2.6707370470133287}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCEKXieT70wByfvZwP1CxdPQ", "to": "UC4cmBAit8i_NJZE8qK8sfpA", "width": 2.919175785079603}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCEKXieT70wByfvZwP1CxdPQ", "to": "UCicjynhfFw2LiIQFnoS1JTw", "width": 2.6935969968484343}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCEKXieT70wByfvZwP1CxdPQ", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 3.2092699609758304}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCEKXieT70wByfvZwP1CxdPQ", "to": "UCeTVoczn9NOZA9blls3YgUg", "width": 2.6707370470133287}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCUeS2Jmgiu0OFaTeRqkuXtw", "to": "UC4cmBAit8i_NJZE8qK8sfpA", "width": 2.622460021956227}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCUeS2Jmgiu0OFaTeRqkuXtw", "to": "UC2SUoo36iHgVLEK7EEVPIFQ", "width": 2.8161020665254135}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCUeS2Jmgiu0OFaTeRqkuXtw", "to": "UCNbeSPp8RYKmHUliYBUDizg", "width": 2.8344537511509307}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCUeS2Jmgiu0OFaTeRqkuXtw", "to": "UC9VWyvdF-91McG6kt27MeKA", "width": 2.6935969968484343}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCfYYi6aJNg70mFYnbBKcMQw", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 2.965179014729281}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCSHhm94gQifhWmO5LhQk2XQ", "to": "UCVBErcpqaokOf4fI5j73K_w", "width": 3.061355264146904}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCSHhm94gQifhWmO5LhQk2XQ", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 2.757724967479859}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCSHhm94gQifhWmO5LhQk2XQ", "to": "UC4cmBAit8i_NJZE8qK8sfpA", "width": 3.008146786903576}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCSHhm94gQifhWmO5LhQk2XQ", "to": "UCicjynhfFw2LiIQFnoS1JTw", "width": 2.994136747522361}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCSHhm94gQifhWmO5LhQk2XQ", "to": "UCaRMivfyupj3ucUyJbZbCNg", "width": 2.757724967479859}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCSHhm94gQifhWmO5LhQk2XQ", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 2.757724967479859}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCSHhm94gQifhWmO5LhQk2XQ", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 2.9502026833693797}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCSHhm94gQifhWmO5LhQk2XQ", "to": "UCNbeSPp8RYKmHUliYBUDizg", "width": 2.7156818820794935}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCNbeSPp8RYKmHUliYBUDizg", "to": "UCVBErcpqaokOf4fI5j73K_w", "width": 2.8344537511509307}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCNbeSPp8RYKmHUliYBUDizg", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 2.9798187706630155}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCNbeSPp8RYKmHUliYBUDizg", "to": "UCicjynhfFw2LiIQFnoS1JTw", "width": 2.7370425407514087}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCNbeSPp8RYKmHUliYBUDizg", "to": "UCeTVoczn9NOZA9blls3YgUg", "width": 3.0864138044011833}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCNbeSPp8RYKmHUliYBUDizg", "to": "UCHaHD477h-FeBbVh9Sh7syA", "width": 2.8344537511509307}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCNbeSPp8RYKmHUliYBUDizg", "to": "UCglDIsg_Z9mE2oT9hsrbzFA", "width": 2.7370425407514087}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCNbeSPp8RYKmHUliYBUDizg", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 2.647045646238481}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCNbeSPp8RYKmHUliYBUDizg", "to": "UC0Hg2Ks00kCekyjZG_LxOmg", "width": 2.647045646238481}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCQ3A7Dnyz1_Fxaa5BCzAPMA", "to": "UCVBErcpqaokOf4fI5j73K_w", "width": 2.869675394925215}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCicjynhfFw2LiIQFnoS1JTw", "to": "UCVBErcpqaokOf4fI5j73K_w", "width": 3.607823010959188}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCicjynhfFw2LiIQFnoS1JTw", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 3.5}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCicjynhfFw2LiIQFnoS1JTw", "to": "UCrJHj7MDQhmQ9iFuACdoWCg", "width": 2.7972183755633826}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCicjynhfFw2LiIQFnoS1JTw", "to": "UC4cmBAit8i_NJZE8qK8sfpA", "width": 3.814272521813946}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCicjynhfFw2LiIQFnoS1JTw", "to": "UCaRMivfyupj3ucUyJbZbCNg", "width": 3.5}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCicjynhfFw2LiIQFnoS1JTw", "to": "UCwk6ifONlkvqnoMF2uyA05g", "width": 2.6935969968484343}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCicjynhfFw2LiIQFnoS1JTw", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 3.4017476768653516}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCicjynhfFw2LiIQFnoS1JTw", "to": "UC8pPDhxSn1nee70LRKJ0p3g", "width": 2.965179014729281}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCicjynhfFw2LiIQFnoS1JTw", "to": "UC1ZSvn6VIWqM68J_2USwH3Q", "width": 2.6935969968484343}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCicjynhfFw2LiIQFnoS1JTw", "to": "UCC3UrdqNf6rpWZoTiYbYk4A", "width": 3.6857774614506287}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCicjynhfFw2LiIQFnoS1JTw", "to": "UCJtBaL1PPmTc1ff0nsihR0g", "width": 3.1885875342473806}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCicjynhfFw2LiIQFnoS1JTw", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 3.1451419903444062}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCicjynhfFw2LiIQFnoS1JTw", "to": "UCeTVoczn9NOZA9blls3YgUg", "width": 2.8344537511509307}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCwk6ifONlkvqnoMF2uyA05g", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 3.1222820405093006}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCwk6ifONlkvqnoMF2uyA05g", "to": "UCrJHj7MDQhmQ9iFuACdoWCg", "width": 2.7370425407514087}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCwk6ifONlkvqnoMF2uyA05g", "to": "UC4cmBAit8i_NJZE8qK8sfpA", "width": 3.133812283508737}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCwk6ifONlkvqnoMF2uyA05g", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 3.1990108241803723}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCwk6ifONlkvqnoMF2uyA05g", "to": "UCeTVoczn9NOZA9blls3YgUg", "width": 2.8161020665254135}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCwk6ifONlkvqnoMF2uyA05g", "to": "UCHaHD477h-FeBbVh9Sh7syA", "width": 2.6707370470133287}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCwk6ifONlkvqnoMF2uyA05g", "to": "UC2SUoo36iHgVLEK7EEVPIFQ", "width": 2.757724967479859}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCwk6ifONlkvqnoMF2uyA05g", "to": "UCBHtnQGUChkwG1eyWL5EA9g", "width": 3.5679844681799864}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCwk6ifONlkvqnoMF2uyA05g", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 2.777770909816831}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCwk6ifONlkvqnoMF2uyA05g", "to": "UC0Hg2Ks00kCekyjZG_LxOmg", "width": 2.9502026833693797}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCwk6ifONlkvqnoMF2uyA05g", "to": "UCKgpamMlm872zkGDcBJHYDg", "width": 2.7370425407514087}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCwk6ifONlkvqnoMF2uyA05g", "to": "UCu4AP8qmYnXNUipUeyPQKig", "width": 3.1672268755754653}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCPDQgXju7hqEGBwzLIeI7Zw", "to": "UC4cmBAit8i_NJZE8qK8sfpA", "width": 2.622460021956227}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCeTVoczn9NOZA9blls3YgUg", "to": "UCVBErcpqaokOf4fI5j73K_w", "width": 3.4527244228309026}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCeTVoczn9NOZA9blls3YgUg", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 3.8061799739838866}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCeTVoczn9NOZA9blls3YgUg", "to": "UCrJHj7MDQhmQ9iFuACdoWCg", "width": 2.994136747522361}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCeTVoczn9NOZA9blls3YgUg", "to": "UC4cmBAit8i_NJZE8qK8sfpA", "width": 3.3381419040357203}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCeTVoczn9NOZA9blls3YgUg", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 3.1779947525161507}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCeTVoczn9NOZA9blls3YgUg", "to": "UC-g0gSStENkYPXFRsKrlvyA", "width": 3.008146786903576}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCeTVoczn9NOZA9blls3YgUg", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 2.777770909816831}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCeTVoczn9NOZA9blls3YgUg", "to": "UC2SUoo36iHgVLEK7EEVPIFQ", "width": 2.8161020665254135}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCeTVoczn9NOZA9blls3YgUg", "to": "UC0Hg2Ks00kCekyjZG_LxOmg", "width": 2.622460021956227}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCMTcsanYhBtOb096XegDZQA", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 2.647045646238481}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCMTcsanYhBtOb096XegDZQA", "to": "UC2SUoo36iHgVLEK7EEVPIFQ", "width": 2.8344537511509307}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCKgpamMlm872zkGDcBJHYDg", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 2.8344537511509307}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCKgpamMlm872zkGDcBJHYDg", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 2.6935969968484343}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCKgpamMlm872zkGDcBJHYDg", "to": "UCHaHD477h-FeBbVh9Sh7syA", "width": 2.7156818820794935}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC0Hg2Ks00kCekyjZG_LxOmg", "to": "UCVBErcpqaokOf4fI5j73K_w", "width": 2.7156818820794935}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC0Hg2Ks00kCekyjZG_LxOmg", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 3.229315903312803}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC0Hg2Ks00kCekyjZG_LxOmg", "to": "UC4cmBAit8i_NJZE8qK8sfpA", "width": 2.7156818820794935}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC0Hg2Ks00kCekyjZG_LxOmg", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 2.6707370470133287}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC0Hg2Ks00kCekyjZG_LxOmg", "to": "UCBHtnQGUChkwG1eyWL5EA9g", "width": 2.6935969968484343}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC0Hg2Ks00kCekyjZG_LxOmg", "to": "UC-g0gSStENkYPXFRsKrlvyA", "width": 2.7370425407514087}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCy-dvmsfmvYXBmt_huqqo1A", "to": "UCVBErcpqaokOf4fI5j73K_w", "width": 2.777770909816831}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCy-dvmsfmvYXBmt_huqqo1A", "to": "UC4cmBAit8i_NJZE8qK8sfpA", "width": 2.8523025861004925}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCy-dvmsfmvYXBmt_huqqo1A", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 2.757724967479859}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCJtBaL1PPmTc1ff0nsihR0g", "to": "UCwA7Aepp7nRUJNa8roQ-6Bw", "width": 2.8865969105397484}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCJtBaL1PPmTc1ff0nsihR0g", "to": "UCVBErcpqaokOf4fI5j73K_w", "width": 3.459691780399548}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCJtBaL1PPmTc1ff0nsihR0g", "to": "UC4cmBAit8i_NJZE8qK8sfpA", "width": 3.5679844681799864}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCJtBaL1PPmTc1ff0nsihR0g", "to": "UCaRMivfyupj3ucUyJbZbCNg", "width": 2.622460021956227}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCJtBaL1PPmTc1ff0nsihR0g", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 2.757724967479859}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCJtBaL1PPmTc1ff0nsihR0g", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 3.2391122040512395}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC8UA8eOwj0WQild7-asffqw", "to": "UC4cmBAit8i_NJZE8qK8sfpA", "width": 2.622460021956227}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC1ZSvn6VIWqM68J_2USwH3Q", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 2.647045646238481}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC1ZSvn6VIWqM68J_2USwH3Q", "to": "UC4cmBAit8i_NJZE8qK8sfpA", "width": 2.647045646238481}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrJHj7MDQhmQ9iFuACdoWCg", "to": "UCVBErcpqaokOf4fI5j73K_w", "width": 2.7972183755633826}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrJHj7MDQhmQ9iFuACdoWCg", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 3.378617138564111}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrJHj7MDQhmQ9iFuACdoWCg", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 2.777770909816831}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrJHj7MDQhmQ9iFuACdoWCg", "to": "UC4cmBAit8i_NJZE8qK8sfpA", "width": 3.229315903312803}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrJHj7MDQhmQ9iFuACdoWCg", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 2.919175785079603}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCrJHj7MDQhmQ9iFuACdoWCg", "to": "UCaRMivfyupj3ucUyJbZbCNg", "width": 2.757724967479859}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCHaHD477h-FeBbVh9Sh7syA", "to": "UCVBErcpqaokOf4fI5j73K_w", "width": 2.622460021956227}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCHaHD477h-FeBbVh9Sh7syA", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 2.622460021956227}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC4cmBAit8i_NJZE8qK8sfpA", "to": "UCwA7Aepp7nRUJNa8roQ-6Bw", "width": 3.5379587978971556}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC4cmBAit8i_NJZE8qK8sfpA", "to": "UCVBErcpqaokOf4fI5j73K_w", "width": 4.05936800445516}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC4cmBAit8i_NJZE8qK8sfpA", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 3.6022787926192423}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC4cmBAit8i_NJZE8qK8sfpA", "to": "UCaRMivfyupj3ucUyJbZbCNg", "width": 3.346440636935662}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC4cmBAit8i_NJZE8qK8sfpA", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 3.573827034005272}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC4cmBAit8i_NJZE8qK8sfpA", "to": "UC02LvI6Ey3MonxQu8mB7wzg", "width": 2.757724967479859}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC4cmBAit8i_NJZE8qK8sfpA", "to": "UC9VWyvdF-91McG6kt27MeKA", "width": 2.622460021956227}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC4cmBAit8i_NJZE8qK8sfpA", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 3.7191920535173573}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC4cmBAit8i_NJZE8qK8sfpA", "to": "UCzBGtBze1AIcDmRwD2ZjiAA", "width": 2.6707370470133287}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC4cmBAit8i_NJZE8qK8sfpA", "to": "UC8pPDhxSn1nee70LRKJ0p3g", "width": 3.048455006504028}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC4cmBAit8i_NJZE8qK8sfpA", "to": "UC-g0gSStENkYPXFRsKrlvyA", "width": 2.6935969968484343}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCKjOCfT-w4ePd98Y_g8gTqg", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 2.6935969968484343}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCVBErcpqaokOf4fI5j73K_w", "to": "UCwA7Aepp7nRUJNa8roQ-6Bw", "width": 3.3381419040357203}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCVBErcpqaokOf4fI5j73K_w", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 3.7420520033524625}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCVBErcpqaokOf4fI5j73K_w", "to": "UCaRMivfyupj3ucUyJbZbCNg", "width": 3.0864138044011833}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCVBErcpqaokOf4fI5j73K_w", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 3.9042694163268745}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCVBErcpqaokOf4fI5j73K_w", "to": "UC-g0gSStENkYPXFRsKrlvyA", "width": 3.061355264146904}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCVBErcpqaokOf4fI5j73K_w", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 3.573827034005272}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCVBErcpqaokOf4fI5j73K_w", "to": "UC9VWyvdF-91McG6kt27MeKA", "width": 2.647045646238481}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCVBErcpqaokOf4fI5j73K_w", "to": "UCzBGtBze1AIcDmRwD2ZjiAA", "width": 3.156278017463216}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC02LvI6Ey3MonxQu8mB7wzg", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 2.8161020665254135}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCu4AP8qmYnXNUipUeyPQKig", "to": "UCBHtnQGUChkwG1eyWL5EA9g", "width": 2.9798187706630155}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC2SUoo36iHgVLEK7EEVPIFQ", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 2.7972183755633826}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC2SUoo36iHgVLEK7EEVPIFQ", "to": "UC-g0gSStENkYPXFRsKrlvyA", "width": 2.8161020665254135}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCQoIEhy6h5Bqzu-oOAjmeYg", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 2.9502026833693797}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC9VWyvdF-91McG6kt27MeKA", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 2.7972183755633826}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC-g0gSStENkYPXFRsKrlvyA", "to": "UC9Pbt3q-ihROg1lmmmQdU2w", "width": 3.6709150284602554}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC-g0gSStENkYPXFRsKrlvyA", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 2.8523025861004925}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC9Pbt3q-ihROg1lmmmQdU2w", "to": "UCwA7Aepp7nRUJNa8roQ-6Bw", "width": 2.757724967479859}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC9Pbt3q-ihROg1lmmmQdU2w", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 3.156278017463216}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC9Pbt3q-ihROg1lmmmQdU2w", "to": "UCaRMivfyupj3ucUyJbZbCNg", "width": 2.8865969105397484}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC9Pbt3q-ihROg1lmmmQdU2w", "to": "UCvn_XCl_mgQmt3sD753zdJA", "width": 3.6295397460121226}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCwA7Aepp7nRUJNa8roQ-6Bw", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 3.3038475795964644}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCvn_XCl_mgQmt3sD753zdJA", "to": "UCaRMivfyupj3ucUyJbZbCNg", "width": 3.2676470600213854}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCvn_XCl_mgQmt3sD753zdJA", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 3.0985906397344527}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UCzBGtBze1AIcDmRwD2ZjiAA", "to": "UC_0NfufarVw04vDfWFm8z_Q", "width": 2.8865969105397484}, {"color": "rgba(255, 255, 255, 0.1)", "from": "UC_0NfufarVw04vDfWFm8z_Q", "to": "UCaRMivfyupj3ucUyJbZbCNg", "width": 2.869675394925215}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    
+    <script type="text/javascript">
+    setTimeout(function() {
+        network.moveTo({
+            scale: 0.05,
+            position: {x: 0, y: 2700},
+            animation: false
+        });
+    }, 100);
+    </script>
+    
+</body>
+</html>

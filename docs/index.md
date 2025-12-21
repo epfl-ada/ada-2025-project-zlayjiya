@@ -90,7 +90,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     <h2>Before We Explore: First Glimpses of the YouNiverse</h2>
     
     <p>
-        To answer these questions, we turned to the YouNiverse dataset. And the name truly does it justice, its size is that of a universe. Data from 73 million videos , 137 thousand channels and 8.6 billion comments from 449 million users on a timeframe from May 2005 to October 2019.
+        To answer these questions, we turned to the YouNiverse dataset. And the name truly does it justice, its size is that of a universe. Data from 73 million videos , 137 thousand channels and 8.6 billion comments from 449 million users on a timeframe from May 2005 to October 2019. The dataset claims to only hold data from english speaking videos (more on that later).
     </p>
 
     <p>
@@ -189,19 +189,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </div>
     </details>
 
-    
 
-    <p>
-        With our normalized map in hand, we applied the Louvain Community Detection algorithm. Think of this as a way to find where the "gas clouds" of users naturally condense into distinct structures.
-    </p>
-
-    <div class="insight-box" style="background: #132f34ff; padding: 15px; border-left: 4px solid #17a2b8; margin: 20px 0;color: #ffffff">
-    ✨ <strong>The Breakthrough:</strong> With gravitational shielding applied, distinct galaxies emerge from the chaos. Each represents a true audience community bound by shared interests, not just shared fame.
-    </div>
-    <p>
-        Louvain seeks to maximize Modularity—a metric that measures how much "denser" the connections are within a galaxy compared to a random universe. Our map achieved a Modularity score of 0.655.
-        In the world of network science, a score above 0.5 is a significant discovery. It confirms that the YouNiverse is not a chaotic cloud of random stars, but a structured system of distinct, high-density galaxies bound by shared cultures, languages, and interests.
-    </p>
     <h3>Filtering the Cosmic Noise</h3>
     <p>
         Even with gravitational shielding applied, our universe still contained faint, unreliable connections, like distant radio signals lost in static. To build a clean map of meaningful relationships, we applied two critical filters to remove the cosmic noise.
@@ -238,7 +226,15 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 </details>
 
     <p>
-        The result? A cleaner cosmic map where every connection carries weight, and every channel has established its place in the universe. With the noise filtered out, we were ready to discover the true galaxy structure hidden within.
+        With our normalized map in hand, we applied the Louvain Community Detection algorithm. Think of this as a way to find where the "gas clouds" of users naturally condense into distinct structures.
+    </p>
+
+    <div class="insight-box" style="background: #132f34ff; padding: 15px; border-left: 4px solid #17a2b8; margin: 20px 0;color: #ffffff">
+    ✨ <strong>The Breakthrough:</strong> With gravitational shielding applied, distinct galaxies emerge from the chaos. Each represents a true audience community bound by shared interests, not just shared fame.
+    </div>
+    <p>
+        Louvain seeks to maximize Modularity—a metric that measures how much "denser" the connections are within a galaxy compared to a random universe. Our map achieved a Modularity score of 0.655.
+        In the world of network science, a score above 0.5 is a significant discovery. It confirms that the YouNiverse is not a chaotic cloud of random stars, but a structured system of distinct, high-density galaxies bound by shared cultures, languages, and interests.
     </p>
 
     <h2>The Architecture of the YouNiverse</h2>
@@ -311,7 +307,97 @@ title: "YouNiverse: Voyage Through Video Galaxies"
             <iframe src="./b.html" width="100%" height="500px" frameborder="0" style="border:none; display: block;"></iframe>
         </div>
     </div>
+    <h3>First Contact: A Glimpse Into Three Galaxies</h3>
+    <p>
+        Before we systematically analyze all galaxies, let's descend into three interesting, yet very small compared to the size of the major galaxies, ones. We will quickly analyze what sort of channels lie in them to determine how they came to be. They define three contrasting types of communities. Do not hesitate to click on the little nodes to get the names of the channels and their total strength in the graph.
+    </p>
 
+    <!-- Galaxy 1: Graph Left, Text Right -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; margin: 40px 0; height: 400px; padding: 30px; background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%); border-radius: 16px; border: 2px solid rgba(100, 181, 246, 0.3);">
+        
+        <div class="viz-network" >
+            <!-- Insert your galaxy visualization here -->
+            <iframe src="./galaxy_25.html" width="100%" height="300px" frameborder="0"></iframe>
+        </div>
+        
+        <div>
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <div style="font-size: 2.5em; margin-right: 15px;">🎾</div>
+                <div>
+                    <h4 style="color: #64b5f6; margin: 0;">Tennis Terror</h4>
+                    <p style="color: #aaa; font-size: 0.9em; margin: 5px 0 0 0;">
+                        Galaxy #25 • 6 channels • Biggest channel : Tennis TV
+                    </p>
+                </div>
+            </div>
+            <p style="color: #ddd; line-height: 1.7; margin-bottom: 15px;">
+                A small, tight-knit community around a passion for one sport : Tennis.  
+            </p>
+            
+        </div>
+        
+    </div>
+
+    <!-- Galaxy 2: Text Left, Graph Right -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; margin: 40px 0; height: 400px;padding: 30px; background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%); border-radius: 16px; border: 2px solid rgba(171, 71, 188, 0.3);">
+        
+        <div>
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <div style="font-size: 2.5em; margin-right: 15px;">🇲🇦🇹🇳</div>
+                <div>
+                    <h4 style="color: #ab47bc; margin: 0;">Maghrebi Power</h4>
+                    <p style="color: #aaa; font-size: 0.9em; margin: 5px 0 0 0;">
+                        Galaxy #25 • 32 channels • Biggest channel : 7liwa
+                    </p>
+                </div>
+            </div>
+            <p style="color: #ddd; line-height: 1.7; margin-bottom: 15px;">
+                A single galaxy with what seems to be two different galaxies connected by two heavily interacting channels. Quick overview of these channels leads us to see that on one part we have some Moroccan singers and on the other side Tunisian ones.
+            </p>
+        </div>
+        
+        <div class="viz-network">
+            <!-- Insert your galaxy visualization here -->
+            <iframe src="./galaxy_26.html" width="100%" height="300px" frameborder="0"></iframe>
+        </div>
+        
+    </div>
+
+    <!-- Galaxy 3: Graph Left, Text Right -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; margin: 40px 0; padding: 30px; background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%); border-radius: 16px; height: 400px;border: 2px solid rgba(255, 193, 7, 0.3);">
+        
+    <div class="viz-network">
+        <!-- Insert your galaxy visualization here -->
+        <iframe src="./galaxy_24.html" width="100%" height="300px" frameborder="0"></iframe>
+        <!-- OR -->
+        <!-- <img src="galaxy_news.png" width="100%" style="border-radius: 8px;"> -->
+    </div>
+    
+    <div>
+        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+            <div style="font-size: 2.5em; margin-right: 15px;">🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
+            <div>
+                <h4 style="color: #ffc107; margin: 0;">English Learners</h4>
+                <p style="color: #aaa; font-size: 0.9em; margin: 5px 0 0 0;">
+                    Galaxy #24 • 45 channels • Biggest channel : Go Natural English
+                </p>
+            </div>
+        </div>
+        <p style="color: #ddd; line-height: 1.7; margin-bottom: 15px;">
+            Probably a hub for recharging your spacecraft before going exploring. This is a community based around learning the biggest language on the website (and the world), English. 
+        </p>
+
+    </div>
+    
+    </div>
+
+    <div class="quote">
+        "From isolated echo chambers to sprawling hubs, each galaxy reveals a different way communities form and interact."
+    </div>
+
+    <p>
+        These three examples showcase the diversity we've discovered. In the next chapter, we will systematically analyze what truly distinguishes all major galaxies in the YouNiverse.
+    </p>
     <h3>What We've Discovered</h3>
     <p>
         By building our cosmic map from 8.6 billion comments across 19,000 channels, we've revealed something remarkable: <strong>YouTube isn't a chaotic cloud of random content</strong>. It's a structured universe with 52 distinct cultural galaxies, each with its own centers of gravity, its own audiences, and its own identity.
@@ -329,69 +415,267 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         "The YouNiverse is not a single universe, but a multiverse, 52 parallel worlds occupying the same digital space, each invisible to the others unless you know where to look."
     </div>
 </section>
+<section id="temporal" class="section">
+    <span class="section-number">Chapter IV</span>
+    <h2>A Decade of Transformation</h2>
 
+    <h3>Slicing Time: Investigating the Invisible Shift</h3>
+    <p>
+        To truly understand the evolution of the YouNiverse, viewing it as a static map is not enough; we must observe it as a living organism. A dataset spanning 14 years flattens history—it hides the dramatic shifts in culture, influence, and structure that occurred between the first viral hits and the modern creator economy.
+    </p>
+    <p>
+        To capture this motion, we employed a <strong>temporal snapshot methodology</strong>. By slicing our data into distinct one-year windows, we isolated the interactions of each era. This allowed us to build independent universes for 2010, 2011, through to 2019, enabling us to watch the laws of digital gravity change in real-time. What we found was not a linear expansion, but a complete structural metamorphosis from a unified community to a fractured multiverse.
+    </p>
+
+    <h3>The Big Bang of Communities</h3>
+    <p>
+        The most fundamental shift in the ecosystem is a massive <strong>+518% fragmentation</strong> of the network structure. In 2010, our community detection algorithms identified only <strong>16 distinct clusters</strong>. At this stage, YouTube acted as a "digital town square": audiences were forced to mingle because there were simply fewer distinct cultural spaces to inhabit.
+    </p>
+    <p>
+        By 2019, this number had exploded to <strong>99 distinct communities</strong>. This fragmentation was driven by two major cosmic events visible on the timeline: the <strong>Gaming explosion</strong> (starting around 2012) and the <strong>Indian expansion</strong> (triggered by Jio in 2016).
+    </p>
+    <p>
+        <strong>The Implication:</strong> This is not an accidental fracture, but a necessary adaptation to abundance. As the platform flooded with content, the "shared experience" became impossible to maintain. To survive the cognitive load, audiences naturally segregated into <strong>cognitive silos</strong>. Viewers retreated into hyper-specific clusters—from K-Pop to Minecraft—turning shared interests into hermetic worlds that rarely interact.
+    </p>
+
+    <iframe src="./fragmentation.html" width="100%" height="500px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
+    <h3>The Connectivity Paradox</h3>
+<p>
+    This creation of silos leads us to a startling paradox: <strong>as the universe expanded, it became less connected</strong>. While the number of channels grew five-fold, the structural density of the network collapsed.
+</p>
+<p>
+    To understand the scale of this collapse, we must look at how density D is calculated:
+</p>
+
+<div style="text-align: center; margin: 20px 0; font-size: 1.2em;">
+    $$D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}$$
+</div>
+
+<p>
+    In 2010, the network density was <strong>0.05</strong>. In simple terms, out of all possible conversations between communities, 5% actually happened. It was a "small world" where distinct groups frequently rubbed shoulders. By 2019, this density had flatlined to <strong>0.002</strong>—a staggering <strong>96% drop</strong> in relative connectivity.
+</p>
+
+<iframe src="./density.html" width="100%" height="500px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
+
+<p>
+    This curve is the <strong>filter bubble made visible</strong>. The mathematical collapse of D represents the death of serendipity. As algorithms got better at prediction, they stopped building bridges between galaxies. Viewers stayed in their comfortable corners, and the "global conversation" of 2010 dissolved into thousands of private, parallel conversations.
+</p>
+<h3>Galaxies Rising and Fading</h3>
+    <p>
+        The heart of the YouNiverse has undergone a seismic transition. Our <strong>PageRank centrality</strong> analysis — a measure of structural influence based on how audiences move between channels — captures the fall of an empire and the birth of a new one.
+    </p>
+    
+    <ul>
+        <li><strong>The Great Passing of the Torch (2012):</strong> In 2010, Music (red curve 🔴) reigned supreme, commanding over 30% of the platform's total influence. By 2012, the graph shows a historic crossover: the beginning of the <strong>Gaming Era</strong> (green curve 🟢). Let's Play creators shifted from peripheral niches to becoming the platform's new centers of gravity.</li>
+        <li><strong>The Decline of Music:</strong> Once a central pillar, Music saw its structural influence steadily collapse as discovery migrated to dedicated streaming services. This trend shows YouTube evolving from a "video radio" into a home for community-driven creator content.</li>
+        <li><strong>The Quiet Ascent:</strong> While Gaming and Music fought for the top spot, other galaxies grew steadily. Categories like <strong>Entertainment</strong> (blue curve 🔵) and <strong>People & Blogs</strong> (purple curve 🟣) saw consistent growth, proving that the YouNiverse has diversified far beyond simple passive entertainment.</li>
+    </ul>
+
+    <iframe src="./pagerank.html" width="100%" height="500px" style="border:none; display:block; margin:20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe><h3>The Emergence of New Powers: The Jio Effect</h3>
+    <p>
+        While the Western core was busy transitioning into the Gaming Era, a seismic shift was happening on the periphery. Our temporal tracking reveals the emergence of massive regional superpowers that fundamentally changed the scale of the YouNiverse.
+    </p>
+    
+    <p>
+        The most prominent example is the <strong>"Jio Effect" of 2016</strong>. As seen in our fragmentation data, the entry of millions of Indian users led to a sudden spike in community detected. This era birthed the massive <strong>T-Series galaxy</strong>. As shown in the "Evolution of Top 5 Identities" chart, by 2016, T-Series shifted from a peripheral node to the third-largest community on the entire platform.
+    </p>
+
+    <iframe src="./top5_identities.html" width="100%" height="550px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
+
+    <p>
+        <strong>Parallel Worlds:</strong> What makes this growth remarkable is its isolation. Despite becoming a global giant, the T-Series galaxy grew with almost zero audience overlap with Western giants like PewDiePie. This proved that the YouNiverse was no longer a single shared experience, but a <strong>multiverse of parallel worlds</strong>. By 2019, YouTube had become a collection of massive, independent islands—vibrant and rich, yet structurally invisible to one another.
+    </p>
+<h3>Visualizing the Drift: A Universe in Motion</h3>
+    
+    <p>
+        Animating these annual snapshots through our physics engine reveals the structural explosion of the network. In 2010, the ecosystem appears as a compact, monolithic block: there are few communities, and they are all tightly interconnected within a restricted space, forming a cohesive mass.
+    </p>
+    <p>
+        Over the decade, the sheer pressure of growth fractures this block. The number of communities rises drastically, creating a centrifugal force that propels new "niche galaxies" outward. The final result in 2019 is no longer a unified network, but a vast archipelago: a fusing core persists at the center, surrounded by a multitude of specialized islands floating on the periphery, orbiting far from the central gravity without ever touching it.
+    </p>
+
+    <iframe src="./galaxy_explorer.html" width="100%" height="700px" style="border:none; display: block; margin: 20px auto;"></iframe>
+
+    <p class="caption" style="text-align: center; color: #888; font-size: 0.9em; margin-top: -10px;">
+        <em>Interactive Model: Drag nodes to explore connections, use the slider to travel through time.</em>
+    </p>
+    <div class="quote">
+        "The YouNiverse transformed from a unified town square into a constellation of isolated worlds."
+    </div>
+</section>
 <!-- Section IV: Galaxy Identity -->
 <section id="identity" class="section">
-    <span class="section-number">Chapter IV</span>
+    <span class="section-number">Chapter V</span>
     <h2>Understanding the Identity of Galaxies</h2>
     
-    <h3>Thematic Characterization</h3>
     <p>
-        Each galaxy has its own identity. Using <span class="highlight">topic detection</span> on video titles and descriptions, we uncover the dominant themes within each community.
+        We've mapped 52 galaxies, but what makes each one unique? YouTube assigns categories to channels, but these official labels only scratch the surface. A "Music" galaxy in one region might be entirely different from another. To truly understand each galaxy's identity, we need to look deeper: into the <span class="highlight">content itself</span>, the <span class="highlight">language</span>, and the <span class="highlight">behavior</span> of its inhabitants.
+    </p>
+
+    <h3>Reading the Stars: Topic Detection with LDA</h3>
+    <p>
+        We deployed <strong>Latent Dirichlet Allocation (LDA)</strong> on video titles and descriptions from the 10 largest galaxies. Using POS-filtering (nouns, proper nouns, adjectives) and bigram detection, we extract the hidden thematic structure within each community—the actual topics people talk about, not just the labels YouTube assigns.
     </p>
     
     <p>
-        Some galaxies are dominated by a single theme (Gaming, Music), while others blend multiple categories into unique subcultures.
+        The results largely validate YouTube's categorization while revealing rich subcultures within each galaxy. Regional ecosystems also emerge, with entire non-English communities thriving in an allegedly "English-only" dataset.
     </p>
-    
-    <h3>Single-Theme vs Multi-Theme Galaxies</h3>
-    <p>
-        Are galaxies defined by a single dominant category, or do they represent hybrid communities? Our analysis reveals both types exist in the YouNiverse.
-    </p>
-    
+
     <div class="viz-container">
-        <div class="viz-title">Topic Distribution Within Galaxies</div>
-        <div id="topic-viz" class="viz-placeholder">
-            <!-- Topic visualization will be inserted here -->
-            [Interactive visualization coming soon]
+        <div id="topic-explorer-container">
+            <iframe src="./topic_explorer.html" width="100%" height="480px" frameborder="0" style="border:none;"></iframe>
         </div>
     </div>
-    
-    <h3>Regional vs Global Galaxies</h3>
+
+    <h3>The Language Barrier: Regional Galaxies Emerge</h3>
     <p>
-        Some galaxies transcend borders, uniting viewers worldwide around shared interests. Others cluster along linguistic or regional lines, forming cultural pockets within the larger universe.
+        One striking discovery: <span class="highlight">language creates galaxies</span>. Despite the YouNiverse dataset claiming to contain only "English-speaking" content, our analysis reveals massive non-English communities bound together by shared language.
     </p>
-    
-    <h3>Engagement Metrics by Galaxy</h3>
+
+    <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #8b5cf6; margin: 20px 0; color: #ffffff; border-radius: 4px;">
+        <strong>🌍 Language-Based Galaxies Discovered:</strong>
+        <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
+            <li><strong>🇮🇳 Galaxy #0 - Indian Entertainment Hub (3,187 channels):</strong> Bollywood dominates (Filmfare, Salman Khan, Varun Dhawan). Hindi beauty tips, Navratri celebrations, and PUBG Mobile.</li>
+            <li><strong>🇵🇭 Galaxy #7 - Filipino Entertainment Hub (596 channels):</strong> Mobile Legends: Bang Bang is the gravitational center. ABS-CBN content, Himig Handog music, and Filipino language (ang, lang, ako, ikaw).</li>
+        </ul>
+    </div>
+
     <p>
-        Different galaxies exhibit different engagement patterns. Gaming communities might favor longer videos, while Music galaxies see higher view counts but shorter durations.
+        These linguistic gravitational bonds are so strong that they override thematic connections. An Indian gamer has more in common with an Indian news channel than with an American gamer—at least in terms of shared audience.
     </p>
-    
+
+    <div class="quote">
+        "In the YouNiverse, language isn't just communication—it's gravity. Speakers of the same language orbit together, regardless of content type."
+    </div>
+
+    <h3>Categories Confirmed: LDA Validates YouTube Labels</h3>
+    <p>
+        Interestingly, our LDA analysis largely <span class="highlight">confirms YouTube's category assignments</span>. The detected topics align remarkably well with the official labels:
+    </p>
+
+    <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #10b981; margin: 20px 0; color: #ffffff; border-radius: 4px;">
+        <strong>✅ Category-Topic Alignment:</strong>
+        <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
+            <li><strong>Galaxy #1 (Gaming 48%):</strong> GTA mods, Roblox, Minecraft roleplay ✓</li>
+            <li><strong>Galaxy #2 (Music 64%):</strong> Ariana Grande, Nicki Minaj, chill playlists ✓</li>
+            <li><strong>Galaxy #3 (Howto & Style 31%):</strong> Vlogs, makeup tutorials, hauls ✓</li>
+            <li><strong>Galaxy #9 (Autos & Vehicles 42%):</strong> Car reviews, bikes, off-road ✓</li>
+        </ul>
+    </div>
+
+    <p>
+        This validates that <strong>co-commenting behavior reflects genuine content affinity</strong>. Users who comment together genuinely share interests that match the channel's official category—the community structure is real.
+    </p>
+
+    <h3>Behavioral Signatures: How Galaxies Engage</h3>
+    <p>
+        Beyond topics, each galaxy has a distinct <span class="highlight">behavioral fingerprint</span>. By analyzing engagement metrics across millions of videos, we uncovered dramatically different patterns of audience interaction.
+    </p>
+
     <div class="viz-container">
-        <div class="viz-title">Engagement Metrics Comparison</div>
-        <div id="engagement-viz" class="viz-placeholder">
-            <!-- Engagement comparison chart will be inserted here -->
-            [Interactive visualization coming soon]
+        <div id="engagement-metrics-viz">
+            <iframe src="./engagement_metrics.html" width="100%" height="560px" frameborder="0" style="border:none;"></iframe>
         </div>
     </div>
-    
-    <h3>Category Evolution Over Time</h3>
+
+    <h3>The Engagement Paradox</h3>
     <p>
-        What were the trending categories in 2010? How did major events reshape the content landscape? Our temporal category analysis reveals the shifting tides of YouTube culture.
+        Our analysis reveals a fascinating paradox: <strong>the most-viewed content isn't the most engaging</strong>.
     </p>
-    
-    <div class="viz-container">
-        <div class="viz-title">Rise and Fall of Content Categories</div>
-        <div id="category-evolution-viz" class="viz-placeholder">
-            <!-- Category evolution chart will be inserted here -->
-            [Interactive visualization coming soon]
+
+    <!-- Engagement insights grid -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
+        
+        <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(40, 30, 20, 0.8) 100%); border: 2px solid rgba(245, 158, 11, 0.4); border-radius: 12px; padding: 25px;">
+            <div style="font-size: 2em; margin-bottom: 10px;">🏆</div>
+            <h4 style="color: #f59e0b; margin: 0 0 10px 0;">Most Engaged: Galaxy #3 - Vlogs & Lifestyle</h4>
+            <p style="color: #e2e2ed; font-size: 0.95em; margin: 0;">
+                <strong>26.9 likes per 1000 views</strong><br>
+                Makeup tutorials, hauls, and vlogs create devoted communities. These viewers don't just watch—they comment, share tips, and build relationships with creators.
+            </p>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, rgba(20, 184, 166, 0.2) 0%, rgba(20, 40, 40, 0.8) 100%); border: 2px solid rgba(20, 184, 166, 0.4); border-radius: 12px; padding: 25px;">
+            <div style="font-size: 2em; margin-bottom: 10px;">👁️</div>
+            <h4 style="color: #14b8a6; margin: 0 0 10px 0;">The Viral Void: Galaxy #8 - ASMR & Kids</h4>
+            <p style="color: #e2e2ed; font-size: 0.95em; margin: 0;">
+                <strong>133K median views, only 4.0 engagement</strong><br>
+                Slime, soap cutting, and satisfying compilations—optimized for the algorithm, not connection. Viewers consume passively without forming lasting communities.
+            </p>
+        </div>
+        
+    </div>
+
+    <h3>Duration Tells a Story</h3>
+    <p>
+        Video length isn't random—it reflects the <span class="highlight">content type</span> and <span class="highlight">audience expectations</span> of each galaxy.
+    </p>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">18.3</div>
+            <div class="stat-label">min - Galaxy #5 Fitness<br>(Workout videos, vegan recipes)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">8.0</div>
+            <div class="stat-label">min - Galaxy #2 Pop Music<br>(Music videos, playlists)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">16.1</div>
+            <div class="stat-label">min - Galaxy #1 Gaming<br>(Let's plays, GTA mods)</div>
         </div>
     </div>
+
+    <p>
+        <strong>Fitness content (Galaxy #5)</strong> demands the longest attention—Buff Dudes workouts, vegan recipes, and Law of Attraction manifestation videos average 18+ minutes. <strong>Pop Music (Galaxy #2)</strong> lives in quick 8-minute bursts: music videos and playlist compilations.
+    </p>
+
+    <h3>The Galaxy Classification System</h3>
+    <p>
+        Combining topic analysis and behavioral metrics, we can classify our galaxies into distinct types:
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 30px 0;">
+        <div style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 10px; padding: 20px; text-align: center;">
+            <div style="font-size: 2.5em;">🌐</div>
+            <h4 style="color: #8b5cf6; margin: 10px 0 5px 0;">Global Galaxies</h4>
+            <p style="color: #a0a0c0; font-size: 0.85em; margin: 0;">#1 Gaming, #2 Music, #8 ASMR<br>Content transcends language</p>
+        </div>
+        <div style="background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); border-radius: 10px; padding: 20px; text-align: center;">
+            <div style="font-size: 2.5em;">🗣️</div>
+            <h4 style="color: #ec4899; margin: 10px 0 5px 0;">Regional Galaxies</h4>
+            <p style="color: #a0a0c0; font-size: 0.85em; margin: 0;">#0 Indian, #7 Filipino<br>Bound by language</p>
+        </div>
+        <div style="background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 10px; padding: 20px; text-align: center;">
+            <div style="font-size: 2.5em;">🎯</div>
+            <h4 style="color: #06b6d4; margin: 10px 0 5px 0;">Engaged Galaxies</h4>
+            <p style="color: #a0a0c0; font-size: 0.85em; margin: 0;">#3 Vlogs, #5 Fitness<br>High engagement, tight communities</p>
+        </div>
+    </div>
+
+    <div class="quote">
+        "Identity in the YouNiverse is multi-dimensional: what you talk about, what language you speak, how long you watch, and how much you engage all combine to define your galactic home."
+    </div>
+
+    <h3>What We've Learned About Galaxy Identity</h3>
+    <p>
+        Our deep dive into the 10 largest galaxies reveals that <strong>YouTube's official categories are only part of the story</strong>. The true identity of a galaxy emerges from the intersection of:
+    </p>
+    <ul style="color: #e2e2ed; line-height: 2;">
+        <li><strong>Thematic content:</strong> What topics dominate the conversation</li>
+        <li><strong>Language:</strong> The gravitational force that binds regional communities</li>
+        <li><strong>Engagement patterns:</strong> Active fans vs. passive consumers</li>
+        <li><strong>Content format:</strong> Long-form immersion vs. short-form consumption</li>
+    </ul>
+    
+    <p>
+        With the identity of each galaxy now mapped, our next question becomes: <strong>how do travelers move between these worlds?</strong> Do they stay loyal to their home galaxy, or do they explore the broader universe?
+    </p>
 </section>
 
 <!-- Section V: User Navigation -->
 <section id="navigation" class="section">
-    <span class="section-number">Chapter V</span>
+    <span class="section-number">Chapter VI</span>
     <h2>Navigating the YouNiverse: How Do Users Travel Between Galaxies?</h2>
     
     <div class="viz-container">
@@ -469,7 +753,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
 <!-- Section VI: Black Holes -->
 <section id="blackholes" class="section">
-    <span class="section-number">Chapter VI</span>
+    <span class="section-number">Chapter VII</span>
     <h2>The Black Holes of the YouNiverse</h2>
     <h3>When Attention Collapses Around a Few Stars</h3>
     

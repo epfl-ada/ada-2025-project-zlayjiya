@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 15px;
+            background: #0d1117;
+            font-family: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #FFFFFF;
+        }
+        .title {
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #8b5cf6;
+        }
+        .galaxy-selector {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .galaxy-btn {
+            background: rgba(40, 40, 60, 0.8);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 6px;
+            padding: 8px 14px;
+            color: #e2e2ed;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 0.8em;
+        }
+        .galaxy-btn:hover {
+            border-color: rgba(139, 92, 246, 0.7);
+            background: rgba(139, 92, 246, 0.2);
+        }
+        .galaxy-btn.active {
+            background: rgba(139, 92, 246, 0.4);
+            border-color: #8b5cf6;
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.3);
+            color: #FFFFFF;
+        }
+        .galaxy-info {
+            background: linear-gradient(135deg, rgba(20, 25, 35, 0.95) 0%, rgba(30, 20, 50, 0.9) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .galaxy-icon { font-size: 2em; }
+        .galaxy-details h3 { margin: 0 0 4px 0; color: #8b5cf6; font-size: 1em; }
+        .galaxy-details p { margin: 0; color: #a0a0c0; font-size: 0.8em; }
+        .topic-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+        .topic-tag {
+            background: rgba(6, 182, 212, 0.25);
+            border: 1px solid rgba(6, 182, 212, 0.5);
+            color: #e2e2ed;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7em;
+        }
+        .topic-tag.highlight {
+            background: rgba(236, 72, 153, 0.35);
+            border-color: rgba(236, 72, 153, 0.6);
+        }
+        .insight-box {
+            background: rgba(6, 182, 212, 0.12);
+            border-left: 3px solid #06b6d4;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.8em;
+            color: #e2e2ed;
+        }
+        .lda-wrapper {
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .lda-wrapper iframe {
+            width: 100%;
+            height: 420px;
+            border: none;
+            transform: scale(0.85);
+            transform-origin: top left;
+            width: 118%;
+            height: 500px;
+        }
+        /* Hide the slider overlay */
+        .slider-overlay {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 60px;
+            background: #f8f9fa;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">🔭 INTERACTIVE TOPIC EXPLORATION</div>
+    
+    <div class="galaxy-selector" id="selector">
+        <button class="galaxy-btn active" data-id="0">🇮🇳 Indian</button>
+        <button class="galaxy-btn" data-id="1">🎵 Music</button>
+        <button class="galaxy-btn" data-id="2">🎮 Gaming α</button>
+        <button class="galaxy-btn" data-id="3">🎯 Gaming β</button>
+        <button class="galaxy-btn" data-id="4">💄 Lifestyle</button>
+        <button class="galaxy-btn" data-id="5">📰 News</button>
+        <button class="galaxy-btn" data-id="6">🏀 Hip-Hop</button>
+        <button class="galaxy-btn" data-id="7">🚗 Auto</button>
+        <button class="galaxy-btn" data-id="8">🇵🇭 Asian</button>
+        <button class="galaxy-btn" data-id="9">✨ Viral</button>
+    </div>
+    
+    <div class="galaxy-info" id="galaxy-info">
+        <span class="galaxy-icon">🇮🇳</span>
+        <div class="galaxy-details">
+            <h3 id="galaxy-name">Indian Entertainment Hub</h3>
+            <p id="galaxy-meta">Entertainment • 3,187 channels • 13.3 engagement</p>
+            <div class="topic-tags" id="topic-tags">
+                <span class="topic-tag highlight">PUBG Mobile</span>
+                <span class="topic-tag">Hindi News</span>
+                <span class="topic-tag">Bihar</span>
+                <span class="topic-tag">Odisha</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="insight-box" id="insight">
+        💡 Language creates strong gravitational bonds. Mobile gaming (PUBG) connects Indian states.
+    </div>
+    
+    <div class="lda-wrapper">
+        <div class="slider-overlay"></div>
+        <iframe id="lda-frame" src="./lda_community_0.html"></iframe>
+    </div>
+
+<script>
+const galaxyData = {
+    0: { icon: "🇮🇳", name: "Indian Entertainment Hub", meta: "Entertainment • 3,187 ch • 13.3 eng", tags: [{text: "PUBG Mobile", highlight: true}, {text: "Hindi News"}, {text: "Bihar"}, {text: "Odisha"}], insight: "💡 Language creates strong gravitational bonds. Mobile gaming connects Indian states." },
+    1: { icon: "🎵", name: "Mainstream Music Universe", meta: "Music • 3,063 ch • 8.0 eng", tags: [{text: "The Weeknd", highlight: true}, {text: "MTV"}, {text: "Piano"}, {text: "Miss Universe"}], insight: "💡 High views, low engagement—passive consumption. Viewers listen but rarely interact." },
+    2: { icon: "🎮", name: "Gaming Galaxy Alpha", meta: "Gaming • 2,547 ch • 17.1 eng", tags: [{text: "Minecraft", highlight: true}, {text: "Fortnite"}, {text: "Mario"}, {text: "Roblox"}], insight: "💡 Creative sandbox games. Long videos (16 min) and highly engaged communities." },
+    3: { icon: "🎯", name: "Gaming Galaxy Beta", meta: "Gaming • 2,529 ch • 19.0 eng", tags: [{text: "Halo", highlight: true}, {text: "Rainbow Six"}, {text: "Destiny"}, {text: "Pokemon"}], insight: "💡 Competitive games. Highest gaming engagement (19 likes/1000 views)." },
+    4: { icon: "💄", name: "Lifestyle & Fashion", meta: "Howto • 2,145 ch • 27.1 eng ⭐", tags: [{text: "Royale High", highlight: true}, {text: "Makeup"}, {text: "Fashion"}, {text: "Nail Art"}], insight: "🔥 Most engaged galaxy! 27.1 likes/1000 views. Dedicated niche audiences." },
+    5: { icon: "📰", name: "News & Wellness", meta: "News • 1,068 ch • 18.5 eng", tags: [{text: "Meditation", highlight: true}, {text: "Vegan"}, {text: "Tiny House"}, {text: "Van Life"}], insight: "💡 Longest videos (18.4 min). News, wellness, and alternative lifestyle." },
+    6: { icon: "🏀", name: "Hip-Hop & Sports", meta: "Music • 1,067 ch • 15.3 eng", tags: [{text: "NBA", highlight: true}, {text: "NFL"}, {text: "Type Beats"}, {text: "Eminem"}], insight: "💡 Sports and hip-hop culture intertwined. Cultural crossover galaxy." },
+    7: { icon: "🚗", name: "Automotive & Outdoor", meta: "Autos • 596 ch • 17.2 eng", tags: [{text: "Cars", highlight: true}, {text: "McLaren"}, {text: "Fishing"}, {text: "MTB"}], insight: "💡 Enthusiast communities. High engagement from passionate hobbyists." },
+    8: { icon: "🇵🇭", name: "Asian Entertainment", meta: "Entertainment • 594 ch • 15.3 eng", tags: [{text: "Filipino", highlight: true}, {text: "Khmer"}, {text: "PUBG"}, {text: "Korean"}], insight: "💡 Southeast Asian creators. Language and regional culture create strong bonds." },
+    9: { icon: "✨", name: "Viral & ASMR Void", meta: "Entertainment • 549 ch • 4.1 eng ⚠️", tags: [{text: "ASMR", highlight: true}, {text: "Satisfying"}, {text: "Mukbang"}, {text: "Magic"}], insight: "⚠️ Paradox: Highest views (135K) but lowest engagement. Viral clickbait." }
+};
+
+document.querySelectorAll('.galaxy-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const id = this.dataset.id;
+        const data = galaxyData[id];
+        document.querySelectorAll('.galaxy-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        document.querySelector('.galaxy-icon').textContent = data.icon;
+        document.getElementById('galaxy-name').textContent = data.name;
+        document.getElementById('galaxy-meta').textContent = data.meta;
+        document.getElementById('insight').innerHTML = data.insight;
+        document.getElementById('topic-tags').innerHTML = data.tags.map(t => 
+            `<span class="topic-tag${t.highlight ? ' highlight' : ''}">${t.text}</span>`
+        ).join('');
+        document.getElementById('lda-frame').src = `./lda_community_${id}.html`;
+    });
+});
+</script>
+</body>
+</html>
+

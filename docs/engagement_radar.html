@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; background: #0a0a1a; }
+    </style>
+</head>
+<body>
+<div id="chart" style="width:100%;height:500px;"></div>
+<script>
+// Galaxy engagement data
+const galaxies = [
+    {id: 0, name: "🇮🇳 Indian Entertainment", category: "Entertainment", views: 31841, duration: 12.5, engagement: 13.3, color: "#8b5cf6"},
+    {id: 1, name: "🎵 Mainstream Music", category: "Music", views: 77887, duration: 8.0, engagement: 8.0, color: "#ec4899"},
+    {id: 2, name: "🎮 Gaming (Minecraft/Fortnite)", category: "Gaming", views: 101074, duration: 16.0, engagement: 17.1, color: "#3b82f6"},
+    {id: 3, name: "🎮 Gaming (Halo/Destiny)", category: "Gaming", views: 75660, duration: 15.8, engagement: 19.0, color: "#06b6d4"},
+    {id: 4, name: "💄 Lifestyle & Fashion", category: "Howto & Style", views: 106490, duration: 11.5, engagement: 27.1, color: "#f59e0b"},
+    {id: 5, name: "📰 News & Wellness", category: "News & Politics", views: 52081, duration: 18.4, engagement: 18.5, color: "#10b981"},
+    {id: 6, name: "🏀 Hip-Hop & Sports", category: "Music", views: 78056, duration: 10.8, engagement: 15.3, color: "#ef4444"},
+    {id: 7, name: "🚗 Automotive & Outdoor", category: "Autos & Vehicles", views: 73264, duration: 13.5, engagement: 17.2, color: "#6366f1"},
+    {id: 8, name: "🇵🇭 Asian Entertainment", category: "Entertainment", views: 71144, duration: 14.5, engagement: 15.3, color: "#a855f7"},
+    {id: 9, name: "✨ Viral & ASMR", category: "Entertainment", views: 135755, duration: 16.2, engagement: 4.1, color: "#14b8a6"}
+];
+
+// Normalize values for radar
+const maxViews = Math.max(...galaxies.map(g => g.views));
+const maxDuration = Math.max(...galaxies.map(g => g.duration));
+const maxEngagement = Math.max(...galaxies.map(g => g.engagement));
+
+const traces = galaxies.map(g => ({
+    type: 'scatterpolar',
+    r: [
+        g.views / maxViews * 100,
+        g.duration / maxDuration * 100,
+        g.engagement / maxEngagement * 100,
+        g.views / maxViews * 100  // Close the shape
+    ],
+    theta: ['Median Views', 'Video Duration', 'Engagement Rate', 'Median Views'],
+    fill: 'toself',
+    fillcolor: g.color + '20',
+    line: {color: g.color, width: 2},
+    name: g.name,
+    hovertemplate: `<b>${g.name}</b><br>` +
+        `Views: ${g.views.toLocaleString()}<br>` +
+        `Duration: ${g.duration.toFixed(1)} min<br>` +
+        `Engagement: ${g.engagement.toFixed(1)} likes/1000 views<extra></extra>`
+}));
+
+const layout = {
+    polar: {
+        radialaxis: {
+            visible: true,
+            range: [0, 100],
+            tickfont: {color: '#a0a0c0'},
+            gridcolor: 'rgba(139, 92, 246, 0.2)'
+        },
+        angularaxis: {
+            tickfont: {color: '#ffffff', size: 12},
+            gridcolor: 'rgba(139, 92, 246, 0.2)'
+        },
+        bgcolor: 'rgba(0,0,0,0)'
+    },
+    paper_bgcolor: '#0a0a1a',
+    plot_bgcolor: '#0a0a1a',
+    showlegend: true,
+    legend: {
+        font: {color: '#ffffff', size: 10},
+        bgcolor: 'rgba(20, 20, 40, 0.8)',
+        bordercolor: 'rgba(139, 92, 246, 0.3)',
+        borderwidth: 1,
+        x: 1.1,
+        y: 0.5
+    },
+    margin: {l: 80, r: 200, t: 40, b: 40},
+    title: {
+        text: '',
+        font: {color: '#ffffff', family: 'Orbitron, sans-serif'}
+    }
+};
+
+Plotly.newPlot('chart', traces, layout, {responsive: true, displayModeBar: false});
+</script>
+</body>
+</html>
+
