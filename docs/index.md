@@ -275,6 +275,14 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         </div>
     </div>
 
+    <h3>Inter-Community Flows: The Cosmic Connections</h3>
+    <p>
+        To visualize how these 52 galaxies interact, we map the <span class="highlight">flows of attention</span> between communities. Each ribbon in the chord diagram represents the strength of connections between galaxies, revealing which communities share audiences and how tightly they are bound together.
+    </p>
+    <p>
+        The thickness and opacity of each connection reflect the normalized flow strength—stronger gravitational bonds appear more prominent, while weaker connections fade into the background. Hover over any connection to see the exact flow weight between two communities.
+    </p>
+
 
     <h3>The Core vs. The Periphery</h3>
     <p>
@@ -386,6 +394,43 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     <span class="section-number">Chapter V</span>
     <h2>Navigating the YouNiverse: How Do Users Travel Between Galaxies?</h2>
     
+    <div class="viz-container">
+        <div class="viz-title">Inter-Community Flow Map</div>
+        <div id="chord-viz" class="viz-placeholder">
+            <iframe src="./chord_visible.html" width="100%" height="900px" frameborder="0" scrolling="no" style="border:none; display: block; overflow:hidden;"></iframe>
+        </div>
+    </div>
+    <div style="text-align: center; margin-top: 10px; font-family: sans-serif;">
+        <p style="font-size: 1.2rem; color: #989292ff; max-width: 600px; margin: 0 auto; line-height: 1.4;">
+            Interactive chord diagram showing flows between the 52 communities. Use the controls to filter and explore specific galaxy groups.
+        </p>
+    </div>
+
+    <div class="viz-container">
+        <div class="viz-title">Echo Chamber Analysis: External Share by Community</div>
+        <div id="echo-chamber-viz" class="viz-placeholder">
+            <iframe src="./echo_chamber_external_share.html" width="100%" height="500px" frameborder="0" scrolling="no" style="border:none; display: block; overflow:hidden;"></iframe>
+        </div>
+    </div>
+
+    <div class="viz-container">
+        <div id="bridge-channels-viz" class="viz-placeholder">
+            <iframe src="./bridge_channels_interactive.html" width="100%" height="850px" frameborder="0" scrolling="no" style="border:none; display: block; overflow:hidden;"></iframe>
+        </div>
+    </div>
+
+    <div class="viz-container">
+        <div id="bridge-categories-viz" class="viz-placeholder">
+            <iframe src="./bridge_categories_top3.html" width="100%" height="600px" frameborder="0" scrolling="no" style="border:none; display: block; overflow:hidden;"></iframe>
+        </div>
+    </div>
+
+    <div class="viz-container">
+        <div id="directional-flows-viz" class="viz-placeholder" style="height: 750px; overflow: hidden;">
+            <iframe src="./bridge_community_topflows.html" width="100%" height="750px" frameborder="0" scrolling="no" style="border:none; display: block; margin-top: 0px;"></iframe>
+        </div>
+    </div>
+
     <h3>Mapping User Journeys</h3>
     <p>
         Do viewers stay within their home galaxy, or do they explore the broader universe? By tracking which communities users comment in, we can map the <span class="highlight">flow of attention</span> across the YouNiverse.

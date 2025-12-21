@@ -4,3 +4,6 @@ gem "jekyll", "~> 3.9"
 gem "jekyll-seo-tag"
 gem "kramdown-parser-gfm"
 gem "webrick" # Required for Ruby 3.0+
+gem "base64"      # Required for Ruby 3.4+
+gem "logger"      # Required for Ruby 3.4+
+gem "bigdecimal"  # Required for Ruby 3.4+
