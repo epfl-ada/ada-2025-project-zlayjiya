@@ -2,7 +2,13 @@
 layout: default
 title: "YouNiverse: Voyage Through Video Galaxies"
 ---
+<head>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
 
+
+<!-- Section I: Introduction -->
 <section id="introduction" class="section">
     <span class="section-number">Chapter I</span>
     <h2>A Journey Through the YouNiverse</h2>
@@ -15,6 +21,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         Today, YouTube is not just entertainment: it is a reflection of society, a mirror of human curiosity, and a massive accelerator of cultural exchange. From music to science, from gaming to politics, its content shapes our habits, our conversations, and often, our worldview.
     </p>
     
+    <!-- Stats about YouTube -->
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-number">136K+</div>
@@ -35,7 +42,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         Given the sheer scale of interactions happening daily on the platform, we are convinced that YouTube cannot be understood as just a collection of videos; it behaves more like an <span class="highlight">immense digital world</span> with its own internal order.
     </p>
     <p>
-        And if we zoom out — far out — this world begins to resemble a vast cosmic landscape. Individual channels appear as stars; they cluster into large thematic <span class="highlight">galaxies</span>, and within them, smaller constellations emerge around more specific interests.
+        And if we zoom out—far out—this world begins to resemble a vast cosmic landscape. Individual channels appear as stars; they cluster into large thematic <span class="highlight">galaxies</span>, and within them, smaller constellations emerge around more specific interests.
     </p>
     
     <div class="quote">
@@ -47,7 +54,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         Yet, the inner order of this digital cosmos remains invisible. We travel through YouTube every day without ever seeing the structure that shapes what we discover, what we watch, and ultimately, what we think.
     </p>
     <p>
-        With billions of interactions steering opinions, habits, and cultural currents, YouTube now functions as a <span class="highlight">parallel society</span> — one whose architecture remains hidden from its own inhabitants.
+        With billions of interactions steering opinions, habits, and cultural currents, YouTube now functions as a <span class="highlight">parallel society</span>—one whose architecture remains hidden from its own inhabitants.
     </p>
     
     <h3>Our Expedition Map</h3>
@@ -77,12 +84,13 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </div>
 </section>
 
+<!-- Section II: Dataset -->
 <section id="dataset" class="section">
     <span class="section-number">Chapter II</span>
     <h2>Before We Explore: First Glimpses of the YouNiverse</h2>
     
     <p>
-        To answer these questions, we turned to the YouNiverse dataset. And the name truly does it justice, its size is that of a universe. Data from 73 million videos, 137 thousand channels and 8.6 billion comments from 449 million users on a timeframe from May 2005 to October 2019. The dataset claims to only hold data from english speaking videos (more on that later).
+        To answer these questions, we turned to the YouNiverse dataset. And the name truly does it justice, its size is that of a universe. Data from 73 million videos , 137 thousand channels and 8.6 billion comments from 449 million users on a timeframe from May 2005 to October 2019. The dataset claims to only hold data from english speaking videos (more on that later).
     </p>
 
     <p>
@@ -99,14 +107,16 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         When we peer through our telescope at these celestial bodies (channels), we notice a stark reality: size is not distributed equally. The distribution of views and subscribers follows a power law, a mathematical signature of winner-takes-all dynamics commonly observed in large-scale social systems. A few 'Supermassive' channels command the vast majority of the YouNiverse's light, while millions of smaller stars twinkle in the background. The top 1% of channels capture over 46% of all views, a cosmic inequality that shapes the entire ecosystem.
     </p>
 
+
     <div class="viz-container">
         <div id="power-law-chart" class="viz-placeholder">
             {% include_relative powerlaw.html %}
         </div>
     </div>
 
+
     <p>
-        To understand the nature of these stars, we first look at their "Spectra" — the content categories assigned to them. This provides a first-order view of what content dominates the YouNiverse, before asking how these channels interact. While this gives us a hint of their composition (Gaming, News, Education), categories alone don’t tell us how these stars interact.  
+        To understand the nature of these stars, we first look at their "Spectra"—the content categories assigned to them. This provides a first-order view of what content dominates the YouNiverse, before asking how these channels interact. While this gives us a hint of their composition (Gaming, News, Education), categories alone don’t tell us how these stars interact.  
     </p>
 
     <div class="viz-container">
@@ -125,10 +135,10 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     <h2>Constructing the Cosmic Map: From Comments to Galaxies</h2>
     
     <p>
-        To understand our YouNiverse, our objective is to see what channels actually share common audiences. By doing this we will be able to run community detection algorithms and visualize types of interactions.
+        To understand our YouNiverse, our objective to see what channels actually share common audiences. By doing this we will be able to run community detection algorithms and visualize types of interactions.
     </p>
     <p>
-        To do this we will use the biggest file in our dataset, the comment data. We want to know which channels users most commented on. "We establish gravitational bonds between channels: when users orbit both, commenting frequently on each, we draw a connection weighted by the strength of their shared audience. The edge of these weights will then be first determined by the number of commenters they have in common. Two channels with many shared commenters are linked by strong gravitational bonds — they orbit in the same region of the YouNiverse.
+        To do this we will use the biggest file in our dataset, the comment data. We want to know which channels users most commented on. "We establish gravitational bonds between channels: when users orbit both, commenting frequently on each, we draw a connection weighted by the strength of their shared audience. The edge of these weights will then be first determined by the number of commenters they have in common. Two channels with many shared commenters are linked by strong gravitational bonds—they orbit in the same region of the YouNiverse.
     </p>
 
     <div class="viz-container">
@@ -147,14 +157,14 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         In space, a massive sun has more gravity simply because it is big. On YouTube, two "Black Hole" channels (like PewDiePie and T-Series) might share many commenters just because they are famous, not because they are related. To find true communities, we had to "level the playing field" by normalizing our edge weights.
 
         We developed a Similarity Score to penalize the sheer size of a channel, ensuring that a "Galaxy" is formed by genuine audience overlap rather than just popularity.
-        Imagine trying to see stars near the sun — their light is drowned out. Similarly, mega-channels like PewDiePie overshadow genuine connections. Our Similarity Score acts like a solar filter: it dims the giants proportionally to their size, revealing the authentic audience overlaps that define true communities.
+        Imagine trying to see stars near the sun—their light is drowned out. Similarly, mega-channels like PewDiePie overshadow genuine connections. Our Similarity Score acts like a solar filter: it dims the giants proportionally to their size, revealing the authentic audience overlaps that define true communities.
     </p>
     <p>
     To see the true shape of the galaxies, we had to apply <strong>Gravitational Shielding</strong>. By using our similarity score, we effectively "muted" the blinding light of the Black Holes. This allowed us to see the faint, genuine connections between smaller stars that were previously invisible in the glare of the platform's giants. 
     </p>
 
     <details class="math-deep-dive" style="border: 1px solid rgba(139, 92, 246, 0.3); padding: 20px; border-radius: 8px; background-color: rgba(40, 40, 40, 0.6); backdrop-filter: blur(10px); margin: 20px 0; color: #e8e8f0; font-family: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-    <summary style="font-weight: bold; cursor: pointer; font-size: 1.1em; color: #ffffffff; outline: none;">🧮 The Mathematics of Normalization (Similarity Score)</summary>
+    <summary style="font-weight: bold; cursor: pointer; font-size: 1.1em; color: #ffffffff; outline: none;">📊 The Mathematics of Normalization (Similarity Score)</summary>
     
     <div class="math-content" style="margin-top: 20px; padding-left: 25px; color: #a0a0c0; border-left: 2px solid rgba(139, 92, 246, 0.3);">
         <p style="margin-bottom: 12px;"><strong style="color: #ffffff;">The Problem:</strong> PewDiePie and T-Series might share 100,000 commenters simply because they each have 100 million subscribers. Meanwhile, two niche gaming channels sharing 500 commenters might have a much stronger cultural connection.</p>
@@ -186,7 +196,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </p>
 
     <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #ffd54f; margin: 20px 0; color: #ffffff; border-radius: 4px;">
-        <strong>📋 The Filtering Strategy:</strong>
+        <strong>🔧 The Filtering Strategy:</strong>
         <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
             <li><strong>Minimum Subscribers Filter:</strong> We excluded channels below 200,000 subscribers. These "proto-stars" haven't yet established stable audiences, making their connections unreliable indicators of community structure.</li>
             <li><strong>Minimum Edge Weight Filter:</strong> We removed edges with fewer than 25 shared commenters. Like eliminating background radiation, this ensures we only map gravitational bonds strong enough to define true communities.</li>
@@ -210,7 +220,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         <p style="margin-bottom: 10px;"><strong style="color: #ffffff;">After Filtering:</strong></p>
         <ul style="margin-bottom: 20px; list-style-type: none; padding-left: 0;">
             <li style="margin-bottom: 5px;">• Nodes (channels): 19,129</li>
-            <li style="margin-bottom: 5px;">• Edges (connections): 572,732</li>
+            <li style="margin-bottom: 5px;">• Edges (connections):572,732</li>
         </ul>
     </div>
 </details>
@@ -223,7 +233,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     ✨ <strong>The Breakthrough:</strong> With gravitational shielding applied, distinct galaxies emerge from the chaos. Each represents a true audience community bound by shared interests, not just shared fame.
     </div>
     <p>
-        Louvain seeks to maximize Modularity — a metric that measures how much "denser" the connections are within a galaxy compared to a random universe. Our map achieved a Modularity score of 0.655.
+        Louvain seeks to maximize Modularity—a metric that measures how much "denser" the connections are within a galaxy compared to a random universe. Our map achieved a Modularity score of 0.655.
         In the world of network science, a score above 0.5 is a significant discovery. It confirms that the YouNiverse is not a chaotic cloud of random stars, but a structured system of distinct, high-density galaxies bound by shared cultures, languages, and interests.
     </p>
 
@@ -237,7 +247,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         The scale varies dramatically, the smallest of these communities contain as few as two channels, existing like distant binary stars in the deep void of the YouNiverse.
     </p>
     <p>
-        Before diving deeper, let's label our communities with the biggest channel in each. This gives us the first valuable insights into what sort of galaxies are there in the YouNiverse.
+        Before diving deeper, let's label our communities with the biggest channel in each. This gives us the first valuable insights into what sort of galaxies is there in the YouNiverse.
     </p>
 
     <div class="viz-network">
@@ -252,11 +262,11 @@ title: "YouNiverse: Voyage Through Video Galaxies"
             <div class="stat-label">Galaxies Detected</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">0.655</div>
+            <div class="stat-number">0</div>.<div class="stat-number">655</div>
             <div class="stat-label">Modularity Score</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">80%</div>
+            <div class="stat-number">80</div><div class="stat-number">%</div>
             <div class="stat-label">Channels in Top 5 Galaxies</div>
         </div>
     </div>
@@ -266,7 +276,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         To visualize how these 52 galaxies interact, we map the <span class="highlight">flows of attention</span> between communities. Each ribbon in the chord diagram represents the strength of connections between galaxies, revealing which communities share audiences and how tightly they are bound together.
     </p>
     <p>
-        The thickness and opacity of each connection reflect the normalized flow strength — stronger gravitational bonds appear more prominent, while weaker connections fade into the background. Hover over any connection to see the exact flow weight between two communities.
+        The thickness and opacity of each connection reflect the normalized flow strength—stronger gravitational bonds appear more prominent, while weaker connections fade into the background. Hover over any connection to see the exact flow weight between two communities.
     </p>
 
 
@@ -276,7 +286,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </p>
 
     <p>
-        Stretching out from this core are thin, elongated edges: the <strong>Interstellar Bridges</strong>. These represent bridge channels that link the mainstream center to peripheral niche clusters. These channels serve as the connective tissue of the YouNiverse, allowing users to travel between vastly different content worlds.
+        Stretching out from this core are thin, elongated edges : the <strong>Interstellar Bridges</strong>. These represent bridge channels that link the mainstream center to peripheral niche clusters. These channels serve as the connective tissue of the YouNiverse, allowing users to travel between vastly different content worlds.
     </p>
 
     <div class="quote">
@@ -299,12 +309,14 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </div>
     <h3>First Contact: A Glimpse Into Three Galaxies</h3>
     <p>
-        Before we systematically analyze all galaxies, let's descend into three interesting ones, yet very small compared to the size of the major galaxies. We will quickly analyze what sort of channels lie in them to determine how they came to be. They define three contrasting types of communities. Do not hesitate to click on the little nodes to get the names of the channels and their total strength in the graph.
+        Before we systematically analyze all galaxies, let's descend into three interesting, yet very small compared to the size of the major galaxies, ones. We will quickly analyze what sort of channels lie in them to determine how they came to be. They define three contrasting types of communities. Do not hesitate to click on the little nodes to get the names of the channels and their total strength in the graph.
     </p>
 
+    <!-- Galaxy 1: Graph Left, Text Right -->
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; margin: 40px 0; height: 400px; padding: 30px; background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%); border-radius: 16px; border: 2px solid rgba(100, 181, 246, 0.3);">
         
         <div class="viz-network" >
+            <!-- Insert your galaxy visualization here -->
             <iframe src="./galaxy_25.html" width="100%" height="300px" frameborder="0"></iframe>
         </div>
         
@@ -319,16 +331,19 @@ title: "YouNiverse: Voyage Through Video Galaxies"
                 </div>
             </div>
             <p style="color: #ddd; line-height: 1.7; margin-bottom: 15px;">
-                A small, tight-knit community around a passion for one sport: Tennis.  
+                A small, tight-knit community around a passion for one sport : Tennis.  
             </p>
+            
         </div>
+        
     </div>
 
+    <!-- Galaxy 2: Text Left, Graph Right -->
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; margin: 40px 0; height: 400px;padding: 30px; background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%); border-radius: 16px; border: 2px solid rgba(171, 71, 188, 0.3);">
         
         <div>
             <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                <div style="font-size: 2.5em; margin-right: 15px;">🇲🇦</div>
+                <div style="font-size: 2.5em; margin-right: 15px;">🇲🇦🇹🇳</div>
                 <div>
                     <h4 style="color: #ab47bc; margin: 0;">Maghrebi Power</h4>
                     <p style="color: #aaa; font-size: 0.9em; margin: 5px 0 0 0;">
@@ -342,19 +357,25 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         </div>
         
         <div class="viz-network">
+            <!-- Insert your galaxy visualization here -->
             <iframe src="./galaxy_26.html" width="100%" height="300px" frameborder="0"></iframe>
         </div>
+        
     </div>
 
+    <!-- Galaxy 3: Graph Left, Text Right -->
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; margin: 40px 0; padding: 30px; background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%); border-radius: 16px; height: 400px;border: 2px solid rgba(255, 193, 7, 0.3);">
         
     <div class="viz-network">
+        <!-- Insert your galaxy visualization here -->
         <iframe src="./galaxy_24.html" width="100%" height="300px" frameborder="0"></iframe>
+        <!-- OR -->
+        <!-- <img src="galaxy_news.png" width="100%" style="border-radius: 8px;"> -->
     </div>
     
     <div>
         <div style="display: flex; align-items: center; margin-bottom: 15px;">
-            <div style="font-size: 2.5em; margin-right: 15px;">🇬🇧</div>
+            <div style="font-size: 2.5em; margin-right: 15px;">🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
             <div>
                 <h4 style="color: #ffc107; margin: 0;">English Learners</h4>
                 <p style="color: #aaa; font-size: 0.9em; margin: 5px 0 0 0;">
@@ -365,7 +386,9 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         <p style="color: #ddd; line-height: 1.7; margin-bottom: 15px;">
             Probably a hub for recharging your spacecraft before going exploring. This is a community based around learning the biggest language on the website (and the world), English. 
         </p>
+
     </div>
+    
     </div>
 
     <div class="quote">
@@ -392,14 +415,13 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         "The YouNiverse is not a single universe, but a multiverse, 52 parallel worlds occupying the same digital space, each invisible to the others unless you know where to look."
     </div>
 </section>
-
 <section id="temporal" class="section">
     <span class="section-number">Chapter IV</span>
     <h2>A Decade of Transformation</h2>
 
     <h3>Slicing Time: Investigating the Invisible Shift</h3>
     <p>
-        To truly understand the evolution of the YouNiverse, viewing it as a static map is not enough; we must observe it as a living organism. A dataset spanning 14 years flattens history — it hides the dramatic shifts in culture, influence, and structure that occurred between the first viral hits and the modern creator economy.
+        To truly understand the evolution of the YouNiverse, viewing it as a static map is not enough; we must observe it as a living organism. A dataset spanning 14 years flattens history—it hides the dramatic shifts in culture, influence, and structure that occurred between the first viral hits and the modern creator economy.
     </p>
     <p>
         To capture this motion, we employed a <strong>temporal snapshot methodology</strong>. By slicing our data into distinct one-year windows, we isolated the interactions of each era. This allowed us to build independent universes for 2010, 2011, through to 2019, enabling us to watch the laws of digital gravity change in real-time. What we found was not a linear expansion, but a complete structural metamorphosis from a unified community to a fractured multiverse.
@@ -413,7 +435,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         By 2019, this number had exploded to <strong>99 distinct communities</strong>. This fragmentation was driven by two major cosmic events visible on the timeline: the <strong>Gaming explosion</strong> (starting around 2012) and the <strong>Indian expansion</strong> (triggered by Jio in 2016).
     </p>
     <p>
-        <strong>The Implication:</strong> This is not an accidental fracture, but a necessary adaptation to abundance. As the platform flooded with content, the "shared experience" became impossible to maintain. To survive the cognitive load, audiences naturally segregated into <strong>cognitive silos</strong>. Viewers retreated into hyper-specific clusters — from K-Pop to Minecraft — turning shared interests into hermetic worlds that rarely interact.
+        <strong>The Implication:</strong> This is not an accidental fracture, but a necessary adaptation to abundance. As the platform flooded with content, the "shared experience" became impossible to maintain. To survive the cognitive load, audiences naturally segregated into <strong>cognitive silos</strong>. Viewers retreated into hyper-specific clusters—from K-Pop to Minecraft—turning shared interests into hermetic worlds that rarely interact.
     </p>
 
     <iframe src="./fragmentation.html" width="100%" height="500px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
@@ -422,7 +444,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     This creation of silos leads us to a startling paradox: <strong>as the universe expanded, it became less connected</strong>. While the number of channels grew five-fold, the structural density of the network collapsed.
 </p>
 <p>
-    To understand the scale of this collapse, we must look at how density $D$ is calculated:
+    To understand the scale of this collapse, we must look at how density D is calculated:
 </p>
 
 <div style="text-align: center; margin: 20px 0; font-size: 1.2em;">
@@ -430,13 +452,13 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 </div>
 
 <p>
-    In 2010, the network density was <strong>0.05</strong>. In simple terms, out of all possible conversations between communities, 5% actually happened. It was a "small world" where distinct groups frequently rubbed shoulders. By 2019, this density had flatlined to <strong>0.002</strong> — a staggering <strong>96% drop</strong> in relative connectivity.
+    In 2010, the network density was <strong>0.05</strong>. In simple terms, out of all possible conversations between communities, 5% actually happened. It was a "small world" where distinct groups frequently rubbed shoulders. By 2019, this density had flatlined to <strong>0.002</strong>—a staggering <strong>96% drop</strong> in relative connectivity.
 </p>
 
 <iframe src="./density.html" width="100%" height="500px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
 
 <p>
-    This curve is the <strong>filter bubble made visible</strong>. The mathematical collapse of $D$ represents the death of serendipity. As algorithms got better at prediction, they stopped building bridges between galaxies. Viewers stayed in their comfortable corners, and the "global conversation" of 2010 dissolved into thousands of private, parallel conversations.
+    This curve is the <strong>filter bubble made visible</strong>. The mathematical collapse of D represents the death of serendipity. As algorithms got better at prediction, they stopped building bridges between galaxies. Viewers stayed in their comfortable corners, and the "global conversation" of 2010 dissolved into thousands of private, parallel conversations.
 </p>
 <h3>Galaxies Rising and Fading</h3>
     <p>
@@ -444,25 +466,24 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </p>
     
     <ul>
-        <li><strong>The Great Passing of the Torch (2012):</strong> In 2010, Music (red curve 🎵) reigned supreme, commanding over 30% of the platform's total influence. By 2012, the graph shows a historic crossover: the beginning of the <strong>Gaming Era</strong> (green curve 🎮). Let's Play creators shifted from peripheral niches to becoming the platform's new centers of gravity.</li>
+        <li><strong>The Great Passing of the Torch (2012):</strong> In 2010, Music (red curve 🔴) reigned supreme, commanding over 30% of the platform's total influence. By 2012, the graph shows a historic crossover: the beginning of the <strong>Gaming Era</strong> (green curve 🟢). Let's Play creators shifted from peripheral niches to becoming the platform's new centers of gravity.</li>
         <li><strong>The Decline of Music:</strong> Once a central pillar, Music saw its structural influence steadily collapse as discovery migrated to dedicated streaming services. This trend shows YouTube evolving from a "video radio" into a home for community-driven creator content.</li>
-        <li><strong>The Quiet Ascent:</strong> While Gaming and Music fought for the top spot, other galaxies grew steadily. Categories like <strong>Entertainment</strong> (blue curve 🎭) and <strong>People & Blogs</strong> (purple curve 👥) saw consistent growth, proving that the YouNiverse has diversified far beyond simple passive entertainment.</li>
+        <li><strong>The Quiet Ascent:</strong> While Gaming and Music fought for the top spot, other galaxies grew steadily. Categories like <strong>Entertainment</strong> (blue curve 🔵) and <strong>People & Blogs</strong> (purple curve 🟣) saw consistent growth, proving that the YouNiverse has diversified far beyond simple passive entertainment.</li>
     </ul>
 
-    <iframe src="./pagerank.html" width="100%" height="500px" style="border:none; display:block; margin:20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
-<h3>The Emergence of New Powers: The Jio Effect</h3>
+    <iframe src="./pagerank.html" width="100%" height="500px" style="border:none; display:block; margin:20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe><h3>The Emergence of New Powers: The Jio Effect</h3>
     <p>
         While the Western core was busy transitioning into the Gaming Era, a seismic shift was happening on the periphery. Our temporal tracking reveals the emergence of massive regional superpowers that fundamentally changed the scale of the YouNiverse.
     </p>
     
     <p>
-        The most prominent example is the <strong>"Jio Effect" of 2016</strong>. As seen in our fragmentation data, the entry of millions of Indian users led to a sudden spike in community detection. This era birthed the massive <strong>T-Series galaxy</strong>. As shown in the "Evolution of Top 5 Identities" chart, by 2016, T-Series shifted from a peripheral node to the third-largest community on the entire platform.
+        The most prominent example is the <strong>"Jio Effect" of 2016</strong>. As seen in our fragmentation data, the entry of millions of Indian users led to a sudden spike in community detected. This era birthed the massive <strong>T-Series galaxy</strong>. As shown in the "Evolution of Top 5 Identities" chart, by 2016, T-Series shifted from a peripheral node to the third-largest community on the entire platform.
     </p>
 
     <iframe src="./top5_identities.html" width="100%" height="550px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
 
     <p>
-        <strong>Parallel Worlds:</strong> What makes this growth remarkable is its isolation. Despite becoming a global giant, the T-Series galaxy grew with almost zero audience overlap with Western giants like PewDiePie. This proved that the YouNiverse was no longer a single shared experience, but a <strong>multiverse of parallel worlds</strong>. By 2019, YouTube had become a collection of massive, independent islands — vibrant and rich, yet structurally invisible to one another.
+        <strong>Parallel Worlds:</strong> What makes this growth remarkable is its isolation. Despite becoming a global giant, the T-Series galaxy grew with almost zero audience overlap with Western giants like PewDiePie. This proved that the YouNiverse was no longer a single shared experience, but a <strong>multiverse of parallel worlds</strong>. By 2019, YouTube had become a collection of massive, independent islands—vibrant and rich, yet structurally invisible to one another.
     </p>
 <h3>Visualizing the Drift: A Universe in Motion</h3>
     
@@ -482,7 +503,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         "The YouNiverse transformed from a unified town square into a constellation of isolated worlds."
     </div>
 </section>
-
+<!-- Section IV: Galaxy Identity -->
 <section id="identity" class="section">
     <span class="section-number">Chapter V</span>
     <h2>Understanding the Identity of Galaxies</h2>
@@ -493,7 +514,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
     <h3>Reading the Stars: Topic Detection with LDA</h3>
     <p>
-        We deployed <strong>Latent Dirichlet Allocation (LDA)</strong> on video titles and descriptions from the 10 largest galaxies. Using POS-filtering (nouns, proper nouns, adjectives) and bigram detection, we extract the hidden thematic structure within each community — the actual topics people talk about, not just the labels YouTube assigns.
+        We deployed <strong>Latent Dirichlet Allocation (LDA)</strong> on video titles and descriptions from the 10 largest galaxies. Using POS-filtering (nouns, proper nouns, adjectives) and bigram detection, we extract the hidden thematic structure within each community—the actual topics people talk about, not just the labels YouTube assigns.
     </p>
     
     <p>
@@ -512,7 +533,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </p>
 
     <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #8b5cf6; margin: 20px 0; color: #ffffff; border-radius: 4px;">
-        <strong>🌐 Language-Based Galaxies Discovered:</strong>
+        <strong>🌍 Language-Based Galaxies Discovered:</strong>
         <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
             <li><strong>🇮🇳 Galaxy #0 - Indian Entertainment Hub (3,187 channels):</strong> Bollywood dominates (Filmfare, Salman Khan, Varun Dhawan). Hindi beauty tips, Navratri celebrations, and PUBG Mobile.</li>
             <li><strong>🇵🇭 Galaxy #7 - Filipino Entertainment Hub (596 channels):</strong> Mobile Legends: Bang Bang is the gravitational center. ABS-CBN content, Himig Handog music, and Filipino language (ang, lang, ako, ikaw).</li>
@@ -520,11 +541,11 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </div>
 
     <p>
-        These linguistic gravitational bonds are so strong that they override thematic connections. An Indian gamer has more in common with an Indian news channel than with an American gamer — at least in terms of shared audience.
+        These linguistic gravitational bonds are so strong that they override thematic connections. An Indian gamer has more in common with an Indian news channel than with an American gamer—at least in terms of shared audience.
     </p>
 
     <div class="quote">
-        "In the YouNiverse, language isn't just communication — it's gravity. Speakers of the same language orbit together, regardless of content type."
+        "In the YouNiverse, language isn't just communication—it's gravity. Speakers of the same language orbit together, regardless of content type."
     </div>
 
     <h3>Categories Confirmed: LDA Validates YouTube Labels</h3>
@@ -535,15 +556,15 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #10b981; margin: 20px 0; color: #ffffff; border-radius: 4px;">
         <strong>✅ Category-Topic Alignment:</strong>
         <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
-            <li><strong>Galaxy #1 (Gaming 48%):</strong> GTA mods, Roblox, Minecraft roleplay 🎮</li>
-            <li><strong>Galaxy #2 (Music 64%):</strong> Ariana Grande, Nicki Minaj, chill playlists 🎵</li>
-            <li><strong>Galaxy #3 (Howto & Style 31%):</strong> Vlogs, makeup tutorials, hauls 💄</li>
-            <li><strong>Galaxy #9 (Autos & Vehicles 42%):</strong> Car reviews, bikes, off-road 🚗</li>
+            <li><strong>Galaxy #1 (Gaming 48%):</strong> GTA mods, Roblox, Minecraft roleplay ✓</li>
+            <li><strong>Galaxy #2 (Music 64%):</strong> Ariana Grande, Nicki Minaj, chill playlists ✓</li>
+            <li><strong>Galaxy #3 (Howto & Style 31%):</strong> Vlogs, makeup tutorials, hauls ✓</li>
+            <li><strong>Galaxy #9 (Autos & Vehicles 42%):</strong> Car reviews, bikes, off-road ✓</li>
         </ul>
     </div>
 
     <p>
-        This validates that <strong>co-commenting behavior reflects genuine content affinity</strong>. Users who comment together genuinely share interests that match the channel's official category — the community structure is real.
+        This validates that <strong>co-commenting behavior reflects genuine content affinity</strong>. Users who comment together genuinely share interests that match the channel's official category—the community structure is real.
     </p>
 
     <h3>Behavioral Signatures: How Galaxies Engage</h3>
@@ -562,23 +583,24 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         Our analysis reveals a fascinating paradox: <strong>the most-viewed content isn't the most engaging</strong>.
     </p>
 
+    <!-- Engagement insights grid -->
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
         
         <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(40, 30, 20, 0.8) 100%); border: 2px solid rgba(245, 158, 11, 0.4); border-radius: 12px; padding: 25px;">
-            <div style="font-size: 2em; margin-bottom: 10px;">🔥</div>
+            <div style="font-size: 2em; margin-bottom: 10px;">🏆</div>
             <h4 style="color: #f59e0b; margin: 0 0 10px 0;">Most Engaged: Galaxy #3 - Vlogs & Lifestyle</h4>
             <p style="color: #e2e2ed; font-size: 0.95em; margin: 0;">
                 <strong>26.9 likes per 1000 views</strong><br>
-                Makeup tutorials, hauls, and vlogs create devoted communities. These viewers don't just watch — they comment, share tips, and build relationships with creators.
+                Makeup tutorials, hauls, and vlogs create devoted communities. These viewers don't just watch—they comment, share tips, and build relationships with creators.
             </p>
         </div>
         
         <div style="background: linear-gradient(135deg, rgba(20, 184, 166, 0.2) 0%, rgba(20, 40, 40, 0.8) 100%); border: 2px solid rgba(20, 184, 166, 0.4); border-radius: 12px; padding: 25px;">
-            <div style="font-size: 2em; margin-bottom: 10px;">👻</div>
+            <div style="font-size: 2em; margin-bottom: 10px;">👁️</div>
             <h4 style="color: #14b8a6; margin: 0 0 10px 0;">The Viral Void: Galaxy #8 - ASMR & Kids</h4>
             <p style="color: #e2e2ed; font-size: 0.95em; margin: 0;">
                 <strong>133K median views, only 4.0 engagement</strong><br>
-                Slime, soap cutting, and satisfying compilations — optimized for the algorithm, not connection. Viewers consume passively without forming lasting communities.
+                Slime, soap cutting, and satisfying compilations—optimized for the algorithm, not connection. Viewers consume passively without forming lasting communities.
             </p>
         </div>
         
@@ -586,7 +608,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
     <h3>Duration Tells a Story</h3>
     <p>
-        Video length isn't random — it reflects the <span class="highlight">content type</span> and <span class="highlight">audience expectations</span> of each galaxy.
+        Video length isn't random—it reflects the <span class="highlight">content type</span> and <span class="highlight">audience expectations</span> of each galaxy.
     </p>
 
     <div class="stats-grid">
@@ -605,7 +627,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </div>
 
     <p>
-        <strong>Fitness content (Galaxy #5)</strong> demands the longest attention — Buff Dudes workouts, vegan recipes, and Law of Attraction manifestation videos average 18+ minutes. <strong>Pop Music (Galaxy #2)</strong> lives in quick 8-minute bursts: music videos and playlist compilations.
+        <strong>Fitness content (Galaxy #5)</strong> demands the longest attention—Buff Dudes workouts, vegan recipes, and Law of Attraction manifestation videos average 18+ minutes. <strong>Pop Music (Galaxy #2)</strong> lives in quick 8-minute bursts: music videos and playlist compilations.
     </p>
 
     <h3>The Galaxy Classification System</h3>
@@ -615,17 +637,17 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 30px 0;">
         <div style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 10px; padding: 20px; text-align: center;">
-            <div style="font-size: 2.5em;">🌎</div>
+            <div style="font-size: 2.5em;">🌐</div>
             <h4 style="color: #8b5cf6; margin: 10px 0 5px 0;">Global Galaxies</h4>
             <p style="color: #a0a0c0; font-size: 0.85em; margin: 0;">#1 Gaming, #2 Music, #8 ASMR<br>Content transcends language</p>
         </div>
         <div style="background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); border-radius: 10px; padding: 20px; text-align: center;">
-            <div style="font-size: 2.5em;">📍</div>
+            <div style="font-size: 2.5em;">🗣️</div>
             <h4 style="color: #ec4899; margin: 10px 0 5px 0;">Regional Galaxies</h4>
             <p style="color: #a0a0c0; font-size: 0.85em; margin: 0;">#0 Indian, #7 Filipino<br>Bound by language</p>
         </div>
         <div style="background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 10px; padding: 20px; text-align: center;">
-            <div style="font-size: 2.5em;">💬</div>
+            <div style="font-size: 2.5em;">🎯</div>
             <h4 style="color: #06b6d4; margin: 10px 0 5px 0;">Engaged Galaxies</h4>
             <p style="color: #a0a0c0; font-size: 0.85em; margin: 0;">#3 Vlogs, #5 Fitness<br>High engagement, tight communities</p>
         </div>
@@ -651,6 +673,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </p>
 </section>
 
+<!-- Section V: User Navigation -->
 <section id="navigation" class="section">
     <span class="section-number">Chapter VI</span>
     <h2>Navigating the YouNiverse: How Do Users Travel Between Galaxies?</h2>
@@ -659,12 +682,12 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         We've mapped 52 galaxies, decoded their identities, and watched the universe fragment over a decade. But one question remains unanswered: <strong>do the inhabitants of these galaxies stay home, or do they wander?</strong>
     </p>
     <p>
-        In the physical universe, stars rarely leave their galaxies. But in the YouNiverse, viewers have no such constraints — a single click can transport them from a Gaming stream to a Music video to a Political commentary. To understand these journeys, we must first map the <span class="highlight">highways that connect the galaxies</span>.
+        In the physical universe, stars rarely leave their galaxies. But in the YouNiverse, viewers have no such constraints—a single click can transport them from a Gaming stream to a Music video to a Political commentary. To understand these journeys, we must first map the <span class="highlight">highways that connect the galaxies</span>.
     </p>
 
     <h3>The Cosmic Highway: Where Does Attention Flow?</h3>
     <p>
-        Yet some attention <em>does</em> escape. Where does it go? To visualize the inter-galactic traffic, we constructed a <strong>chord diagram</strong> of all 52 communities. Each arc represents a galaxy's size, and ribbons show the flow of shared audience between them — the thicker the ribbon, the stronger the gravitational bond.
+        Yet some attention <em>does</em> escape. Where does it go? To visualize the inter-galactic traffic, we constructed a <strong>chord diagram</strong> of all 52 communities. Each arc represents a galaxy's size, and ribbons show the flow of shared audience between them—the thicker the ribbon, the stronger the gravitational bond.
     </p>
 
     <div class="viz-container">
@@ -679,25 +702,25 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </div>
 
     <p>
-        The full view (all 52 communities) appears chaotic — a dense web of crisscrossing ribbons. But look closer: <strong>C18</strong> (the large green arc) dominates the landscape. Its ribbons stretch to nearly every corner of the diagram, making it the <span class="highlight">gravitational center of the YouNiverse</span>. Similarly, <strong>C0</strong> and <strong>C11</strong> act as major hubs.
+        The full view (all 52 communities) appears chaotic—a dense web of crisscrossing ribbons. But look closer: <strong>C18</strong> (the large green arc) dominates the landscape. Its ribbons stretch to nearly every corner of the diagram, making it the <span class="highlight">gravitational center of the YouNiverse</span>. Similarly, <strong>C0</strong> and <strong>C11</strong> act as major hubs.
     </p>
 
     <p>
-        Now drag the slider to show only the <strong>top 10 communities</strong>. The chaos resolves into clarity: a dense, tightly-interconnected core emerges. The strongest corridors become visible — <strong>C18 — C31</strong>, <strong>C18 — C13</strong>, <strong>C18 — C3</strong> — highways where millions of viewers travel between galaxies.
+        Now drag the slider to show only the <strong>top 10 communities</strong>. The chaos resolves into clarity: a dense, tightly-interconnected core emerges. The strongest corridors become visible—<strong>C18 ↔ C31</strong>, <strong>C18 ↔ C13</strong>, <strong>C18 ↔ C3</strong>—highways where millions of viewers travel between galaxies.
     </p>
 
     <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #22c55e; margin: 20px 0; color: #ffffff; border-radius: 4px;">
-        <strong>🛣️ The Core Highway System:</strong>
+        <strong>🛤️ The Core Highway System:</strong>
         <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
-            <li><strong>C18:</strong> The absolute center — connected to virtually everyone with thick, prominent ribbons</li>
+            <li><strong>C18:</strong> The absolute center—connected to virtually everyone with thick, prominent ribbons</li>
             <li><strong>C31, C13, C3:</strong> Major satellites orbiting C18 with strong bidirectional flows</li>
             <li><strong>C0, C4, C5, C10, C11:</strong> Secondary hubs forming the densely-connected Galactic Core</li>
-            <li><strong>C34 — C51:</strong> Tiny peripheral communities — barely visible arcs with thin or no connections</li>
+            <li><strong>C34–C51:</strong> Tiny peripheral communities—barely visible arcs with thin or no connections</li>
         </ul>
     </div>
 
     <p>
-        The chord diagram reveals a stark <strong>hub-and-spoke structure</strong>. The top 10 galaxies form a tightly-bound core where attention flows freely. Meanwhile, the 40+ smaller communities on the periphery exist as <span class="highlight">isolated islands</span> — their thin ribbons (if any) connect only to the nearest hub, never to each other. The YouNiverse isn't a uniform web; it's a hierarchical network with clear highways and dead ends.
+        The chord diagram reveals a stark <strong>hub-and-spoke structure</strong>. The top 10 galaxies form a tightly-bound core where attention flows freely. Meanwhile, the 40+ smaller communities on the periphery exist as <span class="highlight">isolated islands</span>—their thin ribbons (if any) connect only to the nearest hub, never to each other. The YouNiverse isn't a uniform web; it's a hierarchical network with clear highways and dead ends.
     </p>
 
     <h3>Bridge Channels: The Cosmic Connectors</h3>
@@ -718,7 +741,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </p>
 
     <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #f59e0b; margin: 20px 0; color: #ffffff; border-radius: 4px;">
-        <strong>🌉 The Mega-Bridges of the YouNiverse:</strong>
+        <strong>🏆 The Mega-Bridges of the YouNiverse:</strong>
         <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
             <li><strong>WWE (C5):</strong> ~350K cross-strength, 0.82 cross-share — THE biggest bridge in the entire YouNiverse. Wrestling transcends community boundaries like nothing else.</li>
             <li><strong>Mo Vlogs (C0):</strong> ~150K cross-strength — Vlogging's universal appeal bridges the massive Indian Entertainment hub to the world</li>
@@ -729,7 +752,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </div>
 
     <p>
-        But the most striking finding lies in the <strong>isolated communities</strong>. Scroll to <strong>Community 34</strong> (Crafts/Quilting): nearly every channel shows <strong>0.00 cross-share</strong>. These viewers exclusively watch quilting content — they never venture into Gaming or Music. Similarly, <strong>Community 22</strong> (Tennis) features official channels like Roland Garros and ATP Tour with zero external connections. <span class="highlight">Some galaxies are perfect echo chambers.</span>
+        But the most striking finding lies in the <strong>isolated communities</strong>. Scroll to <strong>Community 34</strong> (Crafts/Quilting): nearly every channel shows <strong>0.00 cross-share</strong>. These viewers exclusively watch quilting content—they never venture into Gaming or Music. Similarly, <strong>Community 22</strong> (Tennis) features official channels like Roland Garros and ATP Tour with zero external connections. <span class="highlight">Some galaxies are perfect echo chambers.</span>
     </p>
 
     <div class="insight-box" style="background: #132f34ff; padding: 20px; border-left: 4px solid #ef4444; margin: 20px 0; color: #ffffff; border-radius: 4px;">
@@ -745,29 +768,29 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
     <h3>The Anatomy of a Bridge</h3>
     <p>
-        What makes a channel become a bridge? Usually it’s content that’s <strong>easy to share</strong> with someone outside your niche—something people watch even if they didn’t “come for that topic.” Across communities, a few simple patterns show up again and again:
+        What makes a channel become a bridge? Looking across communities, clear patterns emerge:
     </p>
 
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 30px 0;">
         <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 10px; padding: 20px; text-align: center;">
-            <div style="font-size: 2.5em;">🎬</div>
+            <div style="font-size: 2.5em;">🎭</div>
             <h4 style="color: #f59e0b; margin: 10px 0 5px 0;">Entertainment Variety</h4>
             <p style="color: #a0a0c0; font-size: 0.85em; margin: 0;">WWE, First We Feast, AWE me<br>Broad appeal = massive bridging</p>
         </div>
         <div style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 10px; padding: 20px; text-align: center;">
-            <div style="font-size: 2.5em;">🤳</div>
+            <div style="font-size: 2.5em;">📹</div>
             <h4 style="color: #8b5cf6; margin: 10px 0 5px 0;">Vlogging Giants</h4>
             <p style="color: #a0a0c0; font-size: 0.85em; margin: 0;">CaseyNeistat, Mo Vlogs<br>Personal stories transcend niches</p>
         </div>
         <div style="background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 10px; padding: 20px; text-align: center;">
-            <div style="font-size: 2.5em;">💻</div>
+            <div style="font-size: 2.5em;">🔧</div>
             <h4 style="color: #06b6d4; margin: 10px 0 5px 0;">Tech Crossovers</h4>
             <p style="color: #a0a0c0; font-size: 0.85em; margin: 0;">TechRax, TechSmartt<br>Destruction + reviews = viral bridging</p>
         </div>
     </div>
 
     <p>
-        Meanwhile, <strong>regional content</strong>, <strong>niche hobbies</strong>, and even some <strong>official sports leagues</strong> tend to keep viewers “in the same neighborhood.” If you binge quilting tutorials or tennis highlights, YouTube mostly serves you more of the same—and you rarely jump to totally different worlds. The lesson: <span class="highlight">universality bridges, specificity isolates</span>.
+        Meanwhile, <strong>regional content</strong> (Sri Lankan, Filipino, Nepali), <strong>niche hobbies</strong> (quilting, roller coasters, dog training), and surprisingly <strong>professional sports leagues</strong> (Tennis) create the strongest echo chambers. The lesson: <span class="highlight">universality bridges, specificity isolates</span>.
     </p>
 
     <h3>What Types of Content Build Bridges?</h3>
@@ -782,78 +805,56 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </div>
 
     <p>
-<<<<<<< HEAD
-        The key takeaway: <strong>bridging is concentrated</strong>. A small number of communities do a huge share of the cross-community connecting.
+        Here’s how to read this: each <strong>community (galaxy)</strong> has a cluster of colored bars, and each color is a <strong>YouTube category</strong>. The height of a bar is <strong>cross-strength</strong> — how much that category acts like a <em>bridge engine</em>, pushing viewers from this galaxy into others.
         <br><br>
-        In the chart, <strong>Community 18</strong> stands out as a “super-connector,” with very large cross-strength in big-tent categories like <span class="highlight">Gaming</span> and <span class="highlight">Entertainment</span> (millions of cross-community links). In plain terms: people don’t just watch one thing there—they bounce between games, reactions, creators, and adjacent topics.
+        The headline is <strong>Community 18</strong>: it’s a super-connector, and a huge part of that power comes from <span class="highlight">Gaming</span>. In the screenshot, <strong>Gaming in C18 alone reaches ~6,790,417</strong> cross-strength — a massive bridge that sends travelers outward into other galaxies. The same community also has a strong <span class="highlight">Entertainment</span> bridge (about <strong>2,909,400</strong>).
         <br><br>
-        Real-life example: you start with a viral gaming moment → you get recommended a reaction/compilation channel → you land in broader entertainment or a creator’s vlog. That’s a bridge.
-=======
-        The chart reveals a stunning concentration of bridging power. <strong>Community 18</strong> towers above all others with nearly <strong>10 million total cross-strength</strong> — and the breakdown tells a story: <span class="highlight">People & Blogs</span> (purple) contributes ~7M alone, with <span class="highlight">Music</span> (cyan) adding another ~3M. This is the home of CaseyNeistat and the vlogging giants — personal stories that resonate across every community.
->>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
+        Compare that with <strong>Community 11</strong>, where <span class="highlight">Entertainment</span> is the powerhouse (around <strong>3,956,458</strong>). Different galaxies build bridges in different ways: some through viral, mainstream gaming; others through universally shareable entertainment formats.
     </p>
 
     <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #a855f7; margin: 20px 0; color: #ffffff; border-radius: 4px;">
-        <strong>🏆 The Bridge-Building Hierarchy:</strong>
+        <strong>🌉 The Bridge-Building Hierarchy:</strong>
         <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
-            <li><strong>Entertainment (Purple):</strong> Big, shareable formats (reactions, clips, variety) travel easily across communities</li>
-            <li><strong>Gaming (Orange):</strong> Can become a massive bridge when it’s mainstream/viral (but game-specific bubbles can still stay closed)</li>
-            <li><strong>People & Blogs:</strong> Personal stories + personalities pull viewers across many different interests</li>
-            <li><strong>Music (Cyan):</strong> A steady “background connector” — songs and artists get picked up in many places</li>
-            <li><strong>Sports / Tech:</strong> Often concentrated in a few standout hubs (e.g., wrestling, tech destruction/reviews)</li>
+            <li><strong>Gaming:</strong> Can be a massive bridge in the right community (e.g., C18’s ~6.8M gaming bridge in the screenshot)</li>
+            <li><strong>Entertainment:</strong> A reliable bridge engine (e.g., C11’s ~4.0M entertainment bridge in the screenshot)</li>
+            <li><strong>People & Blogs:</strong> Personality-driven content that travels across interests</li>
+            <li><strong>Music:</strong> A steady connector that pops up in many communities</li>
+            <li><strong>Everything else:</strong> Often smaller and more community-specific — present, but not driving the main crossovers</li>
         </ul>
     </div>
 
     <p>
-<<<<<<< HEAD
-        One subtle pattern: <strong>not every big category bridges equally</strong>. Some topics create “lanes” where recommendations loop back into the same content (think official league channels, narrow hobby tutorials, or highly specialized education). Those communities show up with smaller cross-strength because viewers don’t hop as much.
+        A useful way to interpret this: <strong>bridges are not evenly distributed</strong>. “Gaming” can be a super-highway (as in C18) or a set of closed loops (game-specific bubbles where recommendations keep you inside one scene). That’s why you can see Gaming explode in one community and stay quiet in others.
         <br><br>
-        A useful way to read it: <span class="highlight">big bars mean “easy to wander”</span>—content that naturally leads to other worlds. Tiny bars mean <span class="highlight">“you stay in your lane”</span>.
-=======
-        But the most striking insight is what's <em>missing</em>. Look for <strong>Gaming (orange)</strong> — it's barely visible anywhere. Despite Gaming being one of the largest categories on YouTube, <span class="highlight">gamers don't build bridges</span>. They stay in their lanes: Minecraft viewers watch Minecraft, Fortnite viewers watch Fortnite. The same applies to <strong>News & Politics</strong> (yellow) and <strong>Education</strong> (pink) — these categories reinforce community boundaries rather than cross them.
->>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
+        In real life: a viral gaming moment often pulls you into reactions, compilations, and broader entertainment — but a niche game can keep you orbiting the same cluster for a long time.
     </p>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
         <div style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(40, 20, 60, 0.8) 100%); border: 2px solid rgba(168, 85, 247, 0.4); border-radius: 12px; padding: 25px;">
-            <div style="font-size: 2em; margin-bottom: 10px;">🤝</div>
+            <div style="font-size: 2em; margin-bottom: 10px;">🌉</div>
             <h4 style="color: #a855f7; margin: 0 0 10px 0;">Categories That Bridge</h4>
             <p style="color: #e2e2ed; font-size: 0.95em; margin: 0;">
-<<<<<<< HEAD
-                <strong>Entertainment, People & Blogs, Music (and some Gaming)</strong><br>
-                Content you can enjoy instantly: clips, reactions, personalities, songs—and big, mainstream gaming moments.
-=======
-                <strong>People & Blogs, Entertainment, Music</strong><br>
-                Emotionally-driven, broadly relatable content. No specialized knowledge required — anyone can enjoy a vlog or a song.
->>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
+                <strong>Gaming (when mainstream), Entertainment, People & Blogs, Music</strong><br>
+                Content with lots of “off-ramps”: viral moments, personalities, clips, reactions, and shareable culture.
             </p>
         </div>
         <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(60, 20, 20, 0.8) 100%); border: 2px solid rgba(239, 68, 68, 0.4); border-radius: 12px; padding: 25px;">
-            <div style="font-size: 2em; margin-bottom: 10px;">🧱</div>
+            <div style="font-size: 2em; margin-bottom: 10px;">🔒</div>
             <h4 style="color: #ef4444; margin: 0 0 10px 0;">Categories That Isolate</h4>
             <p style="color: #e2e2ed; font-size: 0.95em; margin: 0;">
-<<<<<<< HEAD
-                <strong>Niche hobbies, official leagues, highly specialized topics</strong><br>
-                Great depth, but fewer “off-ramps” — you watch more of the same and cross over less.
-=======
-                <strong>Gaming, News & Politics, Education</strong><br>
-                Specialized, topic-specific content. You either care about this game/topic or you don't — no casual crossover.
->>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
+                <strong>Niche hobbies, official channels, highly specialized topics</strong><br>
+                Great depth, fewer crossovers: recommendations keep you “in the same lane.”
             </p>
         </div>
     </div>
 
     <div class="quote">
-        "In the YouNiverse, big-tent stories connect. The more niche the topic, the more it keeps you at home."
+        "In the YouNiverse, big, shareable content builds highways. The more niche the topic, the more gravity keeps you at home."
     </div>
 
     <h3>Directional Flows: Where Do Travelers Actually Go?</h3>
     <p>
-<<<<<<< HEAD
-        Not all traffic is equal. Some communities mostly <em>export</em> attention (their viewers branch out), while others mostly <em>import</em> it (many viewers arrive from elsewhere). This chart lists the biggest one-way “highways.” Read each bar as: <strong>viewers moving from Community A → Community B</strong> (longer bar = stronger flow).
-=======
-        Not all traffic is equal. Some galaxies <em>export</em> attention while others <em>import</em> it. To understand the <strong>directionality</strong> of audience flow, we mapped the top inter-community corridors — the highways where the most traffic flows.
->>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
+        Not all traffic is equal. This chart shows the biggest one-way <strong>highways</strong> between communities. Each label is <strong>source → destination</strong>, and the bar length is the <strong>normalized flow</strong> (bigger bar = more travelers moving that way).
     </p>
 
     <div class="viz-container">
@@ -863,71 +864,60 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </div>
 
     <p>
-<<<<<<< HEAD
-        The flow map reveals the YouNiverse’s <strong>main interchange</strong>: the strongest traffic runs between <span class="highlight">C11 and C18</span>, and it’s <strong>two-way</strong>. That’s a classic sign of two big worlds with a shared audience—people regularly bounce between them rather than making a one-time trip.
-=======
-        The flow map reveals the <strong>central nervous system</strong> of the YouNiverse. One corridor dominates all others: <span class="highlight">C17 — C20</span> carries a combined ~127,000 normalized flow — more than double any other route. This is the main highway of the YouNiverse, a bidirectional channel where massive audiences cross between communities.
->>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
+        The clearest feature in the screenshot is a dominant two-way corridor between <span class="highlight">C11 and C18</span>. The top bar is <strong>C11 → C18</strong> (about <strong>~160K</strong> normalized flow), and right below it is <strong>C18 → C11</strong> (about <strong>~145K</strong>). That tells you these two worlds share a big audience that regularly bounces back and forth — not a one-time “leak.”
     </p>
 
     <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #06b6d4; margin: 20px 0; color: #ffffff; border-radius: 4px;">
-        <strong>🗺️ The Top 5 Highways of the YouNiverse:</strong>
+        <strong>🛣️ The Top 5 Highways of the YouNiverse:</strong>
         <ol style="margin: 10px 0 0 20px; line-height: 1.8;">
-<<<<<<< HEAD
-            <li><strong>C11 → C18:</strong> The largest one-way corridor</li>
-            <li><strong>C18 → C11:</strong> A nearly-as-strong return flow (clear two-way exchange)</li>
-            <li><strong>C18 → C31:</strong> A major outbound route from the main hub</li>
-            <li><strong>C18 → C10:</strong> Another strong outbound route</li>
-            <li><strong>C31 ↔ C11:</strong> A secondary “triangle” that keeps the core tightly connected</li>
-=======
-            <li><strong>C17 — C20:</strong> ~70K flow — The single largest directional corridor</li>
-            <li><strong>C20 — C17:</strong> ~57K flow — Strong return traffic (bidirectional)</li>
-            <li><strong>C17 — C10:</strong> ~55K flow — Major route to the Tech hub</li>
-            <li><strong>C10 — C17:</strong> ~32K flow — Asymmetric return</li>
-            <li><strong>C20 — C9:</strong> ~18K flow — Secondary corridor</li>
->>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
+            <li><strong>C11 → C18:</strong> ~160K — the biggest single corridor</li>
+            <li><strong>C18 → C11:</strong> ~145K — strong return (two-way exchange)</li>
+            <li><strong>C18 → C31:</strong> ~70K — a major outbound route from the core</li>
+            <li><strong>C18 → C10:</strong> ~60K — another big outbound route</li>
+            <li><strong>C31 ↔ C11:</strong> ~50K-ish — a secondary connection that tightens the core</li>
         </ol>
     </div>
 
     <p>
-<<<<<<< HEAD
-        <strong>C18 shows up everywhere</strong> in the top flows, which is exactly what a routing hub looks like: many journeys start there, end there, or pass through it. C11 is its biggest trading partner, and C31/C10 form the next layer of the core.
+        The pattern is simple: <strong>C18 is the main junction</strong>. It shows up repeatedly as the destination (many people land there) and as the source (many people depart from there). C11 is its biggest trade partner, and C31/C10 are the next most common routes out of the core.
         <br><br>
-        Real-life interpretation: if you enter the network through one of these “core” communities, recommendations quickly pull you into the others. If you enter through a niche community, you’re much less likely to appear on this highway map at all.
-=======
-        <strong>C17 emerges as the routing hub</strong> of the YouNiverse — it appears in nearly every top flow, both as source and destination. This community acts as a <span class="highlight">crossroads</span> where travelers from multiple galaxies pass through. Meanwhile, notice what's <em>missing</em>: <strong>C0</strong> (the massive Indian Entertainment hub) appears only once, at the very bottom (C0 — C13). Despite its enormous size, it remains isolated — audiences go in but rarely come out.
->>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
+        Real-life interpretation: once you enter the C11–C18 core, recommendations keep offering “nearby” content across the same core cluster — that’s why these arrows dominate the highway list.
     </p>
 
     <h3>Asymmetric Gravity: The Direction of Attention</h3>
-    <p>
-        The flows reveal <strong>asymmetric relationships</strong>. Compare these pairs:
-    </p>
+<p>
+  The flows reveal <strong>asymmetric relationships</strong>. Compare these pairs:
+</p>
 
-    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 25px 0;">
-        <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 10px; padding: 15px;">
-            <p style="color: #06b6d4; font-weight: bold; margin: 0 0 5px 0;">C17 — C10: 55K</p>
-            <p style="color: #888; font-size: 0.9em; margin: 0;">C10 — C17: 32K</p>
-            <p style="color: #a0a0c0; font-size: 0.85em; margin: 10px 0 0 0;">C17 exports 72% more than it receives from C10</p>
-        </div>
-        <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 10px; padding: 15px;">
-            <p style="color: #06b6d4; font-weight: bold; margin: 0 0 5px 0;">C17 — C20: 70K</p>
-            <p style="color: #888; font-size: 0.9em; margin: 0;">C20 — C17: 57K</p>
-            <p style="color: #a0a0c0; font-size: 0.85em; margin: 10px 0 0 0;">Nearly balanced, but C17 still exports ~23% more</p>
-        </div>
-    </div>
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 25px 0;">
+  <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 10px; padding: 15px;">
+    <p style="color: #06b6d4; font-weight: bold; margin: 0 0 5px 0;">C18 → C10: ~60K</p>
+    <p style="color: #888; font-size: 0.9em; margin: 0;">C10 → C18: ~35K</p>
+    <p style="color: #a0a0c0; font-size: 0.85em; margin: 10px 0 0 0;">C18 sends ~72% more traffic to C10 than it receives back</p>
+  </div>
 
-    <p>
-        The pattern is consistent: <strong>C17 is a net exporter of attention</strong>. It acts as a distribution hub, routing audiences to multiple destinations (C20, C10, C9, C16, C2, C29, C15) while receiving less in return. This makes C17 a <span class="highlight">gateway community</span> — a rare bridge that actively pushes viewers to explore beyond their home galaxy.
-    </p>
+  <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 10px; padding: 15px;">
+    <p style="color: #06b6d4; font-weight: bold; margin: 0 0 5px 0;">C18 → C31: ~68K</p>
+    <p style="color: #888; font-size: 0.9em; margin: 0;">C31 → C18: ~47K</p>
+    <p style="color: #a0a0c0; font-size: 0.85em; margin: 10px 0 0 0;">C18 exports ~46% more to C31 than it receives</p>
+  </div>
+</div>
 
-    <div class="quote">
-        "Most galaxies are black holes that consume attention. C17 is the rare supernova — it radiates viewers outward across the YouNiverse."
-    </div>
+<p>
+  The story that emerges is not “C18 dominates everyone”, but something more interesting:
+  <strong>C18 is a relay station</strong>. It absorbs a massive stream from <strong>C11 → C18 (~152K)</strong>,
+  then redistributes attention outward—especially toward <strong>C10</strong> and <strong>C31</strong>—in a clearly directional way.
+  In other words, <span class="highlight">C11 feeds the hub</span>, and <span class="highlight">C18 routes viewers outward</span>.
+</p>
+
+<div class="quote">
+  "C11 is the main river. C18 is the delta: it catches the flow, then splits it into multiple downstream worlds."
+</div>
+
 
     <h3>The Echo Chamber Revelation</h3>
     <p>
-        We've traced the highways, identified the bridges, and mapped the traffic flows. But here's the sobering truth: <strong>most viewers never use these connections</strong>. To quantify this isolation, we computed the <strong>external share</strong> for each community — what percentage of a galaxy's total interaction weight flows <em>outside</em> its borders?
+        We've traced the highways, identified the bridges, and mapped the traffic flows. But here's the sobering truth: <strong>most viewers never use these connections</strong>. To quantify this isolation, we computed the <strong>external share</strong> for each community—what percentage of a galaxy's total interaction weight flows <em>outside</em> its borders?
     </p>
 
     <div class="viz-container">
@@ -937,26 +927,26 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </div>
 
     <p>
-        The results are striking. On the left, <strong>purple bars</strong> mark the most isolated communities — galaxies where less than <strong>7.5%</strong> of audience interaction escapes their borders. On the right, a few exceptional communities reach external shares of <strong>30-40%</strong>. But look at the distribution: <span class="highlight">the vast majority cluster below 25%</span>.
+        The results are striking. On the left, <strong>purple bars</strong> mark the most isolated communities—galaxies where less than <strong>7.5%</strong> of audience interaction escapes their borders. On the right, a few exceptional communities reach external shares of <strong>30-40%</strong>. But look at the distribution: <span class="highlight">the vast majority cluster below 25%</span>.
     </p>
 
     <p>
-        The range is staggering: <strong>C34</strong> (Crafts/Quilting) keeps 99% of its attention internal — only 1% external share. Meanwhile, <strong>C28</strong> sends 40% of its interactions to other galaxies. Yet C28 is the exception. For most communities, the walls are high and the gates rarely open.
+        The range is staggering: <strong>C34</strong> (Crafts/Quilting) keeps 99% of its attention internal—only 1% external share. Meanwhile, <strong>C28</strong> sends 40% of its interactions to other galaxies. Yet C28 is the exception. For most communities, the walls are high and the gates rarely open.
     </p>
 
     <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #a855f7; margin: 20px 0; color: #ffffff; border-radius: 4px;">
-        <strong>🔊 The Echo Chambers (Purple Bars < 7.5%):</strong>
+        <strong>🔒 The Echo Chambers (Purple Bars < 7.5%):</strong>
         <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
-            <li><strong>C34, C44, C16:</strong> The most sealed vaults — external shares below 3%</li>
+            <li><strong>C34, C44, C16:</strong> The most sealed vaults—external shares below 3%</li>
             <li><strong>C24, C33, C22, C7, C12:</strong> Tight-knit communities around 3-4%</li>
             <li><strong>C0, C17, C45, C26:</strong> Just below the threshold at 5-7%</li>
         </ul>
     </div>
 
     <div class="insight-box" style="background: #132f34ff; padding: 20px; border-left: 4px solid #06b6d4; margin: 20px 0; color: #ffffff; border-radius: 4px;">
-        <strong>🛤️ The Open Crossroads (Top 5 External Share):</strong>
+        <strong>🌐 The Open Crossroads (Top 5 External Share):</strong>
         <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
-            <li><strong>C28:</strong> ~40% external share — the most connected galaxy in the YouNiverse</li>
+            <li><strong>C28:</strong> ~40% external share—the most connected galaxy in the YouNiverse</li>
             <li><strong>C10:</strong> ~36% external share</li>
             <li><strong>C5:</strong> ~33% external share</li>
             <li><strong>C23, C3:</strong> ~31-32% external share</li>
@@ -964,7 +954,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </div>
 
     <p>
-        Notice something surprising: <strong>C0</strong> — the massive Indian Entertainment hub with over 3,000 channels — sits among the echo chambers with only ~5% external share. Despite its enormous size, its audience rarely ventures outside. <span class="highlight">Size doesn't guarantee openness</span>; in fact, regional and linguistic galaxies often form the tightest bubbles.
+        Notice something surprising: <strong>C0</strong>—the massive Indian Entertainment hub with over 3,000 channels—sits among the echo chambers with only ~5% external share. Despite its enormous size, its audience rarely ventures outside. <span class="highlight">Size doesn't guarantee openness</span>; in fact, regional and linguistic galaxies often form the tightest bubbles.
     </p>
 
     <div class="quote">
@@ -978,7 +968,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
         <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(40, 20, 20, 0.8) 100%); border: 2px solid rgba(239, 68, 68, 0.4); border-radius: 12px; padding: 25px;">
-            <div style="font-size: 2em; margin-bottom: 10px;">🛑</div>
+            <div style="font-size: 2em; margin-bottom: 10px;">🔒</div>
             <h4 style="color: #ef4444; margin: 0 0 10px 0;">The Walls</h4>
             <p style="color: #e2e2ed; font-size: 0.95em; margin: 0;">
                 Most viewers are <strong>trapped</strong> in their home galaxy. External shares below 15% mean ideas rarely cross borders. Echo chambers are the norm, not the exception.
@@ -988,7 +978,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
             <div style="font-size: 2em; margin-bottom: 10px;">🌉</div>
             <h4 style="color: #06b6d4; margin: 0 0 10px 0;">The Bridges</h4>
             <p style="color: #e2e2ed; font-size: 0.95em; margin: 0;">
-                Yet bridges <strong>exist</strong>. A small number of channels — often Entertainment and Music creators — serve as wormholes connecting distant worlds.
+                Yet bridges <strong>exist</strong>. A small number of channels—often <strong>Entertainment</strong>, <strong>Music</strong>, <strong>People & Blogs</strong>, and sometimes big <strong>Gaming</strong> hubs—act like wormholes connecting distant worlds.
             </p>
         </div>
     </div>
@@ -1002,9 +992,9 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         The navigation patterns we've uncovered have profound implications:
     </p>
     <ul style="color: #e2e2ed; line-height: 2;">
-        <li><strong>Filter bubbles are real:</strong> The algorithm doesn't need to trap you — viewers trap themselves by gravitating toward familiar content</li>
+        <li><strong>Filter bubbles are real:</strong> The algorithm doesn't need to trap you—viewers trap themselves by gravitating toward familiar content</li>
         <li><strong>Bridges are crucial:</strong> The few channels that connect communities play an outsized role in cultural exchange</li>
-        <li><strong>Mainstream matters:</strong> Large Entertainment and Music galaxies serve as the crossroads of the YouNiverse — remove them, and the network fragments into isolated islands</li>
+        <li><strong>Mainstream matters:</strong> Large Entertainment and Music galaxies serve as the crossroads of the YouNiverse—remove them, and the network fragments into isolated islands</li>
     </ul>
     
     <p>
@@ -1012,274 +1002,53 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </p>
 </section>
 
+<!-- Section VI: Black Holes -->
 <section id="blackholes" class="section">
     <span class="section-number">Chapter VII</span>
     <h2>The Black Holes of the YouNiverse</h2>
-
+    <h3>When Attention Collapses Around a Few Stars</h3>
+    
     <p>
-        On platforms like YouTube, <strong>attention</strong> — understood as the capacity to maintain both broad connectivity and intense interactions —
-        is the most critical resource, even more than views or subscriber counts.
-        Attention enables channels to cross community boundaries, tap into multiple audiences,
-        and capture flows from across the ecosystem.
-        It is precisely this capacity that makes attention so powerful — and potentially so dangerous.
+        In every galaxy, a few channels exert <span class="highlight">disproportionate gravitational pull</span>. These "black holes" capture massive amounts of attention, shaping the dynamics of their entire region.
     </p>
-
+    
+    <h3>Attention Distribution</h3>
     <p>
-        Given this, it becomes essential to study how attention is distributed across the YouNiverse,
-        both <em>within</em> and across galaxies.
+        Using <span class="highlight">Gini coefficients</span>, we quantify the inequality of attention distribution. The results confirm what many suspect: YouTube exhibits a "winner-takes-all" dynamic.
     </p>
-
-    <p>
-        Our goal is simple: to determine whether attention is relatively evenly distributed,
-        or whether it collapses around a small number of dominant actors —
-        the <strong>Black Holes</strong>.
-    </p>
-
-    <h3>Within galaxies</h3>
-
-    <p>
-        We begin our exploration at the scale of individual galaxies by providing a broad estimation
-        of how <strong>interaction intensity</strong> (<em>strength</em>) and
-        <strong>connectivity</strong> (<em>degree</em>) are distributed internally.
-        To quantify these inequalities, we rely on the <strong>Gini coefficient</strong>.
-    </p>
-
+    
     <div class="viz-container">
-        <div class="viz-title">Attention inequality inside galaxies</div>
-        <div class="viz-placeholder">
-            {% include_relative blackholes_gini.html %}
+        <div class="viz-title">Attention Inequality Across Galaxies</div>
+        <div id="gini-viz" class="viz-placeholder">
+            <!-- Gini coefficient visualization will be inserted here -->
+            [Interactive visualization coming soon]
         </div>
     </div>
-
+    
+    <h3>Identifying the Black Holes</h3>
     <p>
-        Two main observations immediately emerge.
+        Who are the black holes of each galaxy? What characteristics do they share? Our analysis reveals patterns in posting frequency, video duration, and content style.
     </p>
-
-    <p>
-        First, attention is <strong>highly unevenly distributed</strong> inside most galaxies.
-        Gini coefficients are typically above <strong>0.7</strong> and can reach values close to <strong>0.9</strong>,
-        revealing extreme concentration among a small subset of channels.
-    </p>
-
-    <p>
-        Second, we observe a clear relationship between <strong>connectivity inequality</strong> and
-        <strong>interaction inequality</strong>.
-        Galaxies with highly unequal degree distributions also tend to exhibit highly unequal strength distributions.
-        However, inequality in interaction intensity is consistently slightly higher than inequality in connectivity,
-        suggesting that attention concentrates even more strongly in <em>how intensely</em> channels interact
-        than in <em>how many</em> connections they have.
-    </p>
-
-    <h3>How much do the giants absorb?</h3>
-
-    <p>
-        Having established that attention is globally unequally distributed within most galaxies,
-        we now quantify how much of this attention is captured by the most dominant channels:
-        the <strong>Black Holes</strong>.
-        We define black holes as channels belonging simultaneously to the top percentile
-        of interaction strength and degree within their community.
-    </p>
-
+    
     <div class="viz-container">
-        <div class="viz-title">Share of total interaction captured by black holes</div>
-        <div class="viz-placeholder">
-            {% include_relative blackholes_concentration.html %}
+        <div class="viz-title">Black Hole Channels by Galaxy</div>
+        <div id="blackhole-viz" class="viz-placeholder">
+            <!-- Black hole channels visualization will be inserted here -->
+            [Interactive visualization coming soon]
         </div>
     </div>
-
+    
+    <h3>Influence on Surrounding Channels</h3>
     <p>
-        At the <strong>1% level</strong>, we already observe a striking concentration of attention within galaxies.
-        Expanding to the <strong>top 5%</strong> largely reinforces this picture.
-        In <strong>Community 20</strong>, the top 5% subset alone accounts for around
-        <strong>70% of total interaction strength</strong>, revealing an extreme collapse of attention
-        around a narrow core.
+        Do black holes drive the content and dynamics of smaller channels in their orbit? Our time series analysis reveals how dominant channels influence their neighbors.
     </p>
-
-    <p>
-        Comparing these thresholds highlights two important patterns.
-        First, within a given galaxy, concentration often increases sharply when moving from the top 1% to the top 5%,
-        suggesting that dominance typically arises from a <strong>small core of influential channels</strong>
-        rather than from a single superstar.
-        Second, rankings change across scales:
-        some galaxies are driven by an ultra-elite at the very top,
-        while others rely on a broader but still highly dominant core.
-        This variability shows that black holes do not all share the same internal structure.
-    </p>
-
-    <h3>Internal structure of the black holes</h3>
-
-    <p>
-        To validate this hypothesis and better understand the nature of black holes,
-        we examine the internal distribution of attention inside the top 5% subset
-        across different galaxies.
-    </p>
-
-    <div class="viz-container">
-        <div class="viz-title">Internal structure of Black Holes</div>
-        <div class="viz-placeholder">
-            {% include_relative blackholes_boxplot.html %}
-        </div>
-    </div>
-
-    <p>
-        The patterns vary substantially across communities.
-        For instance, <strong>Community 7</strong> shows a very large gap between median (or mean)
-        and maximum values, pointing to a sharply peaked internal distribution.
-        In contrast, communities such as <strong>Community 0</strong> display smaller gaps,
-        suggesting a more distributed dominant core.
-    </p>
-
-    <h3>Who are the black holes?</h3>
-
-    <p>
-        After characterising the internal structures of black holes,
-        we now turn to their concrete identities.
-        Which channels actually concentrate the largest share of attention inside each galaxy?
-    </p>
-
-    <p>
-        Use the selector below to explore all communities and inspect the
-        <strong>top black-hole channels</strong>.
-
-        For each galaxy, we display the share of total community strength
-        captured by each dominant channel.
-    </p>
-
-    <div class="viz-container">
-        <div class="viz-title">Top black hole channels (select a galaxy)</div>
-        <div id="top-channels-viz" class="viz-placeholder">
-            {% include_relative blackholes_top_channels.html %}
-        </div>
-    </div>
-
-    <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #ffd54f; margin: 20px 0; color: #ffffff; border-radius: 4px;">
-        <strong>Typology of black-hole cores</strong>
-
-        <ul style="margin: 10px 0 0 20px; line-height: 1.6;">
-            <li>
-                <strong>“Single-superstar” black hole</strong> —
-                <em>one channel dominates the core</em>.<br>
-                <strong>Community 7</strong>: the leading channel alone captures
-                ≈ <strong>16%</strong> of total community strength, followed by a sharp drop.
-                <br>
-                <em>Interpretation:</em> one extremely dominant hub surrounded by a weak halo.
-            </li>
-
-            <li>
-                <strong>“Two-tier” black hole</strong> —
-                <em>a small inner elite</em>.<br>
-                <strong>Community 2</strong>: the top two channels capture
-                ≈ <strong>12%</strong> and <strong>8%</strong>, before a rapid decline.
-                <br>
-                <em>Interpretation:</em> dominance is shared by a very small inner core.
-            </li>
-
-            <li>
-                <strong>“Broad-core” black hole</strong> —
-                <em>many channels share dominance</em>.<br>
-                <strong>Communities 0, 5, 15, 16, 17</strong> show a gradual decay
-                (≈ 6%, 3%, 2%, 1%, …),
-                while <strong>Communities 9, 10, 20, 29</strong> exhibit even flatter profiles.
-                <br>
-                <em>Interpretation:</em> attention collapses into a dense influential nucleus
-                rather than a single superstar.
-            </li>
-        </ul>
-    </div>
-
-    <div class="insight-box" style="background:#131926; padding:20px; border-left:4px solid #ffd54f; margin:20px 0; color:#e8e8f0; border-radius:6px;">
-    <h4 style="margin:0 0 10px 0; color:#ffd54f;">Conclusion — Within galaxies</h4>
-    <p>Inside the YouNiverse galaxies, attention rarely spreads evenly. Instead, most galaxies are shaped by a gravitational pull: a small number of channels draws in a disproportionate share of interactions, bending the internal structure of the community around them.</p>
-    <p>Yet these black holes are not all alike. Some galaxies orbit around a single dominant star, while others are held together by a compact inner core or a broader shared nucleus. Inequality is universal, but the way it takes shape tells a different story in each galaxy.</p>
-    </div>
-
-    <h3>Across galaxies: How is it structured?</h3>
-    <p>
-        After examining how attention is distributed <em>within</em> individual galaxies, we now shift perspective to a broader scale and compare galaxies <strong>with one another</strong>.
-    </p>
-    <p>
-        We associate the amount of attention concentrated by a galaxy with its total interaction strength (`total_strength`), or in other words, the <strong>overall intensity of exchanges</strong> taking place within a galaxy.
-    </p>
-    <p>
-        In a first step, we focus on characterizing the global distribution of total interaction strength across galaxies, in order to assess how unevenly attention is allocated at the ecosystem level.
-    </p>
-
-    <div class="viz-container">
-        <div class="viz-title">Distribution of total interaction strength across galaxies</div>
-        <div class="viz-placeholder">
-            {% include_relative across_total_strength_hist.html %}
-        </div>
-    </div>
-
-    <p>
-        The histogram reveals a <strong>highly skewed distribution</strong> of total interaction strength across galaxies. A large majority of galaxies exhibit <strong>very low total strength</strong>, while a small number reach <strong>extremely high values</strong>. This strong asymmetry suggests that attention is far from evenly spread across the YouNiverse.
-    </p>
-    <p>
-        To quantify how this skewness translates into the global allocation of attention, we now examine the <strong>cumulative distribution of total attention across galaxies</strong>.
-    </p>
-
-    <div class="viz-container">
-        <div class="viz-title">Cumulative distribution of total attention</div>
-        <div class="viz-placeholder">
-            {% include_relative across_cumulative_attention.html %}
-        </div>
-    </div>
-
-    <p>
-        This cumulative view confirms what was already suggested by the histogram: attention is <strong>extremely unevenly distributed across galaxies</strong>. We observe that the <strong>top 10% of galaxies</strong>, ranked by total interaction strength, already concentrate <strong>close to 85% of the total attention</strong> in the YouNiverse. This indicates that a very small fraction of galaxies dominates the overall interaction activity.
-    </p>
-
-    <h4>Why such a gap?</h4>
-    <p>
-        Having established the existence of such a strong global imbalance, we now turn to the question of <strong>why</strong> this concentration emerges. To do so, we identify the galaxies belonging to this top-attention group and examine their main structural properties.
-    </p>
-
-    <div class="viz-container">
-    <div class="viz-title">Galaxy size distribution (top attention highlighted)</div>
-    <div class="viz-placeholder">
-        {% include_relative across_top10_size.html %}
-    </div>
-    </div>
-
-    <p>
-        A first observation is that <strong>all galaxies belonging to the top-attention group also rank among the largest in terms of number of channels</strong>. This suggests a simple explanation: the amount of attention concentrated by a galaxy might be primarily driven by its <strong>size</strong>.
-    </p>
-    <p>
-        To test this hypothesis, we now examine how total interaction strength evolves with galaxy size by plotting total attention as a function of the number of channels.
-    </p>
-
-    <div class="viz-container">
-        <div class="viz-title">Total attention vs. galaxy size</div>
-        <div class="viz-placeholder">
-            {% include_relative across_size_strength_scatter.html %}
-        </div>
-    </div>
-
-    <p>
-        This plot reveals a <strong>clear overall trend</strong>: larger galaxies tend to concentrate more total attention. This confirms that galaxy size plays a role in shaping the distribution of attention.
-    </p>
-    <p>
-        However, the relationship is <strong>highly irregular</strong>. Galaxies of comparable size can exhibit vastly different levels of total interaction strength, and several strong deviations from any smooth growth pattern are visible. As a result, <strong>size alone is insufficient to explain the observed disparities in attention concentration</strong>.
-    </p>
-
-    <div class="viz-container">
-    <div class="viz-title">Average degree distribution (Communities 17 and 20 highlighted)</div>
-    <div class="viz-placeholder">
-        {% include_relative across_top10_degree.html %}
-    </div>
-    </div>
-
-    <p>
-        Looking more closely at galaxies with <strong>abnormally high total interaction strength relative to their size</strong>, a clear pattern emerges: they also exhibit a <strong>very high average degree</strong>. For example, <strong>Community 17</strong>, which is comparable in size to Communities 0 and 9, stands out with an <strong>average degree close to 93</strong>, versus <strong>50–60</strong> for the others, and correspondingly much higher total strength. Similarly, <strong>Community 20</strong> achieves a higher total strength than larger galaxies despite having <strong>nearly 1,000 fewer channels</strong>, driven by its <strong>exceptionally high average degree (≈ 81)</strong>. This indicates that <strong>connectivity density</strong>, rather than size alone, is a key driver of attention accumulation. A higher average degree creates more interaction pathways, allowing attention to circulate and amplify more efficiently, and explains why the size–attention relationship appears highly irregular.
-    </p>
-
-    <div class="insight-box" style="background:#131926; padding:20px; border-left:4px solid #ffd54f; margin:20px 0; color:#e8e8f0; border-radius:6px;">
-    <h4 style="margin:0 0 10px 0; color:#ffd54f;">Conclusion — Across galaxies</h4>
-    <p>At the scale of the entire YouNiverse, attention does not distribute itself evenly among galaxies. Instead, a small number of them act as massive attractors, capturing most of the interaction flows while the majority remain comparatively faint.</p>
-    <p>Size matters, but it is not the whole story. Some large galaxies dominate far beyond what their scale alone would predict. What truly distinguishes these attention giants is their internal connectivity: scale sets the stage but dense connectivity allows attention to circulate, reinforce itself, and grow.</p>
+    
+    <div class="quote">
+        "With great reach comes great responsibility. The black holes of YouTube don't just consume attention—they shape the very fabric of their galaxies."
     </div>
 </section>
 
+<!-- Conclusion -->
 <section class="section">
     <span class="section-number">Epilogue</span>
     <h2>Charting the Future of the YouNiverse</h2>
