@@ -872,26 +872,13 @@ def chord_diagram_html_slider(
     flows: pd.DataFrame,
     communities_sorted,
     community_sizes=None,
-    top_k=150,
+    top_k=100, 
     title="",
     out_path=None,
-    slider_steps=None,  # List of n_top values to include, e.g. [10, 20, 30, 40, 52]
+    slider_steps=None,
 ):
-    """
-    Chord diagram with a NATIVE PLOTLY SLIDER that works in exported HTML.
-    Uses trace visibility toggling for clean switching between views.
-    
-    Parameters:
-    -----------
-    slider_steps : list, optional
-        List of community counts to include in slider. Default: [10, 15, 20, 30, 40, all]
-    """
-    import plotly.graph_objects as go
-    
-    # Theme - pure black background
     bg = "#000000"
     font = "'-apple-system','BlinkMacSystemFont','Segoe UI',Roboto,Helvetica,Arial,sans-serif"
-    
     palette = [
         "#7C3AED", "#06B6D4", "#F97316", "#22C55E", "#E11D48",
         "#FACC15", "#A855F7", "#14B8A6", "#60A5FA", "#FB7185",
@@ -902,266 +889,160 @@ def chord_diagram_html_slider(
     idx_map = {c: i for i, c in enumerate(order)}
     n_total = len(order)
     
-    # Calculate community sizes if not provided
     if community_sizes is None:
-        community_sizes = {}
-        for c in order:
-            in_edges = len(flows[flows["c2"] == c]) if "c2" in flows.columns else 0
-            out_edges = len(flows[flows["c1"] == c]) if "c1" in flows.columns else 0
-            community_sizes[c] = float(in_edges + out_edges)
-        if sum(community_sizes.values()) == 0:
-            community_sizes = {c: 1.0 for c in order}
+        community_sizes = {c: float(len(flows[(flows["c1"]==c) | (flows["c2"]==c)])) for c in order}
     
-    # Sort communities by size
     sorted_communities = sorted(community_sizes.items(), key=lambda x: x[1], reverse=True)
     
-    # Default slider steps
     if slider_steps is None:
-        slider_steps = [10, 15, 20, 30, 40, n_total]
-        slider_steps = [s for s in slider_steps if s <= n_total]
-        if n_total not in slider_steps:
-            slider_steps.append(n_total)
-    slider_steps = sorted(set(slider_steps))
+        slider_steps = sorted(list(set([10, 15, 20, 30, min(50, n_total)])))
     
-    # Prepare original flows
-    original_flows = flows.copy()
-    original_flows = original_flows[original_flows["c1"] != original_flows["c2"]].copy()
-    
-    def arc(theta0, theta1, r=1.05, k=60):
+    original_flows = flows[flows["c1"] != flows["c2"]].copy()
+
+    def arc(theta0, theta1, r=1.05, k=40):
         tt = np.linspace(theta0, theta1, k)
         return (r*np.cos(tt), r*np.sin(tt))
-    
+
     def build_traces_for_n(n_top, visible=True):
         traces = []
         top_n_list = [c for c, _ in sorted_communities[:n_top]]
         top_n_set = set(top_n_list)
-        filtered_flows = original_flows[original_flows["c1"].isin(top_n_set) & original_flows["c2"].isin(top_n_set)].copy()
+        
+        filtered_flows = original_flows[
+            original_flows["c1"].isin(top_n_set) & original_flows["c2"].isin(top_n_set)
+        ].copy()
+        
         local_idx_map = {c: i for i, c in enumerate(top_n_list)}
-        def local_canon_key(a, b):
-            return (a, b) if local_idx_map[a] < local_idx_map[b] else (b, a)
+        
         pairs = {}
         for _, row in filtered_flows.iterrows():
-            key = local_canon_key(row["c1"], row["c2"])
+            c1, c2 = row["c1"], row["c2"]
+            key = (c1, c2) if local_idx_map[c1] < local_idx_map[c2] else (c2, c1)
             pairs[key] = pairs.get(key, 0) + float(row["weight"])
+            
         df = pd.DataFrame([{"c1": k[0], "c2": k[1], "weight": v} for k, v in pairs.items()])
-        df = df.sort_values("weight", ascending=False).head(top_k).reset_index(drop=True)
-        if len(df) == 0:
-            return traces
-        w = df["weight"].values
-        wmin, wmax = float(w.min()), float(w.max())
-        def norm(x):
-            return (x - wmin) / (wmax - wmin + 1e-12)
-        local_sizes = {}
-        for c in top_n_list:
-            in_e = len(filtered_flows[filtered_flows["c2"] == c])
-            out_e = len(filtered_flows[filtered_flows["c1"] == c])
-            local_sizes[c] = float(in_e + out_e)
-        gap = 0.015
-        total_gap = n_top * gap
-        available_angle = 2 * np.pi - total_gap
-        total_size = sum(local_sizes.values())
-        comm = {}
+        df = df.sort_values("weight", ascending=False).head(top_k)
+        
+        if df.empty: return traces
+        
+        total_size = sum(community_sizes[c] for c in top_n_list)
+        gap, available_angle = 0.015, 2 * np.pi - (n_top * 0.015)
+        comm_geom = {}
         t = 0.0
         for c in top_n_list:
-            size_ratio = local_sizes[c] / total_size if total_size > 0 else 1/n_top
-            theta_span = available_angle * size_ratio
-            comm[c] = {"start": t, "end": t + theta_span, "mid": t + theta_span / 2, "size": local_sizes[c]}
-            t += theta_span + gap
+            span = available_angle * (community_sizes[c] / total_size)
+            comm_geom[c] = {"start": t, "end": t + span, "mid": t + span/2}
+            t += span + gap
+
+        # 1. ADD CHORDS
         for _, row in df.iterrows():
             c1, c2, ww = row["c1"], row["c2"], float(row["weight"])
-            nw = norm(ww)
-            nw_visual = nw ** 0.7
-            thickness = 0.012 + 0.055 * nw_visual
-            t1, t2 = comm[c1]["mid"], comm[c2]["mid"]
-            p0 = (np.cos(t1), np.sin(t1))
-            p1 = (np.cos(t2), np.sin(t2))
+            t1, t2 = comm_geom[c1]["mid"], comm_geom[c2]["mid"]
+            p0, p1 = (np.cos(t1), np.sin(t1)), (np.cos(t2), np.sin(t2))
             tm = (t1 + t2) / 2.0
-            pc = (0.20*np.cos(tm), 0.20*np.sin(tm))
-            t_vals = np.linspace(0, 1, 100)
+            pc = (0.2*np.cos(tm), 0.2*np.sin(tm))
+            
+            t_vals = np.linspace(0, 1, 30) 
             x = (1-t_vals)**2*p0[0] + 2*(1-t_vals)*t_vals*pc[0] + t_vals**2*p1[0]
             y = (1-t_vals)**2*p0[1] + 2*(1-t_vals)*t_vals*pc[1] + t_vals**2*p1[1]
-            dx = np.gradient(x)
-            dy = np.gradient(y)
-            norm_len = np.sqrt(dx*dx + dy*dy) + 1e-12
-            nx_arr = -dy / norm_len
-            ny_arr = dx / norm_len
-            x1 = x + (thickness/2)*nx_arr
-            y1 = y + (thickness/2)*ny_arr
-            x2 = x - (thickness/2)*nx_arr
-            y2 = y - (thickness/2)*ny_arr
-            rx = np.concatenate([x1, x2[::-1]])
-            ry = np.concatenate([y1, y2[::-1]])
-            col1 = palette[idx_map[c1] % len(palette)]
-            col2 = palette[idx_map[c2] % len(palette)]
-            h1 = col1.lstrip("#")
-            r1, g1, b1 = int(h1[0:2], 16), int(h1[2:4], 16), int(h1[4:6], 16)
-            h2 = col2.lstrip("#")
-            r2, g2, b2 = int(h2[0:2], 16), int(h2[2:4], 16), int(h2[4:6], 16)
-            r_b, g_b, b_b = (r1+r2)//2, (g1+g2)//2, (b1+b2)//2
-            alpha_base = 0.15 + 0.55 * nw_visual
-            fill_color = f"rgba({r_b},{g_b},{b_b},{alpha_base*0.6})"
-            line_color = f"rgba({r_b},{g_b},{b_b},{alpha_base*0.8})"
+            
+            thickness = 0.018
+            dx, dy = np.gradient(x), np.gradient(y)
+            n_len = np.sqrt(dx**2 + dy**2) + 1e-12
+            nx, ny = -dy/n_len, dx/n_len
+            
+            rx = np.concatenate([x + (thickness/2)*nx, (x - (thickness/2)*nx)[::-1]])
+            ry = np.concatenate([y + (thickness/2)*ny, (y - (thickness/2)*ny)[::-1]])
+            
+            c_idx = idx_map[c1] % len(palette)
+            fill_color = f"rgba({int(palette[c_idx][1:3],16)},{int(palette[c_idx][3:5],16)},{int(palette[c_idx][5:7],16)},0.4)"
+
             traces.append(go.Scatter(
-                x=rx.tolist(), y=ry.tolist(),
-                mode="lines", fill="toself",
-                fillcolor=fill_color,
-                line=dict(width=0.8, color=line_color),
-                hovertemplate=f"<b>C{idx_map[c1]} ↔ C{idx_map[c2]}</b><br>Weight: {ww:,.0f}<extra></extra>",
-                showlegend=False,
-                visible=visible,
+                x=rx, y=ry, mode="lines", fill="toself",
+                fillcolor=fill_color, line=dict(width=0.4, color="rgba(255,255,255,0.1)"),
+                hoverinfo="text", text=f"Community {idx_map[c1]} ↔ {idx_map[c2]}<br>Weight: {ww:,.0f}",
+                visible=visible, showlegend=False
             ))
+
+        # 2. ADD OUTER ARCS
         for c in top_n_list:
-            xa, ya = arc(comm[c]["start"], comm[c]["end"], r=1.06, k=70)
+            xa, ya = arc(comm_geom[c]["start"], comm_geom[c]["end"])
             traces.append(go.Scatter(
-                x=list(xa), y=list(ya), mode="lines",
-                line=dict(color=palette[idx_map[c] % len(palette)], width=14),
-                hovertemplate=f"<b>Community {idx_map[c]}</b><br>Connections: {int(comm[c]['size']):,}<extra></extra>",
-                showlegend=False,
-                visible=visible,
+                x=xa, y=ya, mode="lines",
+                line=dict(color=palette[idx_map[c]%len(palette)], width=12),
+                hoverinfo="text", text=f"Community {idx_map[c]}",
+                visible=visible, showlegend=False
             ))
+
+        # 3. ADD COMMUNITY LABELS (RESTORED)
         lx, ly, lt = [], [], []
         for c in top_n_list:
-            tmid = comm[c]["mid"]
-            lx.append(1.22*np.cos(tmid))
-            ly.append(1.22*np.sin(tmid))
+            tmid = comm_geom[c]["mid"]
+            lx.append(1.22 * np.cos(tmid))
+            ly.append(1.22 * np.sin(tmid))
             lt.append(f"C{idx_map[c]}")
+            
         traces.append(go.Scatter(
             x=lx, y=ly, mode="text", text=lt,
-            textfont=dict(family=font, size=13, color="white", weight=600),
-            hoverinfo="skip", showlegend=False,
-            visible=visible,
+            textfont=dict(family=font, size=11, color="white"),
+            hoverinfo="skip", visible=visible, showlegend=False
         ))
+            
         return traces
-    
-    # Build ALL traces for all slider values, tracking indices
+
     fig = go.Figure()
-    trace_groups = {}  # Maps n_top -> list of trace indices
+    step_data = []
     
-    for step_idx, n_top in enumerate(slider_steps):
-        # Only the last step (all communities) is visible initially
-        is_visible = (n_top == slider_steps[-1])
-        traces = build_traces_for_n(n_top, visible=is_visible)
-        
+    for n in slider_steps:
         start_idx = len(fig.data)
-        for trace in traces:
-            fig.add_trace(trace)
-        end_idx = len(fig.data)
-        
-        trace_groups[n_top] = list(range(start_idx, end_idx))
-    
-    total_traces = len(fig.data)
-    
-    # Build slider steps with visibility toggling
-    sliders_steps = []
-    for step_idx, n_top in enumerate(slider_steps):
-        # Create visibility array: True only for this step's traces
-        visibility = [False] * total_traces
-        for idx in trace_groups[n_top]:
-            visibility[idx] = True
-        
-        label = f"All ({n_top})" if n_top == n_total else str(n_top)
-        step = dict(
-            method="update",
-            args=[{"visible": visibility}],
-            label=label
-        )
-        sliders_steps.append(step)
-    
-    # Find initial active index (last one = all communities)
-    initial_active = len(slider_steps) - 1
-    
+        # Initial view: show the first step in slider_steps
+        is_initial = (n == slider_steps[0])
+        new_traces = build_traces_for_n(n, visible=is_initial)
+        for t in new_traces: fig.add_trace(t)
+        step_data.append({"n": n, "indices": list(range(start_idx, len(fig.data)))})
+
     sliders = [dict(
-        active=initial_active,
-        currentvalue=dict(
-            prefix="Communities: ", 
-            font=dict(size=14, color="white"),
-            visible=True,
-            xanchor="center"
-        ),
-        pad=dict(t=60, b=10),
-        len=0.65,
-        x=0.175,
-        xanchor="left",
-        y=0,
-        yanchor="top",
-        steps=sliders_steps,
-        bgcolor="#333",
-        bordercolor="#555",
-        font=dict(color="white", size=12),
-        ticklen=5,
-        tickcolor="white",
+        active=0,
+        currentvalue={"prefix": "Showing Top Communities: ", "font": {"color": "white"}},
+        pad={"t": 50},
+        steps=[dict(
+            method="update",
+            label=str(s["n"]),
+            args=[{"visible": [i in s["indices"] for i in range(len(fig.data))]}]
+        ) for s in step_data]
     )]
 
-    # Layout
     fig.update_layout(
-        title=dict(
-            text=f"<span style='text-shadow:2px 2px 0 #000'>{title}</span>",
-            x=0.5, y=0.96,
-            font=dict(size=24, family=font, color="white")
-        ),
-        paper_bgcolor=bg,
-        plot_bgcolor=bg,
-        height=900,
-        margin=dict(l=40, r=40, t=80, b=100),
-        font=dict(family=font, color="white"),
-        hoverlabel=dict(
-            bgcolor="#0b1220",
-            font_family=font,
-            font_color="white",
-            bordercolor="#06b6d4"
-        ),
-        sliders=sliders,
-        )
+        title=dict(text=title, x=0.5, font=dict(size=22, color="white")),
+        template="plotly_dark", paper_bgcolor=bg, plot_bgcolor=bg,
+        height=900, sliders=sliders,
+        margin=dict(t=80, b=80, l=50, r=50)
+    )
     
-    fig.update_xaxes(showgrid=False, zeroline=False, showticklabels=False, range=[-1.4, 1.4], scaleanchor="y")
-    fig.update_yaxes(showgrid=False, zeroline=False, showticklabels=False, range=[-1.4, 1.4])
-    
+    fig.update_xaxes(visible=False, range=[-1.4, 1.4], scaleanchor="y")
+    fig.update_yaxes(visible=False, range=[-1.4, 1.4])
+
+    # Optimized Hover Script
+    hover_script = """
+    var gd = document.getElementsByClassName('plotly-graph-div')[0];
+    gd.on('plotly_hover', function(data) {
+        var hoveredIndex = data.points[0].curveNumber;
+        // Only dim the chords (traces with fill), leave labels and arcs bright
+        var opacities = gd.data.map((t, i) => {
+            if (t.fill === 'toself') {
+                return (i === hoveredIndex) ? 1.0 : 0.15;
+            }
+            return 1.0;
+        });
+        Plotly.restyle(gd, {'opacity': opacities});
+    });
+    gd.on('plotly_unhover', function(data) {
+        Plotly.restyle(gd, {'opacity': 1.0});
+    });
+    """
+
     if out_path:
-        # Hide the modebar (toolbar)
-        config = {
-            'displayModeBar': False,
-            'staticPlot': False,
-        }
-        
-        # Custom JavaScript for hover effects (no script tags - Plotly adds them)
-        hover_script = """
-        var gd = document.getElementsByClassName('plotly-graph-div')[0];
-        gd.on('plotly_hover', function(data) {
-            var hoveredTrace = data.points[0].curveNumber;
-            var traces = gd.data;
-            var updates = [];
-            for (var i = 0; i < traces.length; i++) {
-                if (traces[i].fill === 'toself') {
-                    if (i === hoveredTrace) {
-                        updates.push({opacity: 1.0});
-                    } else {
-                        updates.push({opacity: 0.12});
-                    }
-                } else {
-                    updates.push({opacity: 1.0});
-                }
-            }
-            for (var i = 0; i < updates.length; i++) {
-                Plotly.restyle(gd, updates[i], [i]);
-            }
-        });
-        gd.on('plotly_unhover', function(data) {
-            var traces = gd.data;
-            for (var i = 0; i < traces.length; i++) {
-                Plotly.restyle(gd, {opacity: 1.0}, [i]);
-            }
-        });
-        """
-        
-        # Write HTML with hover script
-        fig.write_html(
-            out_path, 
-            include_plotlyjs="cdn", 
-            full_html=True,
-            config=config,
-            post_script=hover_script
-        )
-        print(f"✓ Saved interactive chord diagram with slider to {out_path}")
+        fig.write_html(out_path, include_plotlyjs="cdn", post_script=hover_script)
     
     return fig
 
