@@ -1,11 +1,24 @@
+import random
 import pandas as pd
 import networkx as nx
-from collections import Counter
+import igraph as ig
+import leidenalg
 import numpy as np
 import matplotlib.pyplot as plt
-import random
+import matplotlib.colors as mcolors
+import plotly.graph_objects as go
+import re
+import spacy
 
 from src.utils.general_utils import gini
+
+from gensim.models.phrases import Phrases, Phraser
+from gensim.corpora import Dictionary
+from gensim.models import LdaModel
+from pyvis.network import Network
+from plotly.subplots import make_subplots
+
+from collections import Counter
 
 def filter_edges(edges_df, channel_df, min_subscribers=200_000, min_weight=3):
     """
@@ -80,10 +93,6 @@ def build_graph(edges_df, channels_df):
     return G
 
 
-import networkx as nx
-import igraph as ig
-import leidenalg
-
 def run_leiden_on_nx(G, weight='weight', resolution=1.0):
     """
     Runs the Leiden algorithm on a NetworkX graph using the leidenalg backend.
@@ -153,7 +162,7 @@ def find_communities(G, nodes_out_path, comm_out_path):
 
     node_df.to_csv(nodes_out_path, index=False)
     comm_summary.to_csv(comm_out_path, index=False)
-    print(f"\n✓ Saved node metrics and community summary.")
+    print(f"\nSaved node metrics and community summary.")
     
     return LCC, communities, node_df, comm_summary
 
@@ -277,7 +286,7 @@ def visualize_network(LCC, communities, node_df, viz_out_path, n_per_comm=10, mi
     plt.axis("off")
     plt.tight_layout()
     plt.savefig(viz_out_path, dpi=150, bbox_inches="tight")
-    print(f"✓ Saved {viz_out_path}")
+    print(f"Saved {viz_out_path}")
     plt.show()
 
 
@@ -328,18 +337,7 @@ def categoryDetect(community, video_metadata_df, k_channels=10, n_videos_per_cha
         - 'dictionary': the dictionary used
         - 'n_videos': number of videos analyzed
         - 'sampled_channels': list of channel IDs sampled
-    """
-    try:
-        import spacy
-        from gensim.models.phrases import Phrases, Phraser
-        from gensim.corpora import Dictionary
-        from gensim.models import LdaModel
-        import re
-    except ImportError as e:
-        print(f"Missing required library: {e}")
-        print("Install with: pip install spacy gensim")
-        return {'topics': [], 'n_videos': 0, 'sampled_channels': []}
-    
+    """    
     print(f"=== Topic Detection for Community ({len(community)} channels) ===")
     
     # Set random seed
@@ -654,13 +652,7 @@ def visualize_core_interactive(
     """
     Interactive PyVis view of the core communities with a small legend overlay.
     """
-    try:
-        from pyvis.network import Network
-        import matplotlib.colors as mcolors
-    except ImportError as e:
-        raise ImportError("pyvis is required for visualize_core_interactive. Install with `pip install pyvis`.") from e
-
-    print(f"🔭 Zooming into the top {num_top_communities} galaxies...")
+    print(f"Zooming into the top {num_top_communities} galaxies...")
 
     sorted_communities = sorted(communities, key=len, reverse=True)
     core_communities = sorted_communities[:num_top_communities]
@@ -719,7 +711,7 @@ def visualize_core_interactive(
         size = 12 + (np.log10(strength.get(node, 1) + 1) * 15)
         net.add_node(
             node, x=x, y=y, label=name_of(node), color=color, size=size,
-            title=f"Channel: {name_of(node)}<br>Galaxy Cluster: {cid}",
+            title=f"Channel: {name_of(node)}\nGalaxy Cluster: {cid}",
             borderWidth=1.5, font={'size': 20, 'strokeWidth': 3, 'strokeColor': '#ffffff'}
         )
 
@@ -746,7 +738,7 @@ def visualize_core_interactive(
     with open(html_out_path, 'w', encoding='utf-8') as f:
         f.write(content)
 
-    print(f"✅ Core-only interactive map saved: {html_out_path}")
+    print(f"Core-only interactive map saved: {html_out_path}")
 
 
 
@@ -862,12 +854,6 @@ def top_destinations(flow_share, communities_sorted):
     return pd.DataFrame(rows).sort_values("share_to_top", ascending=False)
 
 
-#from src.models.model_analysis import plot_interactive_community_edges
-import numpy as np
-import pandas as pd
-import plotly.graph_objects as go
-
-
 def chord_diagram_html_slider(
     flows: pd.DataFrame,
     communities_sorted,
@@ -886,8 +872,6 @@ def chord_diagram_html_slider(
     slider_steps : list, optional
         List of community counts to include in slider. Default: [10, 15, 20, 30, 40, all]
     """
-    import plotly.graph_objects as go
-    
     # Theme - pure black background
     bg = "#000000"
     font = "'-apple-system','BlinkMacSystemFont','Segoe UI',Roboto,Helvetica,Arial,sans-serif"
@@ -1227,7 +1211,7 @@ def chord_diagram_html_slider(
             config=config,
             post_script=hover_script
         )
-        print(f"✓ Saved interactive chord diagram with slider to {out_path}")
+        print(f"Saved interactive chord diagram with slider to {out_path}")
     
     return fig
 
@@ -1249,8 +1233,6 @@ def plot_echo_share(mobility_df, echo_candidates, q_ext, out_path="reports/figur
     """
     Plot external share bar chart highlighting echo candidates.
     """
-    import plotly.graph_objects as go
-    
     # YouNiverse Theme
     bg_color = "#000000"
     font_stack = "'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
@@ -1416,7 +1398,6 @@ def plot_bridge_categories(agg, out_path="reports/figures/bridge_categories_top3
     Plot top 3 bridge categories per community.
     Uses YouNiverse theme for consistency.
     """
-    import plotly.graph_objects as go
     
     # YouNiverse Theme - pure black background
     bg_color = "#000000"
@@ -1524,7 +1505,7 @@ def plot_bridge_categories(agg, out_path="reports/figures/bridge_categories_top3
         html_path = out_path.replace('.png', '.html')
         config = {'displayModeBar': False}
         fig.write_html(html_path, include_plotlyjs='cdn', full_html=True, config=config)
-        print(f"✓ Saved bridge categories plot to {html_path}")
+        print(f"Saved bridge categories plot to {html_path}")
     
     return fig
 
@@ -1534,9 +1515,6 @@ def plot_directional_flows(flow_norm, top_n=20, out_path="reports/figures/bridge
     Plot strongest directional flows between communities (normalized weights).
     Uses YouNiverse theme for consistency.
     """
-    import plotly.graph_objects as go
-    import pandas as pd
-    
     # YouNiverse Theme - pure black background
     bg_color = "#000000"
     font_stack = "'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
@@ -1628,7 +1606,7 @@ def plot_directional_flows(flow_norm, top_n=20, out_path="reports/figures/bridge
         html_path = out_path.replace('.png', '.html')
         config = {'displayModeBar': False}
         fig.write_html(html_path, include_plotlyjs='cdn', full_html=True, config=config)
-        print(f"✓ Saved directional flows plot to {html_path}")
+        print(f"Saved directional flows plot to {html_path}")
     
     return fig
 
@@ -1655,10 +1633,6 @@ def bridge_channels_html_slider(
     communities_per_group : int
         Number of communities to show per group (default 3)
     """
-    import plotly.graph_objects as go
-    from plotly.subplots import make_subplots
-    import numpy as np
-    
     # YouNiverse Theme
     bg_color = "#000000"
     font_stack = "'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
@@ -1839,6 +1813,6 @@ def bridge_channels_html_slider(
     if out_path:
         config = {'displayModeBar': False}
         fig.write_html(out_path, include_plotlyjs='cdn', full_html=True, config=config)
-        print(f"✓ Saved bridge channels interactive plot to {out_path}")
+        print(f"Saved bridge channels interactive plot to {out_path}")
     
     return fig

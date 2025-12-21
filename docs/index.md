@@ -423,7 +423,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
     <h3>Slicing Time: Investigating the Invisible Shift</h3>
     <p>
-        To truly understand the evolution of the YouNiverse, viewing it as a static map is not enough; we must observe it as a living organism. A dataset spanning 14 years flattens history — it hides the dramatic shifts in culture, influence, and structure that occurred between the first viral hits and the modern creator economy.
+        To truly understand the evolution of the YouNiverse, viewing it as a static map is not enough; we must observe it as a living organism. A dataset spanning 14 years flattens history, it hides the dramatic shifts in culture, influence, and structure that occurred between the first viral hits and the modern creator economy.
     </p>
     <p>
         To capture this motion, we employed a <strong>temporal snapshot methodology</strong>. By slicing our data into distinct one-year windows, we isolated the interactions of each era. This allowed us to build independent universes for 2010, 2011, through to 2019, enabling us to watch the laws of digital gravity change in real-time. What we found was not a linear expansion, but a complete structural metamorphosis from a unified community to a fractured multiverse.
