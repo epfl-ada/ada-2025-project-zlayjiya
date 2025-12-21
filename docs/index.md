@@ -1008,6 +1008,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
     <p>
         The navigation patterns we've uncovered have profound implications:
     </p>
+    
     <ul style="color: #e2e2ed; line-height: 2;">
         <li><strong>Filter bubbles are real:</strong> The algorithm doesn't need to trap you. Viewers trap themselves by gravitating toward familiar content</li>
         <li><strong>Bridges are crucial:</strong> The few channels that connect communities play an outsized role in cultural exchange</li>
@@ -1016,6 +1017,13 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
     
     <p>
         With the highways and walls of the YouNiverse now mapped, one final question beckons: <strong>who controls these galaxies?</strong> In every community, a few channels capture disproportionate attention. These <span class="highlight">Black Holes</span> warp the fabric of their entire region...
+    </p>
+
+    <p>
+        A note on notation: we sometimes write flows as <strong>C18 → Cx</strong>. Here, <strong>Ck</strong> is simply a community (galaxy) ID.
+        The label alone is not the story. What matters is <strong>why</strong> attention crosses borders.
+        That’s why we also look at <strong>which bridge channels</strong> pull viewers outward, and <strong>which YouTube categories</strong> act like “bridge engines”.
+        
     </p>
 
     <div class="story-outro">
