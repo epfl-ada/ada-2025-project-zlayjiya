@@ -1345,7 +1345,6 @@ def compute_bridge_channels(LCC, node_df, communities, betweenness_k=800, cross_
 
 
 
-
 def plot_bridge_categories(agg, out_path="reports/figures/bridge_categories_top3.html", show_title=True):
     """
     Plot top 3 bridge categories per community.
@@ -1373,8 +1372,9 @@ def plot_bridge_categories(agg, out_path="reports/figures/bridge_categories_top3
         "News & Politics": "#FACC15",
         "People & Blogs": "#A855F7",
         "Comedy": "#14B8A6",
-        "Film & Animation": "#60A5FA",
+        "Film & Animation": "#E879F9",
         "Education": "#FB7185",
+        "Autos & Vehicles": "#94A3B8",
     }
     
     fig = go.Figure()
