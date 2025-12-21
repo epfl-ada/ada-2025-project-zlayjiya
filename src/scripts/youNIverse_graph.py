@@ -43,12 +43,12 @@ CHECKPOINT_EVERY = 20
 # Display tag for file names
 ROWS_TAG = f"{MAX_ROWS//1_000_000}M" if MAX_ROWS else "ALL"
 
-# File Paths (Assumes running from YouNiverse_Project/src)
-PATH_COMMENTS = "../data/raw/youtube_comments.tsv.gz"
-PATH_METADATA = "../data/raw/yt_metadata_helper.feather" 
+# File Paths 
+PATH_COMMENTS = "../../data/raw/youtube_comments.tsv.gz"
+PATH_METADATA = "../../data/raw/yt_metadata_helper.feather" 
 
 # Dynamic Output Paths
-OUTPUT_DIR = f"../data_new/temporal_graphs/{YEAR_TAG}"
+OUTPUT_DIR = f"../../data_new/temporal_graphs/{YEAR_TAG}"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 EDGES_OUT = os.path.join(OUTPUT_DIR, f"channel_edges_{YEAR_TAG}_{ROWS_TAG}.csv")
 DICT_PATH = os.path.join(OUTPUT_DIR, f"channel_counts_{YEAR_TAG}.csv")
