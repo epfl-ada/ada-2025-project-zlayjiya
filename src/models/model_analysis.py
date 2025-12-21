@@ -862,63 +862,308 @@ def top_destinations(flow_share, communities_sorted):
     return pd.DataFrame(rows).sort_values("share_to_top", ascending=False)
 
 
-def plot_chord_backbone(pair_strength, communities_sorted, top_n=100, out_path="reports/figures/community_chord_simple.png"):
+#from src.models.model_analysis import plot_interactive_community_edges
+import numpy as np
+import pandas as pd
+import plotly.graph_objects as go
+
+
+def chord_diagram_html_slider(
+    flows: pd.DataFrame,
+    communities_sorted,
+    community_sizes=None,
+    top_k=150,
+    title="",
+    out_path=None,
+    slider_steps=None,  # List of n_top values to include, e.g. [10, 20, 30, 40, 52]
+):
     """
-    Plot undirected backbone of community flows (chord-like arcs).
-    """
-    import matplotlib.pyplot as plt
-
-
-    flows = pair_strength.copy()
-    flows = flows[flows["src_comm"] != flows["dst_comm"]]
-    flows["a"] = flows[["src_comm", "dst_comm"]].min(axis=1)
-    flows["b"] = flows[["src_comm", "dst_comm"]].max(axis=1)
-    flows = flows.groupby(["a", "b"], as_index=False)["weight"].sum()
-    flows = flows.rename(columns={"a": "c1", "b": "c2"})
-    flows = flows.sort_values("weight", ascending=False).head(top_n)
-
-    order = sorted(communities_sorted)
-    theta = np.linspace(0, 2 * np.pi, len(order), endpoint=False)
-    coords = {c: (np.cos(t), np.sin(t)) for c, t in zip(order, theta)}
-
-    w = flows["weight"]
-    w_norm = (w - w.min()) / (w.max() - w.min() + 1e-9)
-    widths = 1.0 + 6 * w_norm
-    colors = plt.cm.viridis(0.2 + 0.8 * w_norm)
-    alphas = 0.25 + 0.65 * w_norm
-    sm = plt.cm.ScalarMappable(cmap=plt.cm.viridis, norm=plt.Normalize(vmin=w.min(), vmax=w.max()))
-    sm.set_array([])
-
-    fig, ax = plt.subplots(figsize=(11, 11))
-    fig.patch.set_facecolor("white")
-    ax.set_facecolor("white")
-
-    for (c1, c2, weight), lw, col, a in zip(flows[["c1", "c2", "weight"]].itertuples(index=False, name=None), widths, colors, alphas):
-        x0, y0 = coords[c1]
-        x1, y1 = coords[c2]
-        ctrl = np.array([0, 0])
-        t = np.linspace(0, 1, 150)
-        curve = (1 - t)[:, None] ** 2 * np.array([x0, y0]) + 2 * (1 - t)[:, None] * t[:, None] * ctrl + t[:, None] ** 2 * np.array([x1, y1])
-        ax.plot(curve[:, 0], curve[:, 1], color=col, alpha=a, linewidth=lw, solid_capstyle="round")
-
-    for c in order:
-        x, y = coords[c]
-        ax.scatter(x, y, s=150, color="white", edgecolor="black", zorder=3)
-        ax.text(x * 1.12, y * 1.12, f"C{c}", ha="center", va="center", fontsize=11, weight="bold")
-
-    ax.set_aspect("equal")
-    ax.axis("off")
-    plt.title("Flux inter-community", fontsize=12)
-    cbar = plt.colorbar(sm, ax=ax, fraction=0.035, pad=0.02)
-    cbar.set_label("Undirected flow weight (yellow = strongest)", fontsize=9)
-    plt.text(0, -1.18, "Edge width scales with flow strength", ha="center", va="center", fontsize=6)
-    plt.tight_layout()
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
-    plt.show()
-
-    # Affiche un petit tableau affichant les 5 liens les plus forts juste après le plot
-    flows.sort_values("weight", ascending=False).head(5)
+    Chord diagram with a NATIVE PLOTLY SLIDER that works in exported HTML.
+    Uses trace visibility toggling for clean switching between views.
     
+    Parameters:
+    -----------
+    slider_steps : list, optional
+        List of community counts to include in slider. Default: [10, 15, 20, 30, 40, all]
+    """
+    import plotly.graph_objects as go
+    
+    # Theme - pure black background
+    bg = "#000000"
+    font = "'-apple-system','BlinkMacSystemFont','Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+    
+    palette = [
+        "#7C3AED", "#06B6D4", "#F97316", "#22C55E", "#E11D48",
+        "#FACC15", "#A855F7", "#14B8A6", "#60A5FA", "#FB7185",
+        "#34D399", "#F59E0B", "#818CF8", "#2DD4BF", "#F472B6",
+    ]
+    
+    order = list(communities_sorted)
+    idx_map = {c: i for i, c in enumerate(order)}
+    n_total = len(order)
+    
+    # Calculate community sizes if not provided
+    if community_sizes is None:
+        community_sizes = {}
+        for c in order:
+            in_edges = len(flows[flows["c2"] == c]) if "c2" in flows.columns else 0
+            out_edges = len(flows[flows["c1"] == c]) if "c1" in flows.columns else 0
+            community_sizes[c] = float(in_edges + out_edges)
+        if sum(community_sizes.values()) == 0:
+            community_sizes = {c: 1.0 for c in order}
+    
+    # Sort communities by size
+    sorted_communities = sorted(community_sizes.items(), key=lambda x: x[1], reverse=True)
+    
+    # Default slider steps
+    if slider_steps is None:
+        slider_steps = [10, 15, 20, 30, 40, n_total]
+        slider_steps = [s for s in slider_steps if s <= n_total]
+        if n_total not in slider_steps:
+            slider_steps.append(n_total)
+    slider_steps = sorted(set(slider_steps))
+    
+    # Prepare original flows
+    original_flows = flows.copy()
+    original_flows = original_flows[original_flows["c1"] != original_flows["c2"]].copy()
+    
+    def arc(theta0, theta1, r=1.05, k=60):
+        tt = np.linspace(theta0, theta1, k)
+        return (r*np.cos(tt), r*np.sin(tt))
+    
+    def build_traces_for_n(n_top, visible=True):
+        traces = []
+        top_n_list = [c for c, _ in sorted_communities[:n_top]]
+        top_n_set = set(top_n_list)
+        filtered_flows = original_flows[original_flows["c1"].isin(top_n_set) & original_flows["c2"].isin(top_n_set)].copy()
+        local_idx_map = {c: i for i, c in enumerate(top_n_list)}
+        def local_canon_key(a, b):
+            return (a, b) if local_idx_map[a] < local_idx_map[b] else (b, a)
+        pairs = {}
+        for _, row in filtered_flows.iterrows():
+            key = local_canon_key(row["c1"], row["c2"])
+            pairs[key] = pairs.get(key, 0) + float(row["weight"])
+        df = pd.DataFrame([{"c1": k[0], "c2": k[1], "weight": v} for k, v in pairs.items()])
+        df = df.sort_values("weight", ascending=False).head(top_k).reset_index(drop=True)
+        if len(df) == 0:
+            return traces
+        w = df["weight"].values
+        wmin, wmax = float(w.min()), float(w.max())
+        def norm(x):
+            return (x - wmin) / (wmax - wmin + 1e-12)
+        local_sizes = {}
+        for c in top_n_list:
+            in_e = len(filtered_flows[filtered_flows["c2"] == c])
+            out_e = len(filtered_flows[filtered_flows["c1"] == c])
+            local_sizes[c] = float(in_e + out_e)
+        gap = 0.015
+        total_gap = n_top * gap
+        available_angle = 2 * np.pi - total_gap
+        total_size = sum(local_sizes.values())
+        comm = {}
+        t = 0.0
+        for c in top_n_list:
+            size_ratio = local_sizes[c] / total_size if total_size > 0 else 1/n_top
+            theta_span = available_angle * size_ratio
+            comm[c] = {"start": t, "end": t + theta_span, "mid": t + theta_span / 2, "size": local_sizes[c]}
+            t += theta_span + gap
+        for _, row in df.iterrows():
+            c1, c2, ww = row["c1"], row["c2"], float(row["weight"])
+            nw = norm(ww)
+            nw_visual = nw ** 0.7
+            thickness = 0.012 + 0.055 * nw_visual
+            t1, t2 = comm[c1]["mid"], comm[c2]["mid"]
+            p0 = (np.cos(t1), np.sin(t1))
+            p1 = (np.cos(t2), np.sin(t2))
+            tm = (t1 + t2) / 2.0
+            pc = (0.20*np.cos(tm), 0.20*np.sin(tm))
+            t_vals = np.linspace(0, 1, 100)
+            x = (1-t_vals)**2*p0[0] + 2*(1-t_vals)*t_vals*pc[0] + t_vals**2*p1[0]
+            y = (1-t_vals)**2*p0[1] + 2*(1-t_vals)*t_vals*pc[1] + t_vals**2*p1[1]
+            dx = np.gradient(x)
+            dy = np.gradient(y)
+            norm_len = np.sqrt(dx*dx + dy*dy) + 1e-12
+            nx_arr = -dy / norm_len
+            ny_arr = dx / norm_len
+            x1 = x + (thickness/2)*nx_arr
+            y1 = y + (thickness/2)*ny_arr
+            x2 = x - (thickness/2)*nx_arr
+            y2 = y - (thickness/2)*ny_arr
+            rx = np.concatenate([x1, x2[::-1]])
+            ry = np.concatenate([y1, y2[::-1]])
+            col1 = palette[idx_map[c1] % len(palette)]
+            col2 = palette[idx_map[c2] % len(palette)]
+            h1 = col1.lstrip("#")
+            r1, g1, b1 = int(h1[0:2], 16), int(h1[2:4], 16), int(h1[4:6], 16)
+            h2 = col2.lstrip("#")
+            r2, g2, b2 = int(h2[0:2], 16), int(h2[2:4], 16), int(h2[4:6], 16)
+            r_b, g_b, b_b = (r1+r2)//2, (g1+g2)//2, (b1+b2)//2
+            alpha_base = 0.15 + 0.55 * nw_visual
+            fill_color = f"rgba({r_b},{g_b},{b_b},{alpha_base*0.6})"
+            line_color = f"rgba({r_b},{g_b},{b_b},{alpha_base*0.8})"
+            traces.append(go.Scatter(
+                x=rx.tolist(), y=ry.tolist(),
+                mode="lines", fill="toself",
+                fillcolor=fill_color,
+                line=dict(width=0.8, color=line_color),
+                hovertemplate=f"<b>C{idx_map[c1]} ↔ C{idx_map[c2]}</b><br>Weight: {ww:,.0f}<extra></extra>",
+                showlegend=False,
+                visible=visible,
+            ))
+        for c in top_n_list:
+            xa, ya = arc(comm[c]["start"], comm[c]["end"], r=1.06, k=70)
+            traces.append(go.Scatter(
+                x=list(xa), y=list(ya), mode="lines",
+                line=dict(color=palette[idx_map[c] % len(palette)], width=14),
+                hovertemplate=f"<b>Community {idx_map[c]}</b><br>Connections: {int(comm[c]['size']):,}<extra></extra>",
+                showlegend=False,
+                visible=visible,
+            ))
+        lx, ly, lt = [], [], []
+        for c in top_n_list:
+            tmid = comm[c]["mid"]
+            lx.append(1.22*np.cos(tmid))
+            ly.append(1.22*np.sin(tmid))
+            lt.append(f"C{idx_map[c]}")
+        traces.append(go.Scatter(
+            x=lx, y=ly, mode="text", text=lt,
+            textfont=dict(family=font, size=13, color="white", weight=600),
+            hoverinfo="skip", showlegend=False,
+            visible=visible,
+        ))
+        return traces
+    
+    # Build ALL traces for all slider values, tracking indices
+    fig = go.Figure()
+    trace_groups = {}  # Maps n_top -> list of trace indices
+    
+    for step_idx, n_top in enumerate(slider_steps):
+        # Only the last step (all communities) is visible initially
+        is_visible = (n_top == slider_steps[-1])
+        traces = build_traces_for_n(n_top, visible=is_visible)
+        
+        start_idx = len(fig.data)
+        for trace in traces:
+            fig.add_trace(trace)
+        end_idx = len(fig.data)
+        
+        trace_groups[n_top] = list(range(start_idx, end_idx))
+    
+    total_traces = len(fig.data)
+    
+    # Build slider steps with visibility toggling
+    sliders_steps = []
+    for step_idx, n_top in enumerate(slider_steps):
+        # Create visibility array: True only for this step's traces
+        visibility = [False] * total_traces
+        for idx in trace_groups[n_top]:
+            visibility[idx] = True
+        
+        label = f"All ({n_top})" if n_top == n_total else str(n_top)
+        step = dict(
+            method="update",
+            args=[{"visible": visibility}],
+            label=label
+        )
+        sliders_steps.append(step)
+    
+    # Find initial active index (last one = all communities)
+    initial_active = len(slider_steps) - 1
+    
+    sliders = [dict(
+        active=initial_active,
+        currentvalue=dict(
+            prefix="Communities: ", 
+            font=dict(size=14, color="white"),
+            visible=True,
+            xanchor="center"
+        ),
+        pad=dict(t=60, b=10),
+        len=0.65,
+        x=0.175,
+        xanchor="left",
+        y=0,
+        yanchor="top",
+        steps=sliders_steps,
+        bgcolor="#333",
+        bordercolor="#555",
+        font=dict(color="white", size=12),
+        ticklen=5,
+        tickcolor="white",
+    )]
+
+    # Layout
+    fig.update_layout(
+        title=dict(
+            text=f"<span style='text-shadow:2px 2px 0 #000'>{title}</span>",
+            x=0.5, y=0.96,
+            font=dict(size=24, family=font, color="white")
+        ),
+        paper_bgcolor=bg,
+        plot_bgcolor=bg,
+        height=900,
+        margin=dict(l=40, r=40, t=80, b=100),
+        font=dict(family=font, color="white"),
+        hoverlabel=dict(
+            bgcolor="#0b1220",
+            font_family=font,
+            font_color="white",
+            bordercolor="#06b6d4"
+        ),
+        sliders=sliders,
+        )
+    
+    fig.update_xaxes(showgrid=False, zeroline=False, showticklabels=False, range=[-1.4, 1.4], scaleanchor="y")
+    fig.update_yaxes(showgrid=False, zeroline=False, showticklabels=False, range=[-1.4, 1.4])
+    
+    if out_path:
+        # Hide the modebar (toolbar)
+        config = {
+            'displayModeBar': False,
+            'staticPlot': False,
+        }
+        
+        # Custom JavaScript for hover effects (no script tags - Plotly adds them)
+        hover_script = """
+        var gd = document.getElementsByClassName('plotly-graph-div')[0];
+        gd.on('plotly_hover', function(data) {
+            var hoveredTrace = data.points[0].curveNumber;
+            var traces = gd.data;
+            var updates = [];
+            for (var i = 0; i < traces.length; i++) {
+                if (traces[i].fill === 'toself') {
+                    if (i === hoveredTrace) {
+                        updates.push({opacity: 1.0});
+                    } else {
+                        updates.push({opacity: 0.12});
+                    }
+                } else {
+                    updates.push({opacity: 1.0});
+                }
+            }
+            for (var i = 0; i < updates.length; i++) {
+                Plotly.restyle(gd, updates[i], [i]);
+            }
+        });
+        gd.on('plotly_unhover', function(data) {
+            var traces = gd.data;
+            for (var i = 0; i < traces.length; i++) {
+                Plotly.restyle(gd, {opacity: 1.0}, [i]);
+            }
+        });
+        """
+        
+        # Write HTML with hover script
+        fig.write_html(
+            out_path, 
+            include_plotlyjs="cdn", 
+            full_html=True,
+            config=config,
+            post_script=hover_script
+        )
+        print(f"✓ Saved interactive chord diagram with slider to {out_path}")
+    
+    return fig
 
 
 def find_echo_candidates(mobility_df, ext_quantile=0.25, entropy_quantile=0.5):
@@ -934,23 +1179,94 @@ def find_echo_candidates(mobility_df, ext_quantile=0.25, entropy_quantile=0.5):
     return echo_candidates, q_ext, q_ent
 
 
-def plot_echo_share(mobility_df, echo_candidates, q_ext, out_path="reports/figures/echo_chamber_external_share.png"):
+def plot_echo_share(mobility_df, echo_candidates, q_ext, out_path="reports/figures/echo_chamber_external_share.html"):
     """
     Plot external share bar chart highlighting echo candidates.
     """
-    import matplotlib.pyplot as plt
-
-    colors = ["#d62728" if es <= q_ext else "#1f77b4" for es in mobility_df["external_share"]]
-    plt.figure(figsize=(12, 5))
-    plt.bar(mobility_df["community"].astype(str), mobility_df["external_share"], color=colors)
-    plt.axhline(q_ext, color="black", linestyle="--", label="25e percentile share")
-    plt.ylabel("Part des flux sortants")
-    plt.xlabel("ID communauté")
-    plt.title("External share par communauté (plus bas = plus fermé)")
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
-    plt.show()
+    import plotly.graph_objects as go
+    
+    # YouNiverse Theme
+    bg_color = "#000000"
+    font_stack = "'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+    
+    # Prepare data
+    communities = mobility_df["community"].astype(str).tolist()
+    external_shares = mobility_df["external_share"].tolist()
+    
+    # Color: echo chambers in red/purple, others in cyan
+    colors = ["#8b5cf6" if es <= q_ext else "#06b6d4" for es in external_shares]
+    
+    # Create figure
+    fig = go.Figure()
+    
+    # Add bar chart
+    fig.add_trace(go.Bar(
+        x=communities,
+        y=external_shares,
+        marker=dict(
+            color=colors,
+            line=dict(color="#FFFFFF", width=0.5)
+        ),
+        hovertemplate="<b>Community %{x}</b><br>External Share: %{y:.3f}<extra></extra>",
+        name="External Share"
+    ))
+    
+    # Add threshold line
+    fig.add_hline(
+        y=q_ext,
+        line_dash="dash",
+        line_color="#FFFFFF",
+        line_width=2,
+        annotation_text=f"25th percentile: {q_ext:.3f}",
+        annotation_position="top right",
+        annotation_font=dict(size=12, color="#FFFFFF", family=font_stack)
+    )
+    
+    # Layout with YouNiverse theme - no title for embedding
+    fig.update_layout(
+        paper_bgcolor=bg_color,
+        plot_bgcolor=bg_color,
+        height=450,
+        margin=dict(l=60, r=40, t=40, b=60),
+        font=dict(family=font_stack, size=14, color="#FFFFFF"),
+        hoverlabel=dict(
+            bgcolor="#111111",
+            font_size=14,
+            font_family=font_stack,
+            font_color="#FFFFFF",
+            bordercolor="#06b6d4"
+        ),
+        showlegend=False
+    )
+    
+    # X-axis styling
+    fig.update_xaxes(
+        title="COMMUNITY ID",
+        title_font=dict(family=font_stack, size=14, color="#FFFFFF"),
+        showgrid=False,
+        zeroline=False,
+        tickfont=dict(family=font_stack, color="#888888"),
+        linecolor="#444444"
+    )
+    
+    # Y-axis styling
+    fig.update_yaxes(
+        title="<span style='color:#06b6d4'>EXTERNAL SHARE</span>",
+        title_font=dict(family=font_stack, size=14),
+        showgrid=True,
+        gridcolor="rgba(255,255,255,0.05)",
+        zeroline=False,
+        linecolor="#06b6d4",
+        tickfont=dict(family=font_stack, color="#888888")
+    )
+    
+    # Save as HTML instead of PNG for consistency
+    if out_path:
+        html_path = out_path.replace('.png', '.html')
+        config = {'displayModeBar': False}
+        fig.write_html(html_path, include_plotlyjs='cdn', full_html=True, config=config)
+    
+    return fig
 
 
 def compute_bridge_channels(LCC, node_df, communities, betweenness_k=800, cross_share_min=0.5, cross_strength_min=1000):
@@ -1028,87 +1344,435 @@ def compute_bridge_channels(LCC, node_df, communities, betweenness_k=800, cross_
     }
 
 
-def plot_bridge_top_channels(top_channels, topN=10, out_path="reports/figures/bridge_channels_static_overview.png"):
-    """
-    Static multipanel barplot of top bridge channels per community.
-    """
-    import seaborn as sns
-    
 
-    communities = sorted(top_channels["community"].unique())
-    palette = sns.color_palette("tab20", len(communities))
-    comm_color = {c: palette[i % len(palette)] for i, c in enumerate(communities)}
-
-    fig, axes = plt.subplots(
-        nrows=len(communities), figsize=(10, max(4, 2 * len(communities))), constrained_layout=True, sharex=False
-    )
-    if len(communities) == 1:
-        axes = [axes]
-
-    for ax, comm in zip(axes, communities):
-        data = top_channels[top_channels["community"] == comm].sort_values("cross_strength", ascending=False).head(topN)
-        if data.empty:
-            ax.set_axis_off()
-            continue
-        sns.barplot(data=data, y="name", x="cross_strength", color=comm_color.get(comm, "#1f77b4"), ax=ax)
-        for i, row in data.reset_index().iterrows():
-            ax.text(row["cross_strength"] * 1.01, i, f"{row['cross_share']:.2f}", va="center", fontsize=7)
-        ax.set_ylabel("Channel")
-        ax.set_xlabel("Cross strength")
-        ax.set_title(f"Top {topN} bridge channels — comm {comm}")
-
-    plt.suptitle("Bridge channels by community (static overview)", fontsize=14)
-    plt.tight_layout()
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
-    plt.show()
-
-
-def plot_bridge_categories(agg, out_path="reports/figures/bridge_categories_top3.png"):
+def plot_bridge_categories(agg, out_path="reports/figures/bridge_categories_top3.html", show_title=True):
     """
     Plot top 3 bridge categories per community.
+    Uses YouNiverse theme for consistency.
     """
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-
+    import plotly.graph_objects as go
+    
+    # YouNiverse Theme - pure black background
+    bg_color = "#000000"
+    font_stack = "'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+    
+    # Get top 3 categories per community
     cat_top3 = (
-        agg.sort_values(["community", "cross_strength"], ascending=[True, False]).groupby("community").head(3)
+        agg.sort_values(["community", "cross_strength"], ascending=[True, False])
+        .groupby("community").head(3)
     )
+    
+    # Color palette for categories
+    category_colors = {
+        "Entertainment": "#8b5cf6",
+        "Music": "#06b6d4",
+        "Gaming": "#F97316",
+        "Howto & Style": "#22C55E",
+        "Sports": "#E11D48",
+        "News & Politics": "#FACC15",
+        "People & Blogs": "#A855F7",
+        "Comedy": "#14B8A6",
+        "Film & Animation": "#E879F9",
+        "Education": "#FB7185",
+        "Autos & Vehicles": "#94A3B8",
+    }
+    
+    fig = go.Figure()
+    
+    # Get unique categories
+    categories = cat_top3["category_cc"].unique()
+    
+    # Add traces for each category
+    for category in categories:
+        cat_data = cat_top3[cat_top3["category_cc"] == category]
+        color = category_colors.get(category, "#888888")
+        
+        fig.add_trace(go.Bar(
+            x=cat_data["community"].astype(str),
+            y=cat_data["cross_strength"],
+            name=category,
+            marker=dict(color=color, line=dict(color="#FFFFFF", width=0.5)),
+            hovertemplate="<b>Community %{x}</b><br>" + 
+                         f"{category}<br>" + 
+                         "Cross Strength: %{y:,.0f}<extra></extra>",
+        ))
+    
+    # Layout
+    title_config = dict(
+        #text="<span style='text-shadow: 2px 2px 0 #000;'>TOP BRIDGE CATEGORIES BY COMMUNITY</span>",
+        x=0.5,
+        y=0.95,
+        font=dict(size=24, family=font_stack, color="#FFFFFF")
+    ) if show_title else dict(text="")
+    
+    fig.update_layout(
+        title=title_config,
+        paper_bgcolor=bg_color,
+        plot_bgcolor=bg_color,
+        height=550,
+        margin=dict(l=80, r=80, t=60 if not show_title else 120, b=80),
+        font=dict(family=font_stack, size=14, color="#FFFFFF"),
+        barmode='group',
+        hoverlabel=dict(
+            bgcolor="#111111",
+            font_size=14,
+            font_family=font_stack,
+            font_color="#FFFFFF",
+            bordercolor="#06b6d4"
+        ),
+        legend=dict(
+            orientation="v",
+            yanchor="top",
+            y=0.98,
+            xanchor="right",
+            x=0.99,
+            bgcolor="rgba(0,0,0,0.6)",
+            font=dict(family=font_stack, size=11, color="#FFFFFF"),
+            bordercolor="#444444",
+            borderwidth=1
+        )
+    )
+    
+    # X-axis styling
+    fig.update_xaxes(
+        title="COMMUNITY ID",
+        title_font=dict(family=font_stack, size=14, color="#FFFFFF"),
+        showgrid=False,
+        zeroline=False,
+        tickfont=dict(family=font_stack, color="#888888"),
+        linecolor="#444444"
+    )
+    
+    # Y-axis styling
+    fig.update_yaxes(
+        title="<span style='color:#06b6d4'>CROSS STRENGTH (BRIDGES)</span>",
+        title_font=dict(family=font_stack, size=14),
+        showgrid=True,
+        gridcolor="rgba(255,255,255,0.05)",
+        zeroline=False,
+        linecolor="#06b6d4",
+        tickfont=dict(family=font_stack, color="#888888")
+    )
+    
+    if out_path:
+        html_path = out_path.replace('.png', '.html')
+        config = {'displayModeBar': False}
+        fig.write_html(html_path, include_plotlyjs='cdn', full_html=True, config=config)
+        print(f"✓ Saved bridge categories plot to {html_path}")
+    
+    return fig
 
-    plt.figure(figsize=(10, 5))
-    sns.barplot(data=cat_top3, x="community", y="cross_strength", hue="category_cc", palette="tab10")
-    plt.ylabel("Cross strength (bridges)")
-    plt.xlabel("Community")
-    plt.title("Top bridge categories (cross strength)")
-    plt.tight_layout()
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
-    plt.show()
 
-
-def plot_directional_flows(flow_norm, top_n=20, out_path="reports/figures/bridge_community_topflows.png"):
+def plot_directional_flows(flow_norm, top_n=20, out_path="reports/figures/bridge_community_topflows.html", show_title=True):
     """
     Plot strongest directional flows between communities (normalized weights).
+    Uses YouNiverse theme for consistency.
     """
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-
+    import plotly.graph_objects as go
+    import pandas as pd
+    
+    # YouNiverse Theme - pure black background
+    bg_color = "#000000"
+    font_stack = "'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+    
+    # Prepare data
     flow_long = flow_norm.stack().reset_index()
     flow_long.columns = ["community_src", "community_dst", "weight"]
     flow_long = flow_long[flow_long["community_src"] != flow_long["community_dst"]]
     flow_long = flow_long[flow_long["weight"] > 0]
-    top_flows = flow_long.sort_values("weight", ascending=False).head(top_n)
-
-    plt.figure(figsize=(10, 6))
-    sns.barplot(
-        data=top_flows,
-        y=top_flows.apply(lambda r: f"C{int(r.community_src)} → C{int(r.community_dst)}", axis=1),
-        x="weight",
-        hue="weight",
-        palette="crest",
+    top_flows = flow_long.sort_values("weight", ascending=True).tail(top_n)  # Ascending for horizontal bar
+    
+    # Create flow labels
+    flow_labels = [f"C{int(row['community_src'])} → C{int(row['community_dst'])}" 
+                   for _, row in top_flows.iterrows()]
+    
+    # Color gradient based on weight
+    weights = top_flows["weight"].values
+    w_norm = (weights - weights.min()) / (weights.max() - weights.min() + 1e-12)
+    
+    # Create color gradient (purple to cyan based on weight)
+    colors = []
+    for norm_val in w_norm:
+        # Blend from purple (#8b5cf6) to cyan (#06b6d4)
+        r = int(139 + (6 - 139) * norm_val)
+        g = int(92 + (182 - 92) * norm_val)
+        b = int(246 + (212 - 246) * norm_val)
+        colors.append(f"rgb({r},{g},{b})")
+    
+    fig = go.Figure()
+    
+    fig.add_trace(go.Bar(
+        y=flow_labels,
+        x=top_flows["weight"],
+        orientation='h',
+        marker=dict(
+            color=colors,
+            line=dict(color="#FFFFFF", width=0.5)
+        ),
+        hovertemplate="<b>%{y}</b><br>Normalized Flow: %{x:.4f}<extra></extra>",
+        showlegend=False
+    ))
+    
+    # Layout
+    title_config = dict(
+        #text="<span style='text-shadow: 2px 2px 0 #000;'>TOP CROSS-COMMUNITY FLOWS</span>",
+        x=0.5,
+        y=0.96,
+        font=dict(size=24, family=font_stack, color="#FFFFFF")
+    ) if show_title else dict(text="")
+    
+    fig.update_layout(
+        title=title_config,
+        paper_bgcolor=bg_color,
+        plot_bgcolor=bg_color,
+        height=max(550, top_n * 25 + 100),
+        margin=dict(l=150, r=80, t=60 if not show_title else 120, b=80),
+        font=dict(family=font_stack, size=13, color="#FFFFFF"),
+        hoverlabel=dict(
+            bgcolor="#111111",
+            font_size=14,
+            font_family=font_stack,
+            font_color="#FFFFFF",
+            bordercolor="#06b6d4"
+        )
     )
-    plt.xlabel("Normalized flow")
-    plt.ylabel("Source → destination")
-    plt.title("Top cross-community flows (normalized)")
-    plt.tight_layout()
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
-    plt.show()
+    
+    # X-axis styling
+    fig.update_xaxes(
+        title="<span style='color:#06b6d4'>NORMALIZED FLOW</span>",
+        title_font=dict(family=font_stack, size=14),
+        showgrid=True,
+        gridcolor="rgba(255,255,255,0.05)",
+        zeroline=False,
+        tickfont=dict(family=font_stack, color="#888888"),
+        linecolor="#06b6d4"
+    )
+    
+    # Y-axis styling
+    fig.update_yaxes(
+        title="SOURCE → DESTINATION",
+        title_font=dict(family=font_stack, size=14, color="#FFFFFF"),
+        showgrid=False,
+        zeroline=False,
+        tickfont=dict(family=font_stack, color="#888888", size=11),
+        linecolor="#444444"
+    )
+    
+    if out_path:
+        html_path = out_path.replace('.png', '.html')
+        config = {'displayModeBar': False}
+        fig.write_html(html_path, include_plotlyjs='cdn', full_html=True, config=config)
+        print(f"✓ Saved directional flows plot to {html_path}")
+    
+    return fig
 
+
+
+def bridge_channels_html_slider(
+    top_channels,
+    out_path="reports/figures/bridge_channels_interactive.html",
+    topN=10,
+    communities_per_group=3
+):
+    """
+    Bridge Channels visualization with NATIVE PLOTLY slider that works in exported HTML.
+    Shows top bridge channels for each community group.
+    
+    Parameters:
+    -----------
+    top_channels : DataFrame
+        DataFrame with columns: community, name, cross_strength, cross_share
+    out_path : str
+        Output path for HTML file
+    topN : int
+        Number of top channels to show per community
+    communities_per_group : int
+        Number of communities to show per group (default 3)
+    """
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
+    import numpy as np
+    
+    # YouNiverse Theme
+    bg_color = "#000000"
+    font_stack = "'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+    color_palette = ["#8b5cf6", "#06b6d4", "#F97316", "#22C55E", "#E11D48", "#FACC15", "#A855F7", "#14B8A6", "#60A5FA", "#FB7185"]
+    
+    # Get sorted communities
+    communities_list = sorted(top_channels["community"].unique())
+    
+    # Group communities
+    groups = []
+    for i in range(0, len(communities_list), communities_per_group):
+        group = communities_list[i:i+communities_per_group]
+        group_label = f"Communities {group[0]}-{group[-1]}" if len(group) > 1 else f"Community {group[0]}"
+        groups.append((group_label, group))
+    
+    # Create figure with max subplots needed
+    max_comms = communities_per_group
+    fig = make_subplots(
+        rows=max_comms, cols=1,
+        subplot_titles=[f"<b>Community</b>" for _ in range(max_comms)],
+        vertical_spacing=0.12,
+        specs=[[{"type": "bar"}] for _ in range(max_comms)]
+    )
+    
+    # Build all traces for all groups
+    trace_groups = {}  # Maps group_idx -> list of trace indices
+    
+    for group_idx, (group_label, selected_communities) in enumerate(groups):
+        group_traces = []
+        
+        for idx, comm in enumerate(selected_communities):
+            data = top_channels[top_channels["community"] == comm].sort_values(
+                "cross_strength", ascending=True
+            ).tail(topN)
+            
+            if data.empty:
+                continue
+            
+            color = color_palette[int(comm) % len(color_palette)]
+            
+            trace = go.Bar(
+                y=data["name"].tolist(),
+                x=data["cross_strength"].tolist(),
+                orientation='h',
+                marker=dict(color=color, line=dict(color="#FFFFFF", width=0.5)),
+                text=[f"{cs:.2f}" for cs in data["cross_share"]],
+                textposition='outside',
+                textfont=dict(size=9, color="#FFFFFF"),
+                hovertemplate="<b>%{y}</b><br>Cross Strength: %{x:,.0f}<br>Cross Share: %{text}<extra></extra>",
+                showlegend=False,
+                visible=(group_idx == 0),  # Only first group visible initially
+            )
+            group_traces.append((trace, idx + 1, comm))
+        
+        trace_groups[group_idx] = group_traces
+    
+    # Add all traces to figure
+    trace_index_map = {}  # Maps group_idx -> list of (trace_index, comm)
+    current_trace_idx = 0
+    
+    for group_idx, group_traces in trace_groups.items():
+        trace_index_map[group_idx] = []
+        for trace, subplot_row, comm in group_traces:
+            fig.add_trace(trace, row=subplot_row, col=1)
+            trace_index_map[group_idx].append((current_trace_idx, comm))
+            current_trace_idx += 1
+    
+    total_traces = len(fig.data)
+    
+    # Build slider steps
+    slider_steps = []
+    for group_idx, (group_label, selected_communities) in enumerate(groups):
+        # Create visibility array
+        visibility = [False] * total_traces
+        for trace_idx, _ in trace_index_map.get(group_idx, []):
+            visibility[trace_idx] = True
+        
+        # Build subplot title updates
+        annotations = []
+        for i, comm in enumerate(selected_communities):
+            annotations.append(dict(
+                text=f"<b>Community {comm}</b>",
+                font=dict(size=12, color="#06b6d4", family=font_stack),
+                showarrow=False,
+                x=0.5,
+                xref="paper",
+                y=1 - (i * 0.33) - 0.01,
+                yref="paper",
+                xanchor="center",
+                yanchor="bottom"
+            ))
+        
+        step = dict(
+            method="update",
+            args=[
+                {"visible": visibility},
+                {"annotations": annotations}
+            ],
+            label=group_label.replace("Communities ", "").replace("Community ", "")
+        )
+        slider_steps.append(step)
+    
+    # Initial annotations for first group
+    initial_annotations = []
+    first_group_comms = groups[0][1] if groups else []
+    for i, comm in enumerate(first_group_comms):
+        initial_annotations.append(dict(
+            text=f"<b>Community {comm}</b>",
+            font=dict(size=12, color="#06b6d4", family=font_stack),
+            showarrow=False,
+            x=0.5,
+            xref="paper",
+            y=1 - (i * 0.33) - 0.01,
+            yref="paper",
+            xanchor="center",
+            yanchor="bottom"
+        ))
+    
+    sliders = [dict(
+        active=0,
+        currentvalue=dict(
+            prefix="Group: ",
+            font=dict(size=14, color="white"),
+            visible=True,
+            xanchor="center"
+        ),
+        pad=dict(t=50, b=10),
+        len=0.9,
+        x=0.05,
+        xanchor="left",
+        y=0,
+        yanchor="top",
+        steps=slider_steps,
+        bgcolor="#333",
+        bordercolor="#555",
+        font=dict(color="white", size=10),
+        ticklen=5,
+        tickcolor="white",
+    )]
+    
+    # Update layout
+    height = max(700, max_comms * 280)
+    
+    fig.update_layout(
+        paper_bgcolor=bg_color,
+        plot_bgcolor=bg_color,
+        height=height,
+        margin=dict(l=280, r=100, t=60, b=100),
+        font=dict(family=font_stack, size=11, color="#FFFFFF"),
+        hoverlabel=dict(
+            bgcolor="#111111",
+            font_size=12,
+            font_family=font_stack,
+            font_color="#FFFFFF",
+            bordercolor="#06b6d4"
+        ),
+        sliders=sliders,
+        annotations=initial_annotations,
+    )
+    
+    # Update axes
+    for i in range(1, max_comms + 1):
+        fig.update_xaxes(
+            title_text="Cross Strength" if i == max_comms else "",
+            showgrid=True,
+            gridcolor="rgba(255,255,255,0.05)",
+            zeroline=False,
+            tickfont=dict(family=font_stack, color="#888888", size=10),
+            title_font=dict(family=font_stack, color="#06b6d4", size=12),
+            row=i, col=1
+        )
+        fig.update_yaxes(
+            showgrid=False,
+            tickfont=dict(family=font_stack, color="#888888", size=10),
+            row=i, col=1
+        )
+    
+    if out_path:
+        config = {'displayModeBar': False}
+        fig.write_html(out_path, include_plotlyjs='cdn', full_html=True, config=config)
+        print(f"✓ Saved bridge channels interactive plot to {out_path}")
+    
+    return fig
