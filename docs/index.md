@@ -702,7 +702,9 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
     <h3>Bridge Channels: The Cosmic Connectors</h3>
     <p>
-        If most viewers stay home, who are the travelers that connect different worlds? Using <strong>cross-community interaction analysis</strong>, we identified the <span class="highlight">bridge channels</span>: creators whose audiences span multiple galaxies. Each bar shows a channel's <strong>cross-strength</strong> (total external connections), while the number indicates their <strong>cross-share</strong> (fraction of connections going outside).
+        Creators live inside one “galaxy” of content — but a few act like <span class="highlight">connectors</span>, pulling viewers across different communities. This chart highlights those <strong>bridge channels</strong> and shows <em>how strongly</em> they connect outside their home community.
+        <br><br>
+        Read it like this: the <strong>bar length</strong> is <strong>cross-strength</strong> — the total amount of a channel’s connections that go to <em>other</em> communities (bigger bar = more cross-community traffic). The <strong>number</strong> is <strong>cross-share</strong> — the <em>percentage</em> of that channel’s connections that leave its own community (e.g., 0.80 means ~80% goes outside). A channel can have high cross-strength (huge reach) but low cross-share (mostly local), or high cross-share (mostly external) even if the total is smaller.
     </p>
 
     <div class="viz-container">
@@ -743,7 +745,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
     <h3>The Anatomy of a Bridge</h3>
     <p>
-        What makes a channel become a bridge? Looking across communities, clear patterns emerge:
+        What makes a channel become a bridge? Usually it’s content that’s <strong>easy to share</strong> with someone outside your niche—something people watch even if they didn’t “come for that topic.” Across communities, a few simple patterns show up again and again:
     </p>
 
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 30px 0;">
@@ -765,7 +767,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </div>
 
     <p>
-        Meanwhile, <strong>regional content</strong> (Sri Lankan, Filipino, Nepali), <strong>niche hobbies</strong> (quilting, roller coasters, dog training), and surprisingly <strong>professional sports leagues</strong> (Tennis) create the strongest echo chambers. The lesson: <span class="highlight">universality bridges, specificity isolates</span>.
+        Meanwhile, <strong>regional content</strong>, <strong>niche hobbies</strong>, and even some <strong>official sports leagues</strong> tend to keep viewers “in the same neighborhood.” If you binge quilting tutorials or tennis highlights, YouTube mostly serves you more of the same—and you rarely jump to totally different worlds. The lesson: <span class="highlight">universality bridges, specificity isolates</span>.
     </p>
 
     <h3>What Types of Content Build Bridges?</h3>
@@ -780,22 +782,36 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </div>
 
     <p>
+<<<<<<< HEAD
+        The key takeaway: <strong>bridging is concentrated</strong>. A small number of communities do a huge share of the cross-community connecting.
+        <br><br>
+        In the chart, <strong>Community 18</strong> stands out as a “super-connector,” with very large cross-strength in big-tent categories like <span class="highlight">Gaming</span> and <span class="highlight">Entertainment</span> (millions of cross-community links). In plain terms: people don’t just watch one thing there—they bounce between games, reactions, creators, and adjacent topics.
+        <br><br>
+        Real-life example: you start with a viral gaming moment → you get recommended a reaction/compilation channel → you land in broader entertainment or a creator’s vlog. That’s a bridge.
+=======
         The chart reveals a stunning concentration of bridging power. <strong>Community 18</strong> towers above all others with nearly <strong>10 million total cross-strength</strong> — and the breakdown tells a story: <span class="highlight">People & Blogs</span> (purple) contributes ~7M alone, with <span class="highlight">Music</span> (cyan) adding another ~3M. This is the home of CaseyNeistat and the vlogging giants — personal stories that resonate across every community.
+>>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
     </p>
 
     <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #a855f7; margin: 20px 0; color: #ffffff; border-radius: 4px;">
         <strong>🏆 The Bridge-Building Hierarchy:</strong>
         <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
-            <li><strong>People & Blogs (Purple):</strong> THE dominant bridge category — personal, relatable content transcends all boundaries</li>
-            <li><strong>Entertainment (Dark Purple):</strong> Strong in C11, C14, C31 — variety and reactions appeal universally</li>
-            <li><strong>Music (Cyan):</strong> Significant contributor across multiple communities — the universal language</li>
-            <li><strong>Sports (Red):</strong> Only significant in C5 (WWE) — professional wrestling is uniquely bridging</li>
-            <li><strong>Science & Technology (Gray):</strong> Visible in C10 — tech reviews and destruction videos cross boundaries</li>
+            <li><strong>Entertainment (Purple):</strong> Big, shareable formats (reactions, clips, variety) travel easily across communities</li>
+            <li><strong>Gaming (Orange):</strong> Can become a massive bridge when it’s mainstream/viral (but game-specific bubbles can still stay closed)</li>
+            <li><strong>People & Blogs:</strong> Personal stories + personalities pull viewers across many different interests</li>
+            <li><strong>Music (Cyan):</strong> A steady “background connector” — songs and artists get picked up in many places</li>
+            <li><strong>Sports / Tech:</strong> Often concentrated in a few standout hubs (e.g., wrestling, tech destruction/reviews)</li>
         </ul>
     </div>
 
     <p>
+<<<<<<< HEAD
+        One subtle pattern: <strong>not every big category bridges equally</strong>. Some topics create “lanes” where recommendations loop back into the same content (think official league channels, narrow hobby tutorials, or highly specialized education). Those communities show up with smaller cross-strength because viewers don’t hop as much.
+        <br><br>
+        A useful way to read it: <span class="highlight">big bars mean “easy to wander”</span>—content that naturally leads to other worlds. Tiny bars mean <span class="highlight">“you stay in your lane”</span>.
+=======
         But the most striking insight is what's <em>missing</em>. Look for <strong>Gaming (orange)</strong> — it's barely visible anywhere. Despite Gaming being one of the largest categories on YouTube, <span class="highlight">gamers don't build bridges</span>. They stay in their lanes: Minecraft viewers watch Minecraft, Fortnite viewers watch Fortnite. The same applies to <strong>News & Politics</strong> (yellow) and <strong>Education</strong> (pink) — these categories reinforce community boundaries rather than cross them.
+>>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
     </p>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
@@ -803,27 +819,41 @@ title: "YouNiverse: Voyage Through Video Galaxies"
             <div style="font-size: 2em; margin-bottom: 10px;">🤝</div>
             <h4 style="color: #a855f7; margin: 0 0 10px 0;">Categories That Bridge</h4>
             <p style="color: #e2e2ed; font-size: 0.95em; margin: 0;">
+<<<<<<< HEAD
+                <strong>Entertainment, People & Blogs, Music (and some Gaming)</strong><br>
+                Content you can enjoy instantly: clips, reactions, personalities, songs—and big, mainstream gaming moments.
+=======
                 <strong>People & Blogs, Entertainment, Music</strong><br>
                 Emotionally-driven, broadly relatable content. No specialized knowledge required — anyone can enjoy a vlog or a song.
+>>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
             </p>
         </div>
         <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(60, 20, 20, 0.8) 100%); border: 2px solid rgba(239, 68, 68, 0.4); border-radius: 12px; padding: 25px;">
             <div style="font-size: 2em; margin-bottom: 10px;">🧱</div>
             <h4 style="color: #ef4444; margin: 0 0 10px 0;">Categories That Isolate</h4>
             <p style="color: #e2e2ed; font-size: 0.95em; margin: 0;">
+<<<<<<< HEAD
+                <strong>Niche hobbies, official leagues, highly specialized topics</strong><br>
+                Great depth, but fewer “off-ramps” — you watch more of the same and cross over less.
+=======
                 <strong>Gaming, News & Politics, Education</strong><br>
                 Specialized, topic-specific content. You either care about this game/topic or you don't — no casual crossover.
+>>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
             </p>
         </div>
     </div>
 
     <div class="quote">
-        "In the YouNiverse, human stories connect; specialized knowledge divides. The vlogger bridges worlds; the gamer stays home."
+        "In the YouNiverse, big-tent stories connect. The more niche the topic, the more it keeps you at home."
     </div>
 
     <h3>Directional Flows: Where Do Travelers Actually Go?</h3>
     <p>
+<<<<<<< HEAD
+        Not all traffic is equal. Some communities mostly <em>export</em> attention (their viewers branch out), while others mostly <em>import</em> it (many viewers arrive from elsewhere). This chart lists the biggest one-way “highways.” Read each bar as: <strong>viewers moving from Community A → Community B</strong> (longer bar = stronger flow).
+=======
         Not all traffic is equal. Some galaxies <em>export</em> attention while others <em>import</em> it. To understand the <strong>directionality</strong> of audience flow, we mapped the top inter-community corridors — the highways where the most traffic flows.
+>>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
     </p>
 
     <div class="viz-container">
@@ -833,22 +863,40 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     </div>
 
     <p>
+<<<<<<< HEAD
+        The flow map reveals the YouNiverse’s <strong>main interchange</strong>: the strongest traffic runs between <span class="highlight">C11 and C18</span>, and it’s <strong>two-way</strong>. That’s a classic sign of two big worlds with a shared audience—people regularly bounce between them rather than making a one-time trip.
+=======
         The flow map reveals the <strong>central nervous system</strong> of the YouNiverse. One corridor dominates all others: <span class="highlight">C17 — C20</span> carries a combined ~127,000 normalized flow — more than double any other route. This is the main highway of the YouNiverse, a bidirectional channel where massive audiences cross between communities.
+>>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
     </p>
 
     <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #06b6d4; margin: 20px 0; color: #ffffff; border-radius: 4px;">
         <strong>🗺️ The Top 5 Highways of the YouNiverse:</strong>
         <ol style="margin: 10px 0 0 20px; line-height: 1.8;">
+<<<<<<< HEAD
+            <li><strong>C11 → C18:</strong> The largest one-way corridor</li>
+            <li><strong>C18 → C11:</strong> A nearly-as-strong return flow (clear two-way exchange)</li>
+            <li><strong>C18 → C31:</strong> A major outbound route from the main hub</li>
+            <li><strong>C18 → C10:</strong> Another strong outbound route</li>
+            <li><strong>C31 ↔ C11:</strong> A secondary “triangle” that keeps the core tightly connected</li>
+=======
             <li><strong>C17 — C20:</strong> ~70K flow — The single largest directional corridor</li>
             <li><strong>C20 — C17:</strong> ~57K flow — Strong return traffic (bidirectional)</li>
             <li><strong>C17 — C10:</strong> ~55K flow — Major route to the Tech hub</li>
             <li><strong>C10 — C17:</strong> ~32K flow — Asymmetric return</li>
             <li><strong>C20 — C9:</strong> ~18K flow — Secondary corridor</li>
+>>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
         </ol>
     </div>
 
     <p>
+<<<<<<< HEAD
+        <strong>C18 shows up everywhere</strong> in the top flows, which is exactly what a routing hub looks like: many journeys start there, end there, or pass through it. C11 is its biggest trading partner, and C31/C10 form the next layer of the core.
+        <br><br>
+        Real-life interpretation: if you enter the network through one of these “core” communities, recommendations quickly pull you into the others. If you enter through a niche community, you’re much less likely to appear on this highway map at all.
+=======
         <strong>C17 emerges as the routing hub</strong> of the YouNiverse — it appears in nearly every top flow, both as source and destination. This community acts as a <span class="highlight">crossroads</span> where travelers from multiple galaxies pass through. Meanwhile, notice what's <em>missing</em>: <strong>C0</strong> (the massive Indian Entertainment hub) appears only once, at the very bottom (C0 — C13). Despite its enormous size, it remains isolated — audiences go in but rarely come out.
+>>>>>>> c2a6f4e3c3c9f38aefb2f93fa67b367a69cd16d1
     </p>
 
     <h3>Asymmetric Gravity: The Direction of Attention</h3>
