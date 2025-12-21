@@ -53,7 +53,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         Understanding this structure is not optional; it is essential. YouTube offers a rare, large-scale laboratory for studying how communities emerge, evolve, and influence one another.
     </p>
     <div class="image-container" style="margin: 28px 0;">
-        <img src="with%20great%20power%20comes%20great%20responsibility.jpg" alt="With great power comes great responsibility" />
+        <img src="chapter2/with%20great%20power%20comes%20great%20responsibility.jpg" alt="With great power comes great responsibility" />
     </div>
     <h3>Our Expedition Map</h3>
     <p>To navigate this digital cosmos, our exploration is guided by four fundamental questions:</p>
@@ -104,7 +104,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     
     <div class="viz-container">
         <div id="growth-chart" class="viz-placeholder">
-            {% include_relative timeline_evolution.html %}
+            {% include_relative chapter2/timeline_evolution.html %}
         </div>
     </div>
 
@@ -114,7 +114,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
     <div class="viz-container">
         <div id="power-law-chart" class="viz-placeholder">
-            {% include_relative powerlaw.html %}
+            {% include_relative chapter2/powerlaw.html %}
         </div>
     </div>
 
@@ -124,7 +124,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
     <div class="viz-container">
         <div id="category-chart" class="viz-placeholder">
-            {% include_relative pie_chart.html %}
+            {% include_relative chapter2/pie_chart.html %}
         </div>
     </div>
 
@@ -151,7 +151,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
 
     <div class="viz-container">
         <div id="raw-network-viz" class="viz-placeholder">
-            <img src='USER1.png' width="100%">
+            <img src='chapter2/USER1.png' width="100%">
         </div>
     </div>
     <div style="text-align: center; margin-top: 10px; font-family: sans-serif;">
@@ -261,7 +261,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     <div class="viz-network">
         <div class="viz-title">The 52 Galaxies of the YouNiverse</div>
         <div id="full-network-viz" class="viz-placeholder">
-            <iframe src="./a.html" width="100%" height="500px" frameborder="0"></iframe>
+            <iframe src="./chapter3/a.html" width="100%" height="500px" frameborder="0"></iframe>
         </div>
     </div>
         <div class="stats-grid">
@@ -312,7 +312,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
             Showing the 5 biggest galaxies, those that form the core of our universe.
         </p>
         <div id="interactive-core-viz">
-            <iframe src="./b.html" width="100%" height="500px" frameborder="0" style="border:none; display: block;"></iframe>
+            <iframe src="./chapter3/b.html" width="100%" height="500px" frameborder="0" style="border:none; display: block;"></iframe>
         </div>
     </div>
     <h3>First Contact: A Glimpse Into Three Galaxies</h3>
@@ -323,7 +323,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; margin: 40px 0; height: 400px; padding: 30px; background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%); border-radius: 16px; border: 2px solid rgba(100, 181, 246, 0.3);">
         
         <div class="viz-network" >
-            <iframe src="./galaxy_25.html" width="100%" height="300px" frameborder="0"></iframe>
+            <iframe src="./chapter3/galaxy_25.html" width="100%" height="300px" frameborder="0"></iframe>
         </div>
         
         <div>
@@ -360,14 +360,14 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         </div>
         
         <div class="viz-network">
-            <iframe src="./galaxy_26.html" width="100%" height="300px" frameborder="0"></iframe>
+            <iframe src="./chapter3/galaxy_26.html" width="100%" height="300px" frameborder="0"></iframe>
         </div>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; margin: 40px 0; padding: 30px; background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%); border-radius: 16px; height: 400px;border: 2px solid rgba(255, 193, 7, 0.3);">
         
     <div class="viz-network">
-        <iframe src="./galaxy_24.html" width="100%" height="300px" frameborder="0"></iframe>
+        <iframe src="./chapter3/galaxy_24.html" width="100%" height="300px" frameborder="0"></iframe>
     </div>
     
     <div>
@@ -440,7 +440,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         <strong>The Implication:</strong> This is not an accidental fracture, but a necessary adaptation to abundance. As the platform flooded with content, the "shared experience" became impossible to maintain. To survive the cognitive load, audiences naturally segregated into <strong>cognitive silos</strong>. Viewers retreated into hyper-specific clusters — from K-Pop to Minecraft — turning shared interests into hermetic worlds that rarely interact.
     </p>
 
-    <iframe src="./fragmentation.html" width="100%" height="500px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
+    <iframe src="./chapter4/fragmentation.html" width="100%" height="500px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
     <h3>The Connectivity Paradox</h3>
 <p>
     This creation of silos leads us to a startling paradox: <strong>as the universe expanded, it became less connected</strong>. While the number of channels grew, the structural density of the network collapsed.
@@ -459,7 +459,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
     In 2010, the network density was <strong>0.05</strong>. In simple terms, out of all possible conversations between communities, 5% actually happened. It was a "small world" where distinct groups frequently rubbed shoulders. By 2019, this density had flatlined to <strong>0.002</strong> — a staggering <strong>96% drop</strong> in relative connectivity.
 </p>
 
-<iframe src="./density.html" width="100%" height="500px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
+<iframe src="./chapter4/density.html" width="100%" height="500px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
 
 <p>
     This curve is the <strong>filter bubble made visible</strong>. The mathematical collapse of $D$ represents the death of serendipity. As algorithms got better at prediction, they stopped building bridges between galaxies. Viewers stayed in their comfortable corners, and the "global conversation" of 2010 dissolved into thousands of private, parallel conversations.
@@ -475,7 +475,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
         <li><strong>The Quiet Ascent:</strong> While Gaming and Music fought for the top spot, other galaxies grew steadily. Categories like <strong>Entertainment</strong> (blue curve 🎭) and <strong>People & Blogs</strong> (purple curve 👥) saw consistent growth, proving that the YouNiverse has diversified far beyond simple passive entertainment.</li>
     </ul>
 
-    <iframe src="./pagerank.html" width="100%" height="500px" style="border:none; display:block; margin:20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
+    <iframe src="./chapter4/pagerank.html" width="100%" height="500px" style="border:none; display:block; margin:20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
 <h3>The Emergence of New Powers: The Jio Effect</h3>
     <p>
         While the Western core was busy transitioning into the Gaming Era, a seismic shift was happening on the periphery. Our temporal tracking reveals the emergence of massive regional superpowers that fundamentally changed the scale of the YouNiverse.
@@ -485,7 +485,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
         The most prominent example is the <strong>"Jio Effect" of 2016</strong>. As seen in our fragmentation data, the entry of millions of Indian users led to a sudden spike in community detection. This era birthed the massive <strong>T-Series galaxy</strong>. As shown in the "Evolution of Top 5 Identities" chart, by 2016, T-Series shifted from a peripheral node to the third-largest community on the entire platform.
     </p>
 
-    <iframe src="./top5_identities.html" width="100%" height="550px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
+    <iframe src="./chapter4/top5_identities.html" width="100%" height="550px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
 
     <p>
         <strong>Parallel Worlds:</strong> What makes this growth remarkable is its isolation. Despite becoming a global giant, the T-Series galaxy grew with almost zero audience overlap with Western giants like PewDiePie. This proved that the YouNiverse was no longer a single shared experience, but a <strong>multiverse of parallel worlds</strong>. By 2019, YouTube had become a collection of massive, independent islands — vibrant and rich, yet structurally invisible to one another.
@@ -499,7 +499,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
         Over the decade, the sheer pressure of growth fractures this block. The number of communities rises drastically, creating a centrifugal force that propels new "niche galaxies" outward. The final result in 2019 is no longer a unified network, but a vast archipelago: a fusing core persists at the center, surrounded by a multitude of specialized islands floating on the periphery, orbiting far from the central gravity without ever touching it.
     </p>
 
-    <iframe src="./galaxy_explorer.html" width="100%" height="700px" style="border:none; display: block; margin: 20px auto;"></iframe>
+    <iframe src="./chapter4/galaxy_explorer.html" width="100%" height="700px" style="border:none; display: block; margin: 20px auto;"></iframe>
 
     <p class="caption" style="text-align: center; color: #888; font-size: 0.9em; margin-top: -10px;">
         <em>Interactive Model: Drag nodes to explore connections, use the slider to travel through time.</em>
@@ -534,7 +534,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
 
     <div class="viz-container">
         <div id="topic-explorer-container">
-            <iframe src="./topic_explorer.html" width="100%" height="480px" frameborder="0" style="border:none;"></iframe>
+            <iframe src="./chapter5/topic_explorer.html" width="100%" height="480px" frameborder="0" style="border:none;"></iframe>
         </div>
     </div>
 
@@ -585,7 +585,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
 
     <div class="viz-container">
         <div id="engagement-metrics-viz">
-            <iframe src="./engagement_metrics.html" width="100%" height="560px" frameborder="0" style="border:none;"></iframe>
+            <iframe src="./chapter5/engagement_metrics.html" width="100%" height="560px" frameborder="0" style="border:none;"></iframe>
         </div>
     </div>
 
@@ -709,7 +709,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
 
     <div class="viz-container">
         <div id="chord-viz" class="viz-placeholder">
-            <iframe src="./chord_visible.html" width="100%" height="900px" frameborder="0" scrolling="no" style="border:none; display: block; overflow:hidden;"></iframe>
+            <iframe src="./chapter6/chord_visible.html" width="100%" height="900px" frameborder="0" scrolling="no" style="border:none; display: block; overflow:hidden;"></iframe>
         </div>
     </div>
     <div style="text-align: center; margin-top: 10px; font-family: sans-serif;">
@@ -749,7 +749,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
 
     <div class="viz-container">
         <div id="bridge-channels-viz" class="viz-placeholder">
-            <iframe src="./bridge_channels_interactive.html" width="100%" height="850px" frameborder="0" scrolling="no" style="border:none; display: block; overflow:hidden;"></iframe>
+            <iframe src="./chapter6/bridge_channels_interactive.html" width="100%" height="850px" frameborder="0" scrolling="no" style="border:none; display: block; overflow:hidden;"></iframe>
         </div>
     </div>
 
@@ -817,7 +817,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
 
     <div class="viz-container">
         <div id="bridge-categories-viz" class="viz-placeholder">
-            <iframe src="./bridge_categories_top3.html" width="100%" height="600px" frameborder="0" scrolling="no" style="border:none; display: block; overflow:hidden;"></iframe>
+            <iframe src="./chapter6/bridge_categories_top3.html" width="100%" height="600px" frameborder="0" scrolling="no" style="border:none; display: block; overflow:hidden;"></iframe>
         </div>
     </div>
 
@@ -876,7 +876,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
 
     <div class="viz-container">
         <div id="directional-flows-viz" class="viz-placeholder" style="height: 750px; overflow: hidden;">
-            <iframe src="./bridge_community_topflows.html" width="100%" height="750px" frameborder="0" scrolling="no" style="border:none; display: block; margin-top: 0px;"></iframe>
+            <iframe src="./chapter6/bridge_community_topflows.html" width="100%" height="750px" frameborder="0" scrolling="no" style="border:none; display: block; margin-top: 0px;"></iframe>
         </div>
     </div>
 
@@ -939,7 +939,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
 
     <div class="viz-container">
         <div id="echo-chamber-viz" class="viz-placeholder">
-            <iframe src="./echo_chamber_external_share.html" width="100%" height="500px" frameborder="0" scrolling="no" style="border:none; display: block; overflow:hidden;"></iframe>
+            <iframe src="./chapter6/echo_chamber_external_share.html" width="100%" height="500px" frameborder="0" scrolling="no" style="border:none; display: block; overflow:hidden;"></iframe>
         </div>
     </div>
 
@@ -1068,7 +1068,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
     <div class="viz-container">
         <div class="viz-title">Attention inequality inside galaxies</div>
         <div class="viz-placeholder">
-            {% include_relative blackholes_gini.html %}
+            {% include_relative chapter7/blackholes_gini.html %}
         </div>
     </div>
 
@@ -1104,7 +1104,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
     <div class="viz-container">
         <div class="viz-title">Share of total interaction captured by black holes</div>
         <div class="viz-placeholder">
-            {% include_relative blackholes_concentration.html %}
+            {% include_relative chapter7/blackholes_concentration.html %}
         </div>
     </div>
 
@@ -1138,7 +1138,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
     <div class="viz-container">
         <div class="viz-title">Internal structure of Black Holes</div>
         <div class="viz-placeholder">
-            {% include_relative blackholes_boxplot.html %}
+            {% include_relative chapter7/blackholes_boxplot.html %}
         </div>
     </div>
 
@@ -1169,7 +1169,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
     <div class="viz-container">
         <div class="viz-title">Top black hole channels (select a galaxy)</div>
         <div id="top-channels-viz" class="viz-placeholder">
-            {% include_relative blackholes_top_channels.html %}
+            {% include_relative chapter7/blackholes_top_channels.html %}
         </div>
     </div>
 
@@ -1228,7 +1228,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
     <div class="viz-container">
         <div class="viz-title">Distribution of total interaction strength across galaxies</div>
         <div class="viz-placeholder">
-            {% include_relative across_total_strength_hist.html %}
+            {% include_relative chapter7/across_total_strength_hist.html %}
         </div>
     </div>
 
@@ -1242,7 +1242,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
     <div class="viz-container">
         <div class="viz-title">Cumulative distribution of total attention</div>
         <div class="viz-placeholder">
-            {% include_relative across_cumulative_attention.html %}
+            {% include_relative chapter7/across_cumulative_attention.html %}
         </div>
     </div>
 
@@ -1258,7 +1258,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
     <div class="viz-container">
     <div class="viz-title">Galaxy size distribution (top attention highlighted)</div>
     <div class="viz-placeholder">
-        {% include_relative across_top10_size.html %}
+        {% include_relative chapter7/across_top10_size.html %}
     </div>
     </div>
 
@@ -1272,7 +1272,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
     <div class="viz-container">
         <div class="viz-title">Total attention vs. galaxy size</div>
         <div class="viz-placeholder">
-            {% include_relative across_size_strength_scatter.html %}
+            {% include_relative chapter7/across_size_strength_scatter.html %}
         </div>
     </div>
 
@@ -1286,7 +1286,7 @@ D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
     <div class="viz-container">
     <div class="viz-title">Average degree distribution (Communities 17 and 20 highlighted)</div>
     <div class="viz-placeholder">
-        {% include_relative across_top10_degree.html %}
+        {% include_relative chapter7/across_top10_degree.html %}
     </div>
     </div>
 
