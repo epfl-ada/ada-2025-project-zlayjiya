@@ -139,9 +139,9 @@ Video titles and descriptions are lowercased, stripped of special characters, an
 
 ### Role Distribution
 
-- **Adam**: Network construction, community detection (Louvain), graph metrics computation, engagement metrics analysis, time series analysis, interactive dashboard development
-- **Yassine**: Data preprocessing, data integration, TF-IDF analysis, NLP processing and theme extraction, narrative structure design, text synthesis
-- **Elyas**: User activity mapping, echo chamber identification, bridge channel detection (betweenness centrality), user mobility analysis, interactive visualizations
-- **Mehdi**: Category distribution analysis, Gini coefficients, power-law testing, statistical validation, black-hole channel characteristics analysis, final report and documentation
-- **Mohammed**: Edge normalization, temporal network construction, galaxy evolution tracking, black-hole channel influence analysis, repository organization and code documentation
+- **Elyas**: Network construction, community detection (Louvain), graph metrics computation, engagement metrics analysis, time series analysis, interactive dashboard development
+- **Adam**: Data preprocessing, data integration, TF-IDF analysis, NLP processing and theme extraction, narrative structure design, text synthesis
+- **Mohamed**: User activity mapping, echo chamber identification, bridge channel detection (betweenness centrality), user mobility analysis, interactive visualizations
+- **Yassine**: Category distribution analysis, Gini coefficients, power-law testing, statistical validation, black-hole channel characteristics analysis, final report and documentation
+- **Mehdi**: Edge normalization, temporal network construction, galaxy evolution tracking, black-hole channel influence analysis, repository organization and code documentation
 
