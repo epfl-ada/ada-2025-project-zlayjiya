@@ -19,7 +19,8 @@ To explore this digital cosmos, we formulate several research questions that wil
 
 - Can we identify distinct communities through co-commenting network analysis?
 - Does the ecosystem resemble a few large, dominant galaxies or a constellation of many smaller ones?
-- Do some galaxies contain multiple sub-galaxies, indicating internal divisions or nested communities?
+- How has the structure of this digital cosmos evolved over time: have new galaxies emerged, merged, or faded over time?
+
 
 ### 2. What characteristics distinguish these galaxies?
 
@@ -36,12 +37,7 @@ To explore this digital cosmos, we formulate several research questions that wil
 ### 4. Are there dominant "black hole" channels that capture most attention?
 
 - How unequal is attention distribution within and across galaxies?
-- How do black hole channels influence surrounding ones: do they drive the content and dynamics of smaller channels in their orbit?
-- What distinguishes black holes across different galaxies: are there similar characteristics, themes, or growth patterns?
-
-### 5. How did the Youniverse evolve over time?
-
-- How has the structure of this digital cosmos evolved over time: have new galaxies emerged, merged, or faded over time?
+- What distinguishes black holes across different galaxies ?
 
 
 ## Data Preprocessing
@@ -66,6 +62,7 @@ Video titles and descriptions are lowercased, stripped of special characters, an
 1. Construct co-commenting networks where nodes represent channels and edges represent shared audiences (weighted by number of common commenters).
 2. **Normalize** edges based on channel size: We'll count the total amount of people that commented on the channel from the rows we've processed. 
 3. Apply **Louvain community detection algorithm** to identify natural clusters (galaxies) by maximizing network modularity.
+4.  Build temporal networks over time to track the evolution of the YouTube ecosystem: observing which galaxies grew, declined, merged, or emerged over ti
 
 ### Part 2: Galaxy Characterization
 
@@ -84,11 +81,8 @@ Video titles and descriptions are lowercased, stripped of special characters, an
 
 1. Use **Gini coefficients** to quantify overall attention inequality, and concentration ratios to measure how much total attention is captured by the most dominant channels.
 2. Test for power-law behavior in subscriber and view distributions to assess whether YouTube follows a "winner-takes-all" dynamic.
-3. Using time series data, detect sharp variations in metrics and categories among dominant black-hole channels and test whether similar fluctuations occur in smaller surrounding channels within the same galaxy.
-4. For each black-hole channel, compare average video duration, posting frequency, channel size.
+3. For each black-hole channel, compare the main metrics to find patterns.
 
-### Part 5: Temporal evolution of the network
-1. Build temporal networks over time to track the evolution of the YouTube ecosystem: observing which galaxies grew, declined, merged, or emerged over time.
 ---
 
 ## Proposed Timeline
