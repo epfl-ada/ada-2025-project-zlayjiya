@@ -332,7 +332,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
                 <div>
                     <h4 style="color: #64b5f6; margin: 0;">Tennis Terror</h4>
                     <p style="color: #aaa; font-size: 0.9em; margin: 5px 0 0 0;">
-                        Galaxy #25 • 6 channels • Biggest channel : Tennis TV
+                        Galaxy #22 • 6 channels • Biggest channel : Tennis TV
                     </p>
                 </div>
             </div>
