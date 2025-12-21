@@ -1,3 +1,16 @@
+"""
+YouTube Co-commenting Graph Generator
+
+Usage:
+    Run from the project ROOT directory:
+    
+    cd /path/to/ada-2025-project-zlayjiya
+    PYTHONPATH=. python src/scripts/youNIverse_graph.py <START_YEAR> <END_YEAR>
+
+Examples:
+    PYTHONPATH=. python src/scripts/youNIverse_graph.py 2019 2019  # Single year
+    PYTHONPATH=. python src/scripts/youNIverse_graph.py 2015 2018  # Range
+"""
 import pandas as pd
 import os
 import sys
@@ -8,20 +21,18 @@ import pickle
 from collections import defaultdict, Counter
 from itertools import combinations
 from datetime import datetime
-from tqdm.auto import tqdm # Progress bar for streaming visualization
-
+from tqdm.auto import tqdm 
+from src.scripts.process_data import flush_authors, save_state_and_dict
 # --- CLUSTER CONFIGURATION (Command Line Input) ---
 if len(sys.argv) < 3:
-    print("Usage: python youniverse_graph.py <START_YEAR> <END_YEAR>")
-    print("Ex: python youniverse_graph.py 2010 2012")
-    print("Ex: python youniverse_graph.py 2015 2015  (pour une seule année)")
+    print("Usage: python youNIverse_graph.py <START_YEAR> <END_YEAR>")
     sys.exit(1)
     
 START_YEAR = int(sys.argv[1])
 END_YEAR = int(sys.argv[2])
 
 if START_YEAR > END_YEAR:
-    print("ERROR: START_YEAR doit être <= END_YEAR")
+    print("FATAL: START_YEAR must be less than or equal to END_YEAR.")
     sys.exit(1)
 
 START_DATE = f"{START_YEAR}-01-01"
@@ -32,7 +43,6 @@ if START_YEAR == END_YEAR:
 else:
     YEAR_TAG = f"{START_YEAR}-{END_YEAR}"
 
-# Variables du Prototype
 CHUNKSIZE = 10_000_000
 MAX_ROWS = 100_000_000 
 TOP_K_PER_AUTHOR = 5
@@ -44,11 +54,11 @@ CHECKPOINT_EVERY = 20
 ROWS_TAG = f"{MAX_ROWS//1_000_000}M" if MAX_ROWS else "ALL"
 
 # File Paths 
-PATH_COMMENTS = "../../data/raw/youtube_comments.tsv.gz"
-PATH_METADATA = "../../data/raw/yt_metadata_helper.feather" 
+PATH_COMMENTS = "data/raw/youtube_comments.tsv.gz"
+PATH_METADATA = "data/raw/yt_metadata_helper.feather" 
 
 # Dynamic Output Paths
-OUTPUT_DIR = f"../../data_new/temporal_graphs/{YEAR_TAG}"
+OUTPUT_DIR = f"data/temporal_graphs/{YEAR_TAG}"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 EDGES_OUT = os.path.join(OUTPUT_DIR, f"channel_edges_{YEAR_TAG}_{ROWS_TAG}.csv")
 DICT_PATH = os.path.join(OUTPUT_DIR, f"channel_counts_{YEAR_TAG}.csv")
@@ -88,14 +98,12 @@ chunk_idx = 0
 user_counts = defaultdict(Counter)
 currentAuthor = None
 
-# --- AUXILIARY FUNCTIONS (from the Prototype) ---
-
 def load_video_mapping_and_filter(path):
     # This function loads the Feather file and filters the map by date.
     print("Loading video metadata (v2c)...")
     
     # Use Cache for v2c if available (speeds up next runs)
-    cache_path = "../data/processed/v2c.pkl"
+    cache_path = "data/processed/v2c.pkl"
     if os.path.exists(cache_path):
         with open(cache_path, "rb") as f:
             v2c_all = pickle.load(f)
@@ -109,7 +117,7 @@ def load_video_mapping_and_filter(path):
         videoDf["upload_date"] = pd.to_datetime(videoDf["upload_date"], errors='coerce')
         v2c_all = dict(zip(videoDf.display_id.values, videoDf.channel_id.values))
         
-        os.makedirs("../data/processed", exist_ok=True)
+        os.makedirs("data/processed", exist_ok=True)
         with open(cache_path, "wb") as f:
             pickle.dump(v2c_all, f)
             
@@ -135,46 +143,21 @@ def load_video_mapping_and_filter(path):
     print(f"Loaded total videos: {len(v2c_all):,}. Filtered for {YEAR_TAG}: {len(v2c_filtered):,} videos.")
     return v2c_filtered
 
-def save_state_and_dict(rows_seen, channelToCommNumbers, dict_path=DICT_PATH, state_path=STATE_PATH):
-    # Saves the channel-to-commenter-count dict and the row state.
-    with open(dict_path, "w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=["channel_id", "count"])
-        w.writeheader()
-        for ch, cnt in channelToCommNumbers.items():
-            w.writerow({"channel_id": ch, "count": int(cnt)})
-    # Writes the streaming state
-    with open(state_path, "w") as f:
-        json.dump({"rows_seen": int(rows_seen)}, f)
-
-
-def flush_authors(authors_dict):
-    # Implements the core business logic: Top K + Combinations
-    global edges_counter, channelToCommNumbers
-    for author, cnt in authors_dict.items():
-        if not cnt:
-            continue
-        # top-K channels this author commented on the most
-        topk = [ch for ch, _ in cnt.most_common(TOP_K_PER_AUTHOR)]
-        if len(topk) >= MIN_CHANS_FOR_PAIRS:
-            # +1 per unordered pair for this author
-            for a, b in combinations(sorted(topk), 2):
-                edges_counter[(a, b)] += 1
-        # Increment unique commenter count for the involved channels
-        for ch in topk:
-            channelToCommNumbers[ch] += 1
-    authors_dict.clear()
-
 # --- MAIN EXECUTION ---
 def run_analysis():
     global rows_seen, chunk_idx, user_counts, currentAuthor, edges_counter
+        # Skip if already completed
+    if os.path.exists(EDGES_OUT):
+        print(f"{EDGES_OUT} already exists. Skipping.")
+        return
+    
     
     # 1. Prepare filtered video-to-channel map
     v2c = load_video_mapping_and_filter(PATH_METADATA)
 
+
+
     print("Starting comments analysis (Local Read)...")
-    
-    # --- SOLUTION POUR L'ERREUR D'EN-TÊTE ---
-    # Nous lisons seulement les colonnes indispensables qui existent
     AUTH_COL_TSV = "author" 
     VID_COL_TSV = "video_id"
     
@@ -193,8 +176,6 @@ def run_analysis():
         print(f"FATAL: Error reading comments file: {e}")
         return
 
-    # Loop through the comment chunks with progress bar
-    # We estimate the number of chunks based on the total number of comments in the dataset (~77M)
     estimated_chunks = 77000000 // CHUNKSIZE
     
     for chunk in tqdm(reader, desc="Streaming comments in chunks", total=estimated_chunks):
@@ -241,22 +222,24 @@ def run_analysis():
 
         # 4. Flush Periodically (Saves memory)
         if len(user_counts) > AUTHOR_FLUSH_THRESHOLD:
-            flush_authors(user_counts)
+            flush_authors(user_counts, edges_counter, channelToCommNumbers, 
+              TOP_K_PER_AUTHOR, MIN_CHANS_FOR_PAIRS)
 
         # 5. Checkpoint
         if chunk_idx % CHECKPOINT_EVERY == 0:
             with open(CHECKPOINT_PATH, "wb") as f:
                 pickle.dump(edges_counter, f)
 
-            save_state_and_dict(rows_seen, channelToCommNumbers)
+            save_state_and_dict(rows_seen, channelToCommNumbers, DICT_PATH, STATE_PATH)
             # Colab Prototype Print
             print(f"current Author = {currentAuthor}")
             print(f"[checkpoint] rows_seen={rows_seen:,}, authors_tracked={len(user_counts):,}, unique_edges={len(edges_counter):,}")
             
     # --- FINALIZATION ---
-    flush_authors(user_counts) # Final flush
+    flush_authors(user_counts, edges_counter, channelToCommNumbers, 
+              TOP_K_PER_AUTHOR, MIN_CHANS_FOR_PAIRS) # Final flush
 
-    save_state_and_dict(rows_seen, channelToCommNumbers) # Final state save
+    save_state_and_dict(rows_seen, channelToCommNumbers, DICT_PATH, STATE_PATH)# Final state save
 
     # Colab Prototype Print
     print(f"Processed ~{rows_seen:,} comment rows; unique edges: {len(edges_counter):,}")
