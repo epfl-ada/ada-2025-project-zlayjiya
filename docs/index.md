@@ -52,7 +52,9 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         And a more personal one: <strong>how much of what you watch is a choice — and how much is gravity?</strong>
         Understanding this structure is not optional; it is essential. YouTube offers a rare, large-scale laboratory for studying how communities emerge, evolve, and influence one another.
     </p>
-    
+    <div class="image-container" style="margin: 28px 0;">
+        <img src="with%20great%20power%20comes%20great%20responsibility.jpg" alt="With great power comes great responsibility" />
+    </div>
     <h3>Our Expedition Map</h3>
     <p>To navigate this digital cosmos, our exploration is guided by four fundamental questions:</p>
     
@@ -78,6 +80,9 @@ title: "YouNiverse: Voyage Through Video Galaxies"
             <div class="question-text">Do certain channels capture disproportionate attention, shaping the dynamics of their galaxies?</div>
         </div>
     </div>
+
+    
+
     <div class="story-outro">
         <div class="story-outro__kicker">On the horizon</div>
         <div class="story-outro__q">We begin at the edge of infinity, where raw numbers turn into a living cosmos.</div>
@@ -438,14 +443,16 @@ title: "YouNiverse: Voyage Through Video Galaxies"
     <iframe src="./fragmentation.html" width="100%" height="500px" style="border:none; display: block; margin: 20px auto; background:#000000;" scrolling="no" frameborder="0"></iframe>
     <h3>The Connectivity Paradox</h3>
 <p>
-    This creation of silos leads us to a startling paradox: <strong>as the universe expanded, it became less connected</strong>. While the number of channels grew five-fold, the structural density of the network collapsed.
+    This creation of silos leads us to a startling paradox: <strong>as the universe expanded, it became less connected</strong>. While the number of channels grew, the structural density of the network collapsed.
 </p>
 <p>
     To understand the scale of this collapse, we must look at how density $D$ is calculated:
 </p>
 
-<div style="text-align: center; margin: 20px 0; font-size: 1.2em;">
-    $$D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}$$
+<div style="text-align: center; margin: 20px 0; font-size: 1.2em;" class="mathjax-process">
+\[
+D = \frac{\text{Number of actual edges}}{\text{Number of possible edges}}
+\]
 </div>
 
 <p>
@@ -765,7 +772,7 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         But the most striking finding lies in the <strong>isolated communities</strong>. Scroll to <strong>Community 34</strong> (Crafts/Quilting): nearly every channel shows <strong>0.00 cross-share</strong>. These viewers exclusively watch quilting content. They never venture into Gaming or Music. Similarly, <strong>Community 22</strong> (Tennis) features official channels like Roland Garros and ATP Tour with zero external connections. <span class="highlight">Some galaxies are perfect echo chambers.</span>
     </p>
 
-    <div class="insight-box" style="background: #132f34ff; padding: 20px; border-left: 4px solid #ef4444; margin: 20px 0; color: #ffffff; border-radius: 4px;">
+    <div class="insight-box" style="background: #1a1a2e; padding: 20px; border-left: 4px solid #ef4444; margin: 20px 0; color: #ffffff; border-radius: 4px;">
         <strong>🔒 The Sealed Vaults (Communities with no/few bridges):</strong>
         <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
             <li><strong>C34 (Crafts/Quilting):</strong> All Crafts Channel, Ruby Stedman: cross-shares of 0.00-0.09</li>
@@ -1391,6 +1398,21 @@ title: "YouNiverse: Voyage Through Video Galaxies"
         }
     }
 </style>
+
+<script>
+  // Render LaTeX across this page (e.g., \[ ... \], \( ... \), $$ ... $$, $ ... $)
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)'], ['$', '$']],
+      displayMath: [['\\[', '\\]'], ['$$', '$$']]
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+      processHtmlClass: 'mathjax-process'
+    }
+  };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
