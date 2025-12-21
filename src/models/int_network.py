@@ -450,7 +450,7 @@ def visualize_single_galaxy(LCC, communities, node_df, community_id, html_out_pa
         f.write(content)
         f.flush()
     
-    print(f"\n✅ Galaxy #{community_id} visualization saved to: {html_out_path}")
+    print(f"\nGalaxy #{community_id} visualization saved to: {html_out_path}")
     print("=" * 60)
     
     return {
