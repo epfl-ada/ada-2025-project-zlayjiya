@@ -71,20 +71,24 @@ document.addEventListener('DOMContentLoaded', function() {
     document.head.appendChild(style);
     
     // Animate stats on scroll
-    const animateValue = (element, start, end, duration) => {
+    const animateValue = (element, start, end, duration, suffix = '') => {
         let startTimestamp = null;
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
             const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            const value = Math.floor(progress * (end - start) + start);
+            const value = progress * (end - start) + start;
             
-            // Format number with K/M suffix
-            if (value >= 1000000) {
+            // Format based on suffix
+            if (suffix === 'M+') {
                 element.textContent = (value / 1000000).toFixed(1) + 'M+';
-            } else if (value >= 1000) {
+            } else if (suffix === 'K+') {
                 element.textContent = Math.floor(value / 1000) + 'K+';
+            } else if (suffix === '%') {
+                element.textContent = Math.floor(value) + '%';
+            } else if (suffix === 'decimal') {
+                element.textContent = value.toFixed(3);
             } else {
-                element.textContent = value;
+                element.textContent = Math.floor(value);
             }
             
             if (progress < 1) {
@@ -101,15 +105,53 @@ document.addEventListener('DOMContentLoaded', function() {
                 const statNumber = entry.target.querySelector('.stat-number');
                 if (statNumber && !statNumber.classList.contains('animated')) {
                     statNumber.classList.add('animated');
-                    const text = statNumber.textContent;
-                    const match = text.match(/(\d+)/);
-                    if (match) {
-                        const num = parseInt(match[1]);
-                        if (text.includes('K')) {
-                            animateValue(statNumber, 0, num * 1000, 2000);
-                        } else if (text.includes('M')) {
-                            animateValue(statNumber, 0, num * 1000000, 2000);
-                        } else {
+                    const text = statNumber.textContent.trim();
+                    
+                    // Check for decimal with M suffix (like 72.0M+)
+                    const decimalMMatch = text.match(/(\d+\.\d+)M\+/);
+                    if (decimalMMatch) {
+                        const num = parseFloat(decimalMMatch[1]);
+                        animateValue(statNumber, 0, num * 1000000, 2000, 'M+');
+                    }
+                    // Check for decimal with K suffix (like 136.5K+)
+                    else if (text.match(/(\d+\.\d+)K\+/)) {
+                        const num = parseFloat(text.match(/(\d+\.\d+)/)[1]);
+                        animateValue(statNumber, 0, num * 1000, 2000, 'K+');
+                    }
+                    // Check for plain decimal (like 0.655)
+                    else if (text.match(/^\d+\.\d+$/)) {
+                        const num = parseFloat(text);
+                        animateValue(statNumber, 0, num, 1500, 'decimal');
+                    }
+                    // Integer with K suffix
+                    else if (text.includes('K+')) {
+                        const match = text.match(/(\d+)/);
+                        if (match) {
+                            const num = parseInt(match[1]);
+                            animateValue(statNumber, 0, num * 1000, 2000, 'K+');
+                        }
+                    }
+                    // Integer with M suffix
+                    else if (text.includes('M+')) {
+                        const match = text.match(/(\d+)/);
+                        if (match) {
+                            const num = parseInt(match[1]);
+                            animateValue(statNumber, 0, num * 1000000, 2000, 'M+');
+                        }
+                    }
+                    // Percentage
+                    else if (text.includes('%')) {
+                        const match = text.match(/(\d+)/);
+                        if (match) {
+                            const num = parseInt(match[1]);
+                            animateValue(statNumber, 0, num, 1500, '%');
+                        }
+                    }
+                    // Plain integer
+                    else {
+                        const match = text.match(/(\d+)/);
+                        if (match) {
+                            const num = parseInt(match[1]);
                             animateValue(statNumber, 0, num, 1500);
                         }
                     }
